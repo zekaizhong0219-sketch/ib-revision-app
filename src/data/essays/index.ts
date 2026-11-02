@@ -1,4 +1,5 @@
 import type { EssayPrompt } from '../../types';
+import { englishEssays } from './english';
 
-/** All built-in timed-writing prompts. Filled per subject in later files. */
-export const ALL_ESSAYS: EssayPrompt[] = [];
+/** All built-in timed-writing prompts. */
+export const ALL_ESSAYS: EssayPrompt[] = [...englishEssays];
