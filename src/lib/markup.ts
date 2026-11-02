@@ -20,7 +20,7 @@ function escapeHtml(s: string): string {
 
 const DOLLAR = '\u0000D\u0000';
 
-/** Converts our light markup (text, **bold**, $inline$, $$display$$, newlines; \$ = literal dollar) to HTML. */
+/** Converts our light markup (text, **bold**, *italic*, $inline$, $$display$$, newlines; \$ = literal dollar) to HTML. */
 export function toHtml(input: string): string {
   const text = input.replace(/\\\$/g, DOLLAR);
   const out: string[] = [];
@@ -30,6 +30,7 @@ export function toHtml(input: string): string {
   const plain = (s: string) =>
     escapeHtml(s)
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*\w])\*(?!\s)([^*\n]+?)(?<!\s)\*(?!\*)/g, '$1<em>$2</em>')
       .replace(/\n/g, '<br/>');
   while ((m = re.exec(text))) {
     out.push(plain(text.slice(last, m.index)));

@@ -116,3 +116,30 @@ describe('essay prompts and rubrics', () => {
     expect(rubricMax(getRubric('hist-p1-q4')!)).toBe(9);
   });
 });
+
+import { EXEMPLARS } from '../exemplars';
+import { countWords } from '../../lib/answer';
+
+describe('exemplars', () => {
+  it('each matches one prompt and scores every rubric criterion within range', () => {
+    expect(EXEMPLARS.length).toBeGreaterThanOrEqual(6);
+    for (const ex of EXEMPLARS) {
+      const prompt = ALL_ESSAYS.find((e) => e.id === ex.promptId)!;
+      const r = getRubric(prompt.rubric)!;
+      expect(Object.keys(ex.scores).sort(), ex.title).toEqual(r.criteria.map((c) => c.id).sort());
+      for (const c of r.criteria) {
+        expect(ex.scores[c.id], `${ex.title} ${c.id}`).toBeGreaterThanOrEqual(0);
+        expect(ex.scores[c.id], `${ex.title} ${c.id}`).toBeLessThanOrEqual(c.max);
+        expect(ex.notes[c.id], `${ex.title} note ${c.id}`).toBeTruthy();
+      }
+      if (prompt.minWords && prompt.maxWords) {
+        const w = countWords(ex.text.replace(/\*\*/g, ''));
+        expect(w, `${ex.title} words`).toBeGreaterThanOrEqual(prompt.minWords);
+        expect(w, `${ex.title} words`).toBeLessThanOrEqual(prompt.maxWords);
+      }
+    }
+  });
+  it('Spanish exemplars follow the house style (no em dash)', () => {
+    for (const ex of EXEMPLARS.filter((e) => e.promptId.startsWith('esp-'))) expect(ex.text.includes('—'), ex.title).toBe(false);
+  });
+});
