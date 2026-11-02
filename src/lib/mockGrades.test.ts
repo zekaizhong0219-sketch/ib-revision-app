@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { autoMark, buildMock, emptyResponse, itemMax, MINUTES_PER_MARK } from './mock';
-import { estimateGrade, gradeFromPercent } from './grades';
+import { calibrate, estimateGrade, gradeFromPercent } from './grades';
 import { addMistakeCards, isLeech, mistakeCard, MISTAKE_PREFIX } from './mistakes';
 import { defaultData, sanitizeData } from './storage';
 import { ALL_QUESTIONS } from '../data/questions';
@@ -103,6 +103,48 @@ describe('grades', () => {
       d.essays.push({ id: `e${i}`, prompt: 'p', subject: 'history', topic: 'W12.CR', rubric: 'hist-p2', t: i, sec: 1, words: 1, text: '', scores: { M: m }, done: true });
     }
     expect(estimateGrade(d, 'history')!.n).toBe(2);
+  });
+  it('ignores results after the asOf date', () => {
+    const d = defaultData();
+    d.mocks.push({ id: 'a', subject: 'math', t: 10, minutes: 60, got: 30, max: 60, items: 1 });
+    d.mocks.push({ id: 'b', subject: 'math', t: 20, minutes: 60, got: 30, max: 60, items: 1 });
+    d.mocks.push({ id: 'c', subject: 'math', t: 30, minutes: 60, got: 60, max: 60, items: 1 });
+    expect(estimateGrade(d, 'math', 25)!.percent).toBeCloseTo(50);
+    expect(estimateGrade(d, 'math', 15)).toBeNull();
+  });
+});
+
+describe('calibration against school results', () => {
+  const DAY = 86_400_000;
+  it('returns null without school results', () => {
+    expect(calibrate(defaultData(), 'math')).toBeNull();
+  });
+  it('compares each school result with the app estimate at that date and adjusts the current estimate', () => {
+    const d = defaultData();
+    // App says 80 % from two mocks before the school test; the school test gave 60 % → bias +20.
+    d.mocks.push({ id: 'a', subject: 'math', t: 0, minutes: 60, got: 48, max: 60, items: 1 });
+    d.mocks.push({ id: 'b', subject: 'math', t: DAY, minutes: 60, got: 48, max: 60, items: 1 });
+    d.school.push({ id: 's1', subject: 'math', t: 5 * DAY, label: 'Test', got: 30, max: 50, grade: 5 });
+    // A later mock must not change the comparison for the earlier school test.
+    d.mocks.push({ id: 'c', subject: 'math', t: 10 * DAY, minutes: 60, got: 54, max: 60, items: 1 });
+    const c = calibrate(d, 'math')!;
+    expect(c.n).toBe(1);
+    expect(c.pairs).toBe(1);
+    expect(c.bias).toBeCloseTo(20);
+    expect(c.schoolPct).toBeCloseTo(60);
+    expect(c.schoolGrade).toBe(5);
+    const now = estimateGrade(d, 'math')!;
+    expect(c.adjusted!.percent).toBeCloseTo(now.percent - 20);
+    expect(c.adjusted!.grade).toBeLessThanOrEqual(now.grade);
+  });
+  it('has no bias when the app had no estimate before the school result', () => {
+    const d = defaultData();
+    d.school.push({ id: 's1', subject: 'math', t: 0, label: 'Test', got: 30, max: 50 });
+    d.mocks.push({ id: 'a', subject: 'math', t: 5 * DAY, minutes: 60, got: 48, max: 60, items: 1 });
+    d.mocks.push({ id: 'b', subject: 'math', t: 6 * DAY, minutes: 60, got: 48, max: 60, items: 1 });
+    const c = calibrate(d, 'math')!;
+    expect(c.bias).toBeNull();
+    expect(c.adjusted).toBeNull();
   });
 });
 

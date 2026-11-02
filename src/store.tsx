@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AppData, Card, ContentReport, EssayAttempt, Grade, MockRecord, PracticeLog, Question, Settings, Subject } from './types';
+import type {
+  AppData, Card, ContentReport, EssayAttempt, Grade, MockRecord, PracticeLog, Question, SchoolResult, Settings, SourceAttempt, SourceSet, Subject,
+} from './types';
 import { ALL_QUESTIONS } from './data/questions';
 import { addMistakeCards } from './lib/mistakes';
 import { SUBJECTS } from './data/syllabus';
@@ -21,6 +23,11 @@ interface Store {
   saveMock: (record: MockRecord) => void;
   addReport: (r: Omit<ContentReport, 'id' | 't'>) => void;
   clearReports: () => void;
+  addSchoolResult: (r: Omit<SchoolResult, 'id'>) => void;
+  deleteSchoolResult: (id: string) => void;
+  saveSourceSet: (set: SourceSet) => void;
+  deleteSourceSet: (id: string) => void;
+  addSourceAttempt: (setId: string, attempt: SourceAttempt) => void;
   deleteEssay: (id: string) => void;
   gradeCard: (card: Card, grade: Grade, opts?: { cram?: boolean }) => void;
   logPractice: (entries: PracticeLog[]) => void;
@@ -100,6 +107,25 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
     [],
   );
   const clearReports = useCallback(() => setData((d) => ({ ...d, reports: [] })), []);
+  const addSchoolResult = useCallback(
+    (r: Omit<SchoolResult, 'id'>) => setData((d) => ({ ...d, school: [...d.school, { ...r, id: `sr-${Date.now().toString(36)}` }].sort((a, b) => a.t - b.t) })),
+    [],
+  );
+  const deleteSchoolResult = useCallback((id: string) => setData((d) => ({ ...d, school: d.school.filter((r) => r.id !== id) })), []);
+  const saveSourceSet = useCallback(
+    (set: SourceSet) =>
+      setData((d) => ({
+        ...d,
+        sourceSets: d.sourceSets.some((x) => x.id === set.id) ? d.sourceSets.map((x) => (x.id === set.id ? set : x)) : [...d.sourceSets, set],
+      })),
+    [],
+  );
+  const deleteSourceSet = useCallback((id: string) => setData((d) => ({ ...d, sourceSets: d.sourceSets.filter((x) => x.id !== id) })), []);
+  const addSourceAttempt = useCallback(
+    (setId: string, attempt: SourceAttempt) =>
+      setData((d) => ({ ...d, sourceSets: d.sourceSets.map((x) => (x.id === setId ? { ...x, attempts: [...x.attempts, attempt] } : x)) })),
+    [],
+  );
 
   const upsertCustomCard = useCallback((card: Card) => {
     setData((d) => {
@@ -144,10 +170,12 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
   const value = useMemo<Store>(
     () => ({
       data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock, addReport, clearReports,
+      addSchoolResult, deleteSchoolResult, saveSourceSet, deleteSourceSet, addSourceAttempt,
       gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
     }),
     [
       data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock, addReport, clearReports,
+      addSchoolResult, deleteSchoolResult, saveSourceSet, deleteSourceSet, addSourceAttempt,
       gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
     ],
   );

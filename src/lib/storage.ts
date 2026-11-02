@@ -1,4 +1,6 @@
-import type { AppData, Card, CardState, ContentReport, EssayAttempt, Exam, MockRecord, PracticeLog, ReviewLog, Settings, SubjectId } from '../types';
+import type {
+  AppData, Card, CardState, ContentReport, EssayAttempt, Exam, MockRecord, PracticeLog, ReviewLog, SchoolResult, Settings, SourceAttempt, SourceSet, SubjectId,
+} from '../types';
 import { SUBJECT_IDS, isSubjectId } from '../data/subjectIds';
 
 export const STORAGE_KEY = 'ib-revision:data';
@@ -44,6 +46,8 @@ export function defaultData(): AppData {
     essays: [],
     mocks: [],
     reports: [],
+    school: [],
+    sourceSets: [],
     settings: defaultSettings(),
   };
 }
@@ -149,6 +153,50 @@ function sanitizeMock(v: unknown): MockRecord | null {
   };
 }
 
+function sanitizeSchool(v: unknown): SchoolResult | null {
+  if (!isObj(v) || !isStr(v.id) || !isSubject(v.subject) || !isNum(v.t) || !isNum(v.max) || !isNum(v.got) || v.max <= 0) return null;
+  const grade = isNum(v.grade) && v.grade >= 1 && v.grade <= 7 ? Math.round(v.grade) : undefined;
+  return {
+    id: v.id,
+    subject: v.subject,
+    t: v.t,
+    label: isStr(v.label) ? v.label.slice(0, 120) : '',
+    max: v.max,
+    got: Math.min(v.max, Math.max(0, v.got)),
+    ...(grade ? { grade } : {}),
+  };
+}
+
+const MAX_SOURCE_TEXT = 6000;
+
+function sanitizeSourceSet(v: unknown): SourceSet | null {
+  if (!isObj(v) || !isStr(v.id) || !isStr(v.title) || !isStr(v.topic) || !isNum(v.t)) return null;
+  const sources = (Array.isArray(v.sources) ? v.sources : [])
+    .filter(isObj)
+    .map((x) => ({ origin: isStr(x.origin) ? x.origin.slice(0, 400) : '', text: isStr(x.text) ? x.text.slice(0, MAX_SOURCE_TEXT) : '' }))
+    .slice(0, 6);
+  const questions = (Array.isArray(v.questions) ? v.questions : [])
+    .filter((x): x is Record<string, unknown> => isObj(x) && isStr(x.label) && isNum(x.marks) && isStr(x.prompt))
+    .map((x) => ({ label: (x.label as string).slice(0, 8), marks: Math.max(1, Math.min(30, Math.round(x.marks as number))), prompt: (x.prompt as string).slice(0, 600) }))
+    .slice(0, 8);
+  if (!sources.length || !questions.length) return null;
+  const attempts = (Array.isArray(v.attempts) ? v.attempts : [])
+    .filter((x): x is Record<string, unknown> => isObj(x) && isNum(x.t))
+    .map(
+      (x): SourceAttempt => ({
+        t: x.t as number,
+        sec: isNum(x.sec) ? Math.max(0, x.sec) : 0,
+        answers: (Array.isArray(x.answers) ? x.answers : []).map((a) => (isStr(a) ? a.slice(0, 20000) : '')).slice(0, questions.length),
+        scores: questions.map((q, i) => {
+          const sc = Array.isArray(x.scores) ? x.scores[i] : undefined;
+          return isNum(sc) ? Math.max(0, Math.min(q.marks, Math.round(sc))) : 0;
+        }),
+      }),
+    )
+    .slice(-50);
+  return { id: v.id, title: v.title.slice(0, 160), topic: v.topic.slice(0, 20), sources, questions, t: v.t, attempts };
+}
+
 function sanitizeSettings(v: unknown): Settings {
   const d = defaultSettings();
   if (!isObj(v)) return d;
@@ -238,6 +286,8 @@ export function sanitizeData(input: unknown): AppData {
     essays: essays.slice(-MAX_ESSAYS),
     mocks: (Array.isArray(raw.mocks) ? raw.mocks : []).map(sanitizeMock).filter((x): x is MockRecord => !!x).slice(-MAX_ESSAYS),
     reports: (Array.isArray(raw.reports) ? raw.reports : []).map(sanitizeReport).filter((x): x is ContentReport => !!x).slice(-500),
+    school: (Array.isArray(raw.school) ? raw.school : []).map(sanitizeSchool).filter((x): x is SchoolResult => !!x).slice(-MAX_ESSAYS),
+    sourceSets: (Array.isArray(raw.sourceSets) ? raw.sourceSets : []).map(sanitizeSourceSet).filter((x): x is SourceSet => !!x).slice(-100),
     settings: sanitizeSettings(raw.settings),
   };
 }
@@ -327,6 +377,13 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
   const essays = dedupe([...current.essays, ...incoming.essays], (e) => e.id).sort((a, b) => a.t - b.t);
   const mocks = dedupe([...current.mocks, ...incoming.mocks], (m) => m.id).sort((a, b) => a.t - b.t);
   const reports = dedupe([...current.reports, ...incoming.reports], (r) => r.id).sort((a, b) => a.t - b.t);
+  const school = dedupe([...current.school, ...incoming.school], (r) => r.id).sort((a, b) => a.t - b.t);
+  // Source sets: union by id; attempts merged by start time.
+  const setMap = new Map(current.sourceSets.map((x) => [x.id, x]));
+  for (const inc of incoming.sourceSets) {
+    const cur = setMap.get(inc.id);
+    setMap.set(inc.id, cur ? { ...inc, attempts: dedupe([...cur.attempts, ...inc.attempts], (a) => String(a.t)).sort((a, b) => a.t - b.t) } : inc);
+  }
   return {
     version: DATA_VERSION,
     cards,
@@ -336,6 +393,8 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
     essays: essays.slice(-MAX_ESSAYS),
     mocks: mocks.slice(-MAX_ESSAYS),
     reports: reports.slice(-500),
+    school: school.slice(-MAX_ESSAYS),
+    sourceSets: [...setMap.values()].sort((a, b) => a.t - b.t).slice(-100),
     settings: incoming.settings,
   };
 }

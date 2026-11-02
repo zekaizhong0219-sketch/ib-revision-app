@@ -206,7 +206,7 @@ kbd {
 .badge.good { background: var(--good-soft); color: var(--good); }
 .badge.bad { background: var(--bad-soft); color: var(--bad); }
 
-input[type='text'], input[type='number'], input[type='search'], input[type='datetime-local'], select, textarea {
+input[type='text'], input[type='number'], input[type='search'], input[type='datetime-local'], input[type='date'], select, textarea {
   width: 100%; padding: 0.55rem 0.7rem; border-radius: 10px; border: 1px solid var(--border);
   background: var(--surface); min-height: 40px;
 }
