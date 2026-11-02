@@ -95,6 +95,13 @@ export default function Practice({ route }: { route: Route }) {
         </div>
         <span className="btn small">{t('Open')}</span>
       </a>
+      <a className="card spread" href="#/listening" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
+        <div>
+          <strong>English B listening trainer</strong>
+          <div className="small muted">Recordings read aloud (played twice, as in the exam), Paper 2-style questions and a strategy guide.</div>
+        </div>
+        <span className="btn small">{t('Open')}</span>
+      </a>
       <div className="card stack">
         <div>
           <h3>{t('Subjects')}</h3>

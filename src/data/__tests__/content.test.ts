@@ -143,3 +143,29 @@ describe('exemplars', () => {
     for (const ex of EXEMPLARS.filter((e) => e.promptId.startsWith('esp-'))) expect(ex.text.includes('—'), ex.title).toBe(false);
   });
 });
+
+import { LISTENING } from '../listening';
+
+describe('listening items', () => {
+  it('have scripts, unique ids and valid questions referencing English topics', () => {
+    expect(LISTENING.length).toBeGreaterThanOrEqual(4);
+    expect(new Set(LISTENING.map((l) => l.id)).size).toBe(LISTENING.length);
+    for (const l of LISTENING) {
+      expect(l.script.length).toBeGreaterThan(3);
+      for (const line of l.script) expect(l.speakers[line.speaker], `${l.title}: speaker ${line.speaker}`).toBeTruthy();
+      expect(l.question.parts.length).toBeGreaterThanOrEqual(6);
+      expect(SUBJECTS.find((s) => s.id === 'english')!.topics.map((t) => t.id)).toContain(l.theme);
+    }
+  });
+  it('every auto-marked numeric answer appears in the script (as digits or words)', () => {
+    const words: Record<number, string> = { 2: 'two', 3: 'three', 4: 'four', 5: 'five', 7: 'seven', 9: 'nine', 32: 'thirty-two', 2000: 'two thousand' };
+    for (const l of LISTENING) {
+      const text = l.script.map((s) => s.text).join(' ').toLowerCase();
+      for (const p of l.question.parts) {
+        if (!p.numeric) continue;
+        const v = p.numeric.value;
+        expect(text.includes(String(v)) || (words[v] !== undefined && text.includes(words[v])), `${l.title} (${p.label}) ${v}`).toBe(true);
+      }
+    }
+  });
+});

@@ -11,6 +11,7 @@ const Review = lazy(() => import('./views/Review'));
 const Practice = lazy(() => import('./views/Practice'));
 const Writing = lazy(() => import('./views/Writing'));
 const Mock = lazy(() => import('./views/Mock'));
+const Listening = lazy(() => import('./views/Listening'));
 const Cards = lazy(() => import('./views/Cards'));
 const Exams = lazy(() => import('./views/Exams'));
 const Settings = lazy(() => import('./views/Settings'));
@@ -76,7 +77,7 @@ export default function App() {
   const nav = (cls: string) => (
     <nav className={cls} aria-label="Main">
       {NAV.map((n) => (
-        <a key={n.path} href={href(n.path)} className={route.path === n.path || (n.path === '/practice' && route.path === '/mock') ? 'active' : ''} aria-current={route.path === n.path ? 'page' : undefined}>
+        <a key={n.path} href={href(n.path)} className={route.path === n.path || (n.path === '/practice' && (route.path === '/mock' || route.path === '/listening')) ? 'active' : ''} aria-current={route.path === n.path ? 'page' : undefined}>
           <Icon name={n.icon} />
           <span>{t(n.label)}</span>
         </a>
@@ -112,6 +113,7 @@ export default function App() {
           {route.path === '/practice' && <Practice route={route} />}
           {route.path === '/writing' && <Writing route={route} />}
           {route.path === '/mock' && <Mock />}
+          {route.path === '/listening' && <Listening />}
           {route.path === '/cards' && <Cards route={route} />}
           {route.path === '/exams' && <Exams />}
           {route.path === '/settings' && <Settings />}
