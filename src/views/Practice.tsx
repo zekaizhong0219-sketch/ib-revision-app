@@ -189,7 +189,7 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
       <div className="card">
         <div className="row small muted" style={{ marginBottom: '0.6rem' }}>
           <SubjectDot subject={q.subject} /> {topicLabel(q.subject, q.topic)}
-          <span className="badge">{q.type === 'mc' ? 'multiple choice' : q.type === 'numeric' ? 'numeric' : q.solution ? 'open' : 'recall'}</span>
+          <span className="badge">{q.type === 'mc' ? 'multiple choice' : q.type === 'numeric' ? 'numeric' : q.id.includes('-q-') ? 'open' : 'flashcard recall'}</span>
         </div>
         <MathText text={q.prompt} />
         <div style={{ marginTop: '1rem' }}>
