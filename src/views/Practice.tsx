@@ -8,7 +8,7 @@ import { MathText } from '../components/MathText';
 import { HBars } from '../components/Charts';
 import { SubjectChips, SubjectDot, TopicPicker } from '../components/ui';
 import { navigate, type Route } from '../router';
-import { MatchAnswer, OrderAnswer, TextAnswer } from './PracticeAnswers';
+import { MatchAnswer, OrderAnswer, StructuredAnswer, TextAnswer } from './PracticeAnswers';
 import type { Card, PracticeResult, Question, SubjectId } from '../types';
 
 const DURATIONS = [5, 10, 15, 20, 30, 45];
@@ -20,6 +20,7 @@ const TYPE_LABEL: Record<Question['type'], string> = {
   text: 'short answer',
   order: 'put in order',
   match: 'matching',
+  structured: 'structured (Paper 2 style)',
 };
 
 /** Turns a flashcard into a self-marked recall question. */
@@ -48,6 +49,7 @@ interface Answered {
   result: PracticeResult;
   response: string;
   sec: number;
+  marks?: { got: number; max: number };
 }
 
 export default function Practice({ route }: { route: Route }) {
@@ -146,12 +148,12 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
   }, [remaining, finished]);
 
   const record = useCallback(
-    (result: PracticeResult, response: string) => {
+    (result: PracticeResult, response: string, marks?: { got: number; max: number }) => {
       const sec = Math.round((Date.now() - startedAt.current) / 1000);
-      const a = { q, result, response, sec };
+      const a: Answered = { q, result, response, sec, marks };
       setCurrent(a);
       setAnswered((xs) => [...xs, a]);
-      logPractice([{ q: q.id, s: q.subject, tp: q.topic, r: result, t: Date.now(), sec }]);
+      logPractice([{ q: q.id, s: q.subject, tp: q.topic, r: result, t: Date.now(), sec, ...(marks ? { m: marks.got, mx: marks.max } : {}) }]);
     },
     [q, logPractice],
   );
@@ -210,6 +212,7 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
           {q.type === 'text' && <TextAnswer key={i} q={q} done={current} onAnswer={record} />}
           {q.type === 'order' && <OrderAnswer key={i} q={q} done={current} onAnswer={record} />}
           {q.type === 'match' && <MatchAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'structured' && <StructuredAnswer key={i} q={q} done={current} onAnswer={record} />}
         </div>
         {current && q.solution && (
           <div className="feedback info">
@@ -442,6 +445,9 @@ function Results({ answered, minutes, onExit }: { answered: Answered[]; minutes:
                   {a.q.type === 'text' && <p>{a.q.answers.join(' / ')} — you wrote “{a.response}”</p>}
                   {a.q.type === 'order' && <MathText text={a.q.items.map((x, k) => `${k + 1}. ${x}`).join('\n')} />}
                   {a.q.type === 'match' && <MathText text={a.q.pairs.map(([l, r]) => `${l} → ${r}`).join('\n')} />}
+                  {a.q.type === 'structured' && (
+                    <MathText text={a.q.parts.map((pt) => `**(${pt.label}) [${pt.marks}]** ${pt.scheme}`).join('\n')} />
+                  )}
                   {a.q.solution && <MathText className="small muted" text={a.q.solution} />}
                 </details>
               </div>

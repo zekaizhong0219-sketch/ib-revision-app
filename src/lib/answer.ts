@@ -153,3 +153,10 @@ export function countWords(text: string): number {
   const t = text.trim();
   return t ? t.split(/\s+/).length : 0;
 }
+
+/** Practice result for a structured question from marks gained (≥ 75 % correct, ≥ 40 % partial). */
+export function resultFromMarks(got: number, max: number): 'correct' | 'partial' | 'incorrect' {
+  if (max <= 0) return 'incorrect';
+  const f = got / max;
+  return f >= 0.75 ? 'correct' : f >= 0.4 ? 'partial' : 'incorrect';
+}

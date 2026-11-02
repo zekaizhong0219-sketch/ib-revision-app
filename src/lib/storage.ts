@@ -83,6 +83,10 @@ function sanitizePractice(v: unknown): PracticeLog | null {
   if (!isObj(v) || !isStr(v.q) || !isSubject(v.s) || !isStr(v.tp) || !RESULTS.includes(v.r as string) || !isNum(v.t)) return null;
   const out: PracticeLog = { q: v.q, s: v.s, tp: v.tp, r: v.r as PracticeLog['r'], t: v.t };
   if (isNum(v.sec)) out.sec = v.sec;
+  if (isNum(v.m) && isNum(v.mx) && v.mx > 0) {
+    out.mx = v.mx;
+    out.m = Math.min(v.mx, Math.max(0, v.m));
+  }
   return out;
 }
 

@@ -64,6 +64,7 @@ describe('practice questions', () => {
       if (q.type === 'text') texts.push(...q.answers);
       if (q.type === 'order') texts.push(...q.items);
       if (q.type === 'match') texts.push(...q.pairs.flat());
+      if (q.type === 'structured') texts.push(...q.parts.flatMap((p) => [p.prompt, p.scheme]));
       for (const t of texts) {
         const stripped = t.replace(/\\\$/g, '').replace(/\$\$[\s\S]+?\$\$/g, '');
         expect((stripped.match(/\$/g) ?? []).length % 2, `${q.id}: unbalanced $ in ${t}`).toBe(0);
@@ -72,6 +73,12 @@ describe('practice questions', () => {
         }
       }
     }
+  });
+
+  it.each(['physics', 'chemistry', 'math'])('%s has at least 12 structured questions with ≥ 5 marks each', (id) => {
+    const qs = ALL_QUESTIONS.filter((q) => q.subject === id && q.type === 'structured');
+    expect(qs.length).toBeGreaterThanOrEqual(12);
+    for (const q of qs) if (q.type === 'structured') expect(q.parts.reduce((s, p) => s + p.marks, 0), q.id).toBeGreaterThanOrEqual(5);
   });
 
   it.each(SUBJECTS.map((s) => s.id))('%s has at least 40 questions', (id) => {

@@ -1,4 +1,4 @@
-import type { Card, CardKind, EssayPrompt, Question, SubjectId } from '../types';
+import type { Card, CardKind, EssayPrompt, NumericSpec, Question, StructuredPart, StructuredQuestion, SubjectId } from '../types';
 import { SUBJECT_PREFIX as PREFIX } from './subjectIds';
 
 /**
@@ -39,6 +39,16 @@ import { SUBJECT_PREFIX as PREFIX } from './subjectIds';
  *
  *   @match S.1                 ← list P: left => right pairs, correctly matched; right side shuffled
  *   Q: … / P: metáfora => «tus ojos son luceros» / … / S: …
+ *
+ * ── Structured (multi-part, Paper 2-style) questions ─────────
+ *   @struct A.2
+ *   Q: stem / context (may continue on following lines)
+ *   a) [2] Calculate the acceleration.
+ *   = 2.5 rel=0.02 unit=m s^-2        ← optional: auto-mark this part numerically
+ *   M: mark-scheme point ¶ another point
+ *   b) [3] Explain why…
+ *   M: …
+ *   S: optional overall notes
  *
  * ── Essay prompts (timed writing, self-assessed with a rubric) ──
  *   @essay P2 rubric=hist-p2 minutes=45 min=0 max=0
@@ -253,6 +263,83 @@ export function parseEssays(subject: SubjectId, source: string): EssayPrompt[] {
       ...(Number(params.min) > 0 ? { minWords: Number(params.min) } : {}),
       ...(Number(params.max) > 0 ? { maxWords: Number(params.max) } : {}),
       guidance: normalise(fields.S ?? ''),
+    });
+  }
+  return out;
+}
+
+function parseNumericSpec(raw: string, where: string): NumericSpec {
+  const [valueTok, ...rest] = raw.trim().split(/\s+/);
+  const value = Number(valueTok);
+  if (!Number.isFinite(value)) throw new Error(`${where}: invalid numeric value "${valueTok}"`);
+  const spec: NumericSpec = { value };
+  const restStr = rest.join(' ');
+  const unitIdx = restStr.indexOf('unit=');
+  const paramPart = unitIdx >= 0 ? restStr.slice(0, unitIdx) : restStr;
+  if (unitIdx >= 0) spec.unit = restStr.slice(unitIdx + 5).trim();
+  for (const p of paramPart.split(/\s+/).filter(Boolean)) {
+    const [k, v] = p.split('=');
+    if (k === 'rel') spec.rel = Number(v);
+    else if (k === 'abs') spec.abs = Number(v);
+    else throw new Error(`${where}: unknown numeric parameter "${k}"`);
+  }
+  return spec;
+}
+
+/** Parses @struct blocks (see format notes at the top of this file). */
+export function parseStructured(subject: SubjectId, source: string): StructuredQuestion[] {
+  const out: StructuredQuestion[] = [];
+  const blocks = source.split(/^@struct\s+/m).slice(1);
+  for (const block of blocks) {
+    const lines = block.split('\n');
+    const topic = lines[0].trim();
+    const where = `[${subject}] structured ${topic}`;
+    let stem = '';
+    let solution = '';
+    const parts: StructuredPart[] = [];
+    let key: 'Q' | 'S' | 'P' | 'M' | null = null;
+    for (const raw of lines.slice(1)) {
+      const line = raw.trim();
+      if (line.startsWith('//')) continue;
+      const part = line.match(/^([a-z](?:\([ivx]+\))?)\)\s*\[(\d+)\]\s*(.*)$/);
+      const field = line.match(/^(Q|S|M):\s?(.*)$/);
+      if (part) {
+        parts.push({ label: part[1], marks: Number(part[2]), prompt: part[3], scheme: '' });
+        key = 'P';
+      } else if (line.startsWith('=')) {
+        if (!parts.length) throw new Error(`${where}: numeric answer before any part`);
+        parts[parts.length - 1].numeric = parseNumericSpec(line.slice(1), where);
+      } else if (field) {
+        key = field[1] as 'Q' | 'S' | 'M';
+        if (key === 'Q') stem = field[2];
+        else if (key === 'S') solution = field[2];
+        else {
+          if (!parts.length) throw new Error(`${where}: M: before any part`);
+          parts[parts.length - 1].scheme = field[2];
+        }
+      } else if (line && key) {
+        const add = (t: string) => (t ? `${t} ¶ ${line}` : line);
+        if (key === 'Q') stem = add(stem);
+        else if (key === 'S') solution = add(solution);
+        else if (key === 'P') parts[parts.length - 1].prompt = add(parts[parts.length - 1].prompt);
+        else parts[parts.length - 1].scheme = add(parts[parts.length - 1].scheme);
+      }
+    }
+    if (!stem) throw new Error(`${where}: missing Q:`);
+    if (parts.length < 2) throw new Error(`${where}: needs at least two parts`);
+    for (const p of parts) {
+      if (!p.scheme) throw new Error(`${where} (${p.label}): every part needs an M: mark scheme`);
+      if (p.marks < 1) throw new Error(`${where} (${p.label}): marks must be ≥ 1`);
+    }
+    const prompt = normalise(stem);
+    out.push({
+      id: `${PREFIX[subject]}-s-${topic}-${hashString(prompt)}`,
+      subject,
+      topic,
+      type: 'structured',
+      prompt,
+      solution: normalise(solution),
+      parts: parts.map((p) => ({ ...p, prompt: normalise(p.prompt), scheme: normalise(p.scheme) })),
     });
   }
   return out;

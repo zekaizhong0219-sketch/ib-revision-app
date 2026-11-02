@@ -85,3 +85,39 @@ Address readers directly.`,
     expect(() => parseEssays('english', '@essay TT rubric=r\nQ: x')).toThrow(/minutes/);
   });
 });
+
+import { parseStructured } from './dsl';
+
+describe('parseStructured', () => {
+  const src = String.raw`
+@struct A.1
+Q: A car accelerates from rest.
+It reaches 20 m/s.
+a) [2] Calculate the acceleration.
+= 2.5 rel=0.05 unit=m s^-2
+M: $a = \Delta v/\Delta t$ (1)
+answer 2.5 (1)
+b) [3] Explain why…
+M: point one ¶ point two
+c(i)) [1] State x.
+M: x
+S: overall
+`;
+  it('parses parts, numeric specs, schemes and continuation lines', () => {
+    const [q] = parseStructured('physics', src);
+    expect(q.type).toBe('structured');
+    expect(q.prompt).toBe('A car accelerates from rest.\nIt reaches 20 m/s.');
+    expect(q.parts.map((p) => [p.label, p.marks])).toEqual([['a', 2], ['b', 3], ['c(i)', 1]]);
+    expect(q.parts[0].numeric).toEqual({ value: 2.5, rel: 0.05, unit: 'm s^-2' });
+    expect(q.parts[0].scheme).toBe('$a = \\Delta v/\\Delta t$ (1)\nanswer 2.5 (1)');
+    expect(q.parts[1].numeric).toBeUndefined();
+    expect(q.solution).toBe('overall');
+    expect(q.id.startsWith('phy-s-A.1-')).toBe(true);
+  });
+  it('requires a stem, two parts and a scheme per part', () => {
+    expect(() => parseStructured('physics', '@struct A.1\na) [1] x\nM: y\nb) [1] z\nM: w')).toThrow(/Q:/);
+    expect(() => parseStructured('physics', '@struct A.1\nQ: s\na) [1] x\nM: y')).toThrow(/two parts/);
+    expect(() => parseStructured('physics', '@struct A.1\nQ: s\na) [1] x\nb) [1] z\nM: w')).toThrow(/mark scheme/);
+    expect(() => parseStructured('physics', '@struct A.1\nQ: s\na) [1] x\n= abc\nM: y\nb) [1] z\nM: w')).toThrow(/numeric/);
+  });
+});

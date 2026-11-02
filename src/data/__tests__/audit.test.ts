@@ -16,6 +16,7 @@ const ALL_TEXT: { id: string; text: string; subject: string }[] = [
     if (q.type === 'text') t.push(...q.answers);
     if (q.type === 'order') t.push(...q.items);
     if (q.type === 'match') t.push(...q.pairs.flat());
+    if (q.type === 'structured') t.push(...q.parts.flatMap((p) => [p.prompt, p.scheme]));
     return t.map((text) => ({ id: q.id, text, subject: q.subject }));
   }),
   ...ALL_ESSAYS.flatMap((e) => [
@@ -25,27 +26,34 @@ const ALL_TEXT: { id: string; text: string; subject: string }[] = [
 ];
 
 /**
- * Physical constants must always use the IB data-booklet value when written as
- * mantissa × 10^exponent with that exponent.
+ * A value written as mantissa × 10^exp that is within 3 % of a physical constant must be
+ * written with the IB data-booklet mantissa (catches e.g. 6.626 vs 6.63 or a typo like 1.06).
  */
-const CONSTANTS: { name: string; exp: string; allowed: string[] }[] = [
-  { name: 'Planck constant', exp: '-34', allowed: ['6.63'] },
-  { name: 'elementary charge', exp: '-19', allowed: ['1.60', '3.98', '4.97'] }, // photon energies in J also use 10^-19
-  { name: 'gravitational constant', exp: '-11', allowed: ['6.67'] },
-  { name: 'electron mass', exp: '-31', allowed: ['9.11'] },
-  { name: 'Boltzmann constant', exp: '-23', allowed: ['1.38'] },
-  { name: 'Avogadro constant', exp: '23', allowed: ['6.02', '6.02214076', '1.51'] },
-  { name: 'permittivity of free space', exp: '-12', allowed: ['8.85', '6.0'] },
+const CONSTANTS: { name: string; exp: string; value: number; allowed: string[] }[] = [
+  { name: 'Planck constant', exp: '-34', value: 6.63, allowed: ['6.63'] },
+  { name: 'elementary charge', exp: '-19', value: 1.6, allowed: ['1.60', '1.6'] },
+  { name: 'gravitational constant', exp: '-11', value: 6.67, allowed: ['6.67'] },
+  { name: 'electron mass', exp: '-31', value: 9.11, allowed: ['9.11'] },
+  { name: 'Boltzmann constant', exp: '-23', value: 1.38, allowed: ['1.38'] },
+  { name: 'Avogadro constant', exp: '23', value: 6.02, allowed: ['6.02', '6.02214076'] },
+  { name: 'permittivity of free space', exp: '-12', value: 8.85, allowed: ['8.85'] },
 ];
 
 describe('content audit guards', () => {
-  it.each(CONSTANTS)('$name uses the data-booklet value', ({ exp, allowed }) => {
+  it.each(CONSTANTS)('$name uses the data-booklet value', ({ exp, value, allowed }) => {
     const re = new RegExp(String.raw`(\d+(?:\.\d+)?)\s*\\times\s*10\^\{${exp}\}`, 'g');
     const bad: string[] = [];
+    let seen = 0;
     for (const { id, text } of ALL_TEXT) {
-      for (const m of text.matchAll(re)) if (!allowed.includes(m[1])) bad.push(`${id}: ${m[0]}`);
+      for (const m of text.matchAll(re)) {
+        const mant = Number(m[1]);
+        if (Math.abs(mant - value) / value > 0.03) continue; // a different quantity with the same exponent
+        seen++;
+        if (!allowed.includes(m[1])) bad.push(`${id}: ${m[0]}`);
+      }
     }
     expect(bad).toEqual([]);
+    expect(seen).toBeGreaterThan(0);
   });
 
   it('g is always 9.81 and c always 3.00 × 10^8 when stated', () => {

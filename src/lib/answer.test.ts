@@ -143,3 +143,13 @@ describe('countWords', () => {
     expect(countWords('  one two\nthree\t four ')).toBe(4);
   });
 });
+
+import { resultFromMarks } from './answer';
+describe('resultFromMarks', () => {
+  it('uses 75 % / 40 % thresholds', () => {
+    expect(resultFromMarks(6, 8)).toBe('correct');
+    expect(resultFromMarks(4, 8)).toBe('partial');
+    expect(resultFromMarks(3, 8)).toBe('incorrect');
+    expect(resultFromMarks(0, 0)).toBe('incorrect');
+  });
+});

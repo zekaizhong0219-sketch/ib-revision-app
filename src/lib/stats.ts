@@ -108,7 +108,8 @@ export function topicStats(data: AppData, cards: Card[], now: number, windowDays
     v.practiceAttempts++;
     if (p.t >= since) {
       // Practice questions are weighted double: they test application, not just recall.
-      v.scoreSum += 2 * RESULT_SCORE[p.r];
+      // Structured questions carry marks: use the exact fraction rather than the 3-level result.
+      v.scoreSum += 2 * (p.mx ? (p.m ?? 0) / p.mx : RESULT_SCORE[p.r]);
       v.attempts += 2;
     }
   }

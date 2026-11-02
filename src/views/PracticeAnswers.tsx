@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react';
-import { checkText, resultFromScore, scoreMatch, scoreOrder } from '../lib/answer';
+import { checkNumeric, checkText, formatNumber, resultFromMarks, resultFromScore, scoreMatch, scoreOrder } from '../lib/answer';
 import { shuffle } from '../lib/queue';
 import { MathText } from '../components/MathText';
-import type { MatchQuestion, OrderQuestion, PracticeResult, TextQuestion } from '../types';
+import type { MatchQuestion, OrderQuestion, PracticeResult, StructuredPart, StructuredQuestion, TextQuestion } from '../types';
 
 interface Props<Q> {
   q: Q;
   /** Result once answered, null before. */
   done: { result: PracticeResult } | null;
-  onAnswer: (r: PracticeResult, response: string) => void;
+  onAnswer: (r: PracticeResult, response: string, marks?: { got: number; max: number }) => void;
 }
 
 function Feedback({ result, children }: { result: PracticeResult; children: React.ReactNode }) {
@@ -162,6 +162,112 @@ export function MatchAnswer({ q, done, onAnswer }: Props<MatchQuestion>) {
         </button>
       )}
       {done && <Feedback result={done.result}>{Math.round(scoreMatch(choice, q.pairs) * q.pairs.length)} of {q.pairs.length} matched correctly.</Feedback>}
+    </div>
+  );
+}
+
+/**
+ * Paper 2-style question: parts answered in order. Numeric parts are auto-marked (with an
+ * optional self-override for method marks); other parts are self-marked against the mark scheme.
+ */
+export function StructuredAnswer({ q, done, onAnswer }: Props<StructuredQuestion>) {
+  const [marks, setMarks] = useState<(number | null)[]>(() => q.parts.map(() => null));
+  const [step, setStep] = useState(0);
+  const max = q.parts.reduce((s, p) => s + p.marks, 0);
+  const got = marks.reduce<number>((s, m) => s + (m ?? 0), 0);
+  const allMarked = marks.every((m) => m !== null);
+
+  const setPart = (i: number, m: number) => {
+    const next = [...marks];
+    next[i] = m;
+    setMarks(next);
+    if (i === step && step < q.parts.length - 1) setStep(step + 1);
+  };
+
+  return (
+    <div className="stack">
+      {q.parts.slice(0, step + 1).map((p, i) => (
+        <PartView key={p.label} part={p} mark={marks[i]} locked={!!done} onMark={(m) => setPart(i, m)} />
+      ))}
+      {!done && allMarked && (
+        <button
+          className="btn primary"
+          onClick={() => onAnswer(resultFromMarks(got, max), `${got}/${max} marks`, { got, max })}
+        >
+          Submit — {got} / {max} marks
+        </button>
+      )}
+      {done && (
+        <div className={`feedback ${done.result === 'correct' ? 'ok' : done.result === 'partial' ? 'info' : 'no'}`}>
+          <strong>
+            {got} / {max} marks
+          </strong>{' '}
+          ({Math.round((got / max) * 100)}%)
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PartView({ part, mark, locked, onMark }: { part: StructuredPart; mark: number | null; locked: boolean; onMark: (m: number) => void }) {
+  const [value, setValue] = useState('');
+  const [checked, setChecked] = useState<null | boolean>(null);
+  const [shown, setShown] = useState(false);
+  const revealed = shown || checked !== null;
+  return (
+    <div className="list-item">
+      <div className="spread">
+        <strong>({part.label})</strong>
+        <span className="badge">
+          {mark ?? '–'} / {part.marks} {part.marks === 1 ? 'mark' : 'marks'}
+        </span>
+      </div>
+      <MathText text={part.prompt} />
+      {part.numeric && checked === null && (
+        <form
+          className="row"
+          style={{ flexWrap: 'nowrap', marginTop: '0.5rem' }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const r = checkNumeric(value, part.numeric!);
+            if (r.parsed === null) return;
+            setChecked(r.ok);
+            onMark(r.ok ? part.marks : 0);
+          }}
+        >
+          <input type="text" inputMode="decimal" autoComplete="off" aria-label={`Answer to part ${part.label}`} value={value} onChange={(e) => setValue(e.target.value)} placeholder="Final answer" autoFocus />
+          {part.numeric.unit && <span className="muted" style={{ whiteSpace: 'nowrap' }}>{part.numeric.unit}</span>}
+          <button className="btn primary" type="submit" disabled={!value.trim()}>
+            Check
+          </button>
+        </form>
+      )}
+      {!part.numeric && !revealed && (
+        <button className="btn small" style={{ marginTop: '0.5rem' }} onClick={() => setShown(true)}>
+          Write your answer on paper, then show the mark scheme
+        </button>
+      )}
+      {revealed && (
+        <div className="feedback info">
+          {part.numeric && (
+            <p style={{ margin: '0 0 0.4rem' }}>
+              {checked ? '✓ Correct final answer' : '✗ Final answer differs'} — accepted: <strong>{formatNumber(part.numeric.value)}</strong> {part.numeric.unit}
+            </p>
+          )}
+          <strong className="small">Mark scheme</strong>
+          <MathText text={part.scheme} className="small" />
+          {!locked && (
+            <div className="row" style={{ marginTop: '0.5rem' }} role="group" aria-label={`Marks for part ${part.label}`}>
+              <span className="small muted">{part.numeric ? 'Adjust for method marks:' : 'Your marks:'}</span>
+              {Array.from({ length: part.marks + 1 }, (_, m) => (
+                <button key={m} className="chip" aria-pressed={mark === m} onClick={() => onMark(m)}>
+                  {m}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -93,6 +93,9 @@ export interface PracticeLog {
   t: number;
   /** Time spent in seconds */
   sec?: number;
+  /** Marks gained / available (structured questions and mock papers). */
+  m?: number;
+  mx?: number;
 }
 
 export interface Exam {
@@ -204,7 +207,25 @@ export interface MatchQuestion extends QuestionBase {
   pairs: [string, string][];
 }
 
-export type Question = MCQuestion | NumericQuestion | OpenQuestion | TextQuestion | OrderQuestion | MatchQuestion;
+/** One part of a multi-part (Paper 2-style) question. */
+export interface StructuredPart {
+  /** "a", "b", "c(i)"… */
+  label: string;
+  marks: number;
+  prompt: string;
+  /** If present the part is auto-marked: all marks for a correct value, otherwise 0 (self-override allowed). */
+  numeric?: NumericSpec;
+  /** Mark scheme: one point per line. */
+  scheme: string;
+}
+
+/** Multi-part exam-style question with marks per part. */
+export interface StructuredQuestion extends QuestionBase {
+  type: 'structured';
+  parts: StructuredPart[];
+}
+
+export type Question = MCQuestion | NumericQuestion | OpenQuestion | TextQuestion | OrderQuestion | MatchQuestion | StructuredQuestion;
 
 /** A timed extended-writing task, self-assessed with a rubric. */
 export interface EssayPrompt {
