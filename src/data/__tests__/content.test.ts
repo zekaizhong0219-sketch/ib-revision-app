@@ -42,3 +42,33 @@ describe('flashcard content', () => {
     expect(ALL_CARDS.filter((c) => c.subject === id).length).toBeGreaterThanOrEqual(150);
   });
 });
+
+import { ALL_QUESTIONS } from '../questions';
+
+describe('practice questions', () => {
+  it('have unique ids and valid topics', () => {
+    const ids = ALL_QUESTIONS.map((q) => q.id);
+    expect(ids.filter((id, i) => ids.indexOf(id) !== i)).toEqual([]);
+    for (const q of ALL_QUESTIONS) {
+      const subj = SUBJECTS.find((s) => s.id === q.subject)!;
+      expect(subj.topics.map((t) => t.id), q.id).toContain(q.topic);
+    }
+  });
+
+  it('have valid KaTeX everywhere', () => {
+    for (const q of ALL_QUESTIONS) {
+      const texts = [q.prompt, q.solution];
+      if (q.type === 'mc') texts.push(...q.options);
+      if (q.type === 'open') texts.push(q.answer);
+      for (const t of texts) {
+        for (const seg of mathSegments(t)) {
+          expect(() => katex.renderToString(seg, { throwOnError: true }), `${q.id}: ${seg}`).not.toThrow();
+        }
+      }
+    }
+  });
+
+  it.each(SUBJECTS.map((s) => s.id))('%s has at least 40 questions', (id) => {
+    expect(ALL_QUESTIONS.filter((q) => q.subject === id).length).toBeGreaterThanOrEqual(40);
+  });
+});
