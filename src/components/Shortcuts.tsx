@@ -1,4 +1,5 @@
 import { Icon } from './ui';
+import { useT } from '../i18n';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const SHORTCUTS: [string, string][] = [
@@ -21,12 +22,13 @@ export const SHORTCUTS: [string, string][] = [
 ];
 
 export function ShortcutHelp({ onClose }: { onClose: () => void }) {
+  const t = useT();
   return (
-    <div className="overlay" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts" onClick={onClose}>
+    <div className="overlay" role="dialog" aria-modal="true" aria-label={t('Keyboard shortcuts')} onClick={onClose}>
       <div className="card" onClick={(e) => e.stopPropagation()}>
         <div className="spread">
           <h2 style={{ margin: 0 }}>
-            <Icon name="keyboard" /> Keyboard shortcuts
+            <Icon name="keyboard" /> {t('Keyboard shortcuts')}
           </h2>
           <button className="btn small ghost" onClick={onClose} autoFocus>
             Close

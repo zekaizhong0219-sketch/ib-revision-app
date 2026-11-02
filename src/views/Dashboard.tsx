@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useT } from '../i18n';
 import { useStore } from '../store';
 import { getSubject, topicLabel } from '../data/syllabus';
 import { activityByDay, currentStreak, dueForecast, longestStreak, recommend, topicStats } from '../lib/stats';
@@ -14,6 +15,7 @@ import { NextExamBanner } from './Exams';
 import type { SubjectId } from '../types';
 
 export default function Dashboard() {
+  const t = useT();
   const { data, cards, visibleSubjects, activeSubjectIds } = useStore();
   const [now] = useState(() => Date.now());
   const [tab, setSubjectTab] = useState<SubjectId>(visibleSubjects[0]?.id ?? 'physics');
@@ -63,13 +65,13 @@ export default function Dashboard() {
   return (
     <div>
       <div className="spread">
-        <h1>Dashboard</h1>
+        <h1>{t('Dashboard')}</h1>
         <div className="row">
           <a className="btn primary" href={href('/review')}>
-            Review {counts.due + counts.newToday > 0 ? `(${counts.due + counts.newToday})` : ''}
+            {t('Review')} {counts.due + counts.newToday > 0 ? `(${counts.due + counts.newToday})` : ''}
           </a>
           <a className="btn" href={href('/practice')}>
-            Timed practice
+            {t('Timed practice')}
           </a>
         </div>
       </div>
@@ -78,31 +80,27 @@ export default function Dashboard() {
 
       {isFresh && (
         <div className="card" style={{ marginTop: '1rem' }}>
-          <h2>Welcome 👋</h2>
-          <p>
-            You have <strong>{cards.length}</strong> flashcards across Physics, Chemistry and Math AA HL. Start a review to learn your first{' '}
-            {data.settings.newPerDay} new cards, then come back daily — the scheduler shows each card again just before you would forget it.
-          </p>
+          <h2>{t('Welcome')} 👋</h2>
+          <p>{t('welcome.body', { cards: cards.length, subjects: visibleSubjects.length, n: data.settings.newPerDay })}</p>
           <p className="muted small">
-            Set your exam dates under <a href={href('/exams')}>Exams</a>. Progress is stored only in this browser — export a backup in{' '}
-            <a href={href('/settings')}>Settings</a> now and then.
+            {t('welcome.exams')} <a href={href('/exams')}>{t('Exams')}</a>. {t('welcome.backup')} <a href={href('/settings')}>{t('Settings')}</a>.
           </p>
         </div>
       )}
 
       <div className="tiles" style={{ marginTop: '1rem' }}>
-        <Tile label="Due now" value={counts.due} sub={`+ ${counts.newToday} new today`} />
-        <Tile label="Streak" value={`${streak} 🔥`} sub={`best ${best} day${best === 1 ? '' : 's'}`} />
-        <Tile label="Today" value={todayCount.reviews + todayCount.practice} sub={`${todayCount.reviews} cards · ${todayCount.practice} questions`} />
-        <Tile label="Cards studied" value={studied} sub={`of ${cards.length}`} />
+        <Tile label={t('Due now')} value={counts.due} sub={t('+ {n} new today', { n: counts.newToday })} />
+        <Tile label={t('Streak')} value={`${streak} 🔥`} sub={t('best {n} days', { n: best })} />
+        <Tile label={t('Today')} value={todayCount.reviews + todayCount.practice} sub={t('{a} cards · {b} questions', { a: todayCount.reviews, b: todayCount.practice })} />
+        <Tile label={t('Cards studied')} value={studied} sub={t('of {n}', { n: cards.length })} />
       </div>
 
       <div className="grid grid-2" style={{ marginTop: '1rem' }}>
         <section className="card">
           <div className="spread">
-            <h2 style={{ margin: 0 }}>Today's plan</h2>
+            <h2 style={{ margin: 0 }}>{t('Today\'s plan')}</h2>
             <span className="small muted">
-              ≈ {plan.total} of {plan.budget} min · <a href={href('/settings')}>change budget</a>
+              {t('≈ {a} of {b} min', { a: plan.total, b: plan.budget })} · <a href={href('/settings')}>{t('change budget')}</a>
             </span>
           </div>
           {plan.overBudget && (
@@ -116,7 +114,7 @@ export default function Dashboard() {
           ))}
         </section>
         <section className="card">
-          <h2>Review load — next 7 days (min)</h2>
+          <h2>{t('Review load: next 7 days (min)')}</h2>
           <BarChart
             title="Estimated review minutes per day by subject"
             labels={['today', '+1', '+2', '+3', '+4', '+5', '+6']}
@@ -128,7 +126,7 @@ export default function Dashboard() {
 
       <div className="grid grid-2" style={{ marginTop: '1rem' }}>
         <section className="card">
-          <h2>What to revise next</h2>
+          <h2>{t('What to revise next')}</h2>
           {recs.length === 0 && <p className="muted">Enable at least one subject in Settings.</p>}
           {recs.map((r) => (
             <div className="rec" key={`${r.subject}|${r.topic}`}>
@@ -140,10 +138,10 @@ export default function Dashboard() {
               </div>
               <div className="row" style={{ flexWrap: 'nowrap' }}>
                 <a className="btn small" href={href('/review', { subjects: r.subject, topics: `${r.subject}|${r.topic}`, mode: r.stats.due > 0 ? undefined : 'cram' })}>
-                  Cards
+                  {t('Cards')}
                 </a>
                 <a className="btn small" href={href('/practice', { subject: r.subject, topics: `${r.subject}|${r.topic}` })}>
-                  Practice
+                  {t('Practice')}
                 </a>
               </div>
             </div>
@@ -151,7 +149,7 @@ export default function Dashboard() {
         </section>
 
         <section className="card">
-          <h2>Subjects</h2>
+          <h2>{t('Subjects')}</h2>
           <div className="stack">
             {subjectSummary.map(({ s, total, seen, due, mature, accuracy }) => (
               <div key={s.id}>
@@ -175,7 +173,7 @@ export default function Dashboard() {
 
       <div className="grid grid-2" style={{ marginTop: '1rem' }}>
         <section className="card">
-          <h2>Activity — last 30 days</h2>
+          <h2>{t('Activity: last 30 days')}</h2>
           <BarChart
             title="Daily activity"
             labels={activity.map((a) => dayLabel(a.day))}
@@ -186,7 +184,7 @@ export default function Dashboard() {
           />
         </section>
         <section className="card">
-          <h2>Upcoming reviews — next 14 days</h2>
+          <h2>{t('Upcoming reviews: next 14 days')}</h2>
           <BarChart
             title="Cards due per day"
             labels={forecast.map((_, i) => (i === 0 ? 'today' : `+${i}`))}
@@ -197,9 +195,9 @@ export default function Dashboard() {
 
       <section className="card" style={{ marginTop: '1rem' }}>
         <div className="spread">
-          <h2 style={{ margin: 0 }}>Grade estimates</h2>
+          <h2 style={{ margin: 0 }}>{t('Grade estimates')}</h2>
           <a className="btn small" href={href('/mock')}>
-            Take a mock
+            {t('Take a mock')}
           </a>
         </div>
         <div className="tiles" style={{ marginTop: '0.75rem' }}>
@@ -230,7 +228,7 @@ export default function Dashboard() {
 
       <section className="card" style={{ marginTop: '1rem' }}>
         <div className="spread" style={{ marginBottom: '0.75rem' }}>
-          <h2 style={{ margin: 0 }}>Accuracy by topic</h2>
+          <h2 style={{ margin: 0 }}>{t('Accuracy by topic')}</h2>
           <div className="row">
             {visibleSubjects.map((s) => (
               <button key={s.id} className="chip" aria-pressed={subjectTab === s.id} onClick={() => setSubjectTab(s.id)}>
@@ -258,6 +256,7 @@ const PRACTICE_TOPICS = (() => {
 const KIND_LABEL: Record<PlanItem['kind'], string> = { review: 'Flashcards', practice: 'Practice', writing: 'Timed writing' };
 
 function PlanRow({ item }: { item: PlanItem }) {
+  const t = useT();
   const link =
     item.kind === 'review'
       ? href('/review', { subjects: item.subject })
@@ -268,7 +267,7 @@ function PlanRow({ item }: { item: PlanItem }) {
     <div className="plan-item">
       <div>
         <div>
-          <SubjectDot subject={item.subject} /> <strong>{KIND_LABEL[item.kind]}</strong> · {getSubject(item.subject).short}
+          <SubjectDot subject={item.subject} /> <strong>{t(KIND_LABEL[item.kind])}</strong> · {getSubject(item.subject).short}
           {item.topic && item.kind !== 'review' ? ` · ${topicLabel(item.subject, item.topic)}` : ''}
         </div>
         <div className="small muted">
@@ -276,7 +275,7 @@ function PlanRow({ item }: { item: PlanItem }) {
         </div>
       </div>
       <a className="btn small" href={link}>
-        Start
+        {t('Start')}
       </a>
     </div>
   );

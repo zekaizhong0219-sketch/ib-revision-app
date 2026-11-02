@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
+import { useT } from './i18n';
 import { useStore } from './store';
 import { href, navigate, useRoute, type RoutePath } from './router';
 import { Icon } from './components/ui';
@@ -37,10 +38,14 @@ function useTheme(pref: ThemePref) {
 }
 
 export default function App() {
+  const t = useT();
   const route = useRoute();
   const { data, updateSettings } = useStore();
   const [help, setHelp] = useState(false);
   useTheme(data.settings.theme);
+  useEffect(() => {
+    document.documentElement.lang = data.settings.uiLang === 'zh' ? 'zh-Hans' : data.settings.uiLang;
+  }, [data.settings.uiLang]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -73,7 +78,7 @@ export default function App() {
       {NAV.map((n) => (
         <a key={n.path} href={href(n.path)} className={route.path === n.path || (n.path === '/practice' && route.path === '/mock') ? 'active' : ''} aria-current={route.path === n.path ? 'page' : undefined}>
           <Icon name={n.icon} />
-          <span>{n.label}</span>
+          <span>{t(n.label)}</span>
         </a>
       ))}
     </nav>
@@ -87,7 +92,7 @@ export default function App() {
         </a>
         {nav('nav')}
         <div className="topbar-actions" style={{ marginLeft: 'auto' }}>
-          <button className="btn ghost icon-btn kbd-hint" onClick={() => setHelp(true)} aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">
+          <button className="btn ghost icon-btn kbd-hint" onClick={() => setHelp(true)} aria-label={t('Keyboard shortcuts')} title="Keyboard shortcuts (?)">
             <Icon name="keyboard" />
           </button>
           <button

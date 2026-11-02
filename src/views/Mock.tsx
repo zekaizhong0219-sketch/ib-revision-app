@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useT } from '../i18n';
 import { useStore } from '../store';
 import { ALL_QUESTIONS } from '../data/questions';
 import { getSubject, topicLabel } from '../data/syllabus';
@@ -21,6 +22,7 @@ type Phase =
   | { kind: 'done'; subject: SubjectId; got: number; max: number; rows: { item: MockItem; got: number }[] };
 
 export default function Mock() {
+  const t = useT();
   const { visibleSubjects } = useStore();
   const subjects = visibleSubjects.filter((s) => ALL_QUESTIONS.some((q) => q.subject === s.id));
   const [phase, setPhase] = useState<Phase>({ kind: 'setup' });
@@ -42,7 +44,7 @@ export default function Mock() {
 
   return (
     <div>
-      <h1>Mock exam</h1>
+      <h1>{t('Mock exam')}</h1>
       <p className="muted">
         A timed paper built from the question bank, sat under exam conditions: no feedback until the end. Short items come first, then
         Paper 2-style structured questions. Afterwards you mark your written answers against the mark scheme, then get a score and a rough
@@ -50,7 +52,7 @@ export default function Mock() {
       </p>
       <div className="card stack">
         <div>
-          <h3>Subject</h3>
+          <h3>{t('Subject')}</h3>
           <div className="row">
             {subjects.map((s) => (
               <button key={s.id} className="chip" aria-pressed={subject === s.id} onClick={() => setSubject(s.id)}>
@@ -60,7 +62,7 @@ export default function Mock() {
           </div>
         </div>
         <div>
-          <h3>Length</h3>
+          <h3>{t('Length')}</h3>
           <div className="row">
             {LENGTHS.map((m) => (
               <button key={m} className="chip" aria-pressed={minutes === m} onClick={() => setMinutes(m)}>
@@ -70,7 +72,7 @@ export default function Mock() {
           </div>
         </div>
         <p className="small muted">
-          Essay papers (Spanish Paper 1/2, English Paper 1, History Paper 2) are practised in <a href={href('/writing')}>Writing</a>; for those
+          Essay papers (Spanish Paper 1/2, English Paper 1, History Paper 2) are practised in <a href={href('/writing')}>{t('Writing')}</a>; for those
           subjects the mock covers the short-answer and reading items.
         </p>
         <button
@@ -85,6 +87,7 @@ export default function Mock() {
 }
 
 function Sit({ subject, minutes, items, started, onFinish }: { subject: SubjectId; minutes: number; items: MockItem[]; started: number; onFinish: (r: MockResponse[]) => void }) {
+  const t = useT();
   const [responses, setResponses] = useState<MockResponse[]>(() => items.map((i) => emptyResponse(i.q)));
   const [idx, setIdx] = useState(0);
   const [now, setNow] = useState(Date.now());
@@ -100,15 +103,15 @@ function Sit({ subject, minutes, items, started, onFinish }: { subject: SubjectI
   const item = items[idx];
   const set = (r: MockResponse) => setResponses((rs) => rs.map((x, i) => (i === idx ? r : x)));
   const answered = (r: MockResponse) =>
-    r.kind === 'mc' ? r.choice !== null : r.kind === 'value' ? !!r.text.trim() : r.kind === 'order' ? r.order.length > 0 : r.kind === 'match' ? Object.keys(r.choice).length > 0 : r.texts.some((t) => t.trim());
-  const t = Math.ceil(remaining / 1000);
+    r.kind === 'mc' ? r.choice !== null : r.kind === 'value' ? !!r.text.trim() : r.kind === 'order' ? r.order.length > 0 : r.kind === 'match' ? Object.keys(r.choice).length > 0 : r.texts.some((x) => x.trim());
+  const secs = Math.ceil(remaining / 1000);
   const totalMarks = items.reduce((s, i) => s + i.max, 0);
 
   return (
     <div>
       <div className="spread" style={{ marginBottom: '0.75rem' }}>
-        <span className={`timer ${t < 300 ? 'low' : ''}`}>
-          ⏱ {Math.floor(t / 60)}:{String(t % 60).padStart(2, '0')}
+        <span className={`timer ${secs < 300 ? 'low' : ''}`}>
+          ⏱ {Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}
         </span>
         <span className="small muted">
           <SubjectDot subject={subject} /> {getSubject(subject).short} mock · {items.length} questions · {totalMarks} marks
@@ -119,7 +122,7 @@ function Sit({ subject, minutes, items, started, onFinish }: { subject: SubjectI
             if (window.confirm('Finish the paper and start marking?')) onFinish(responses);
           }}
         >
-          Finish paper
+          {t('Finish paper')}
         </button>
       </div>
       <nav className="row palette" aria-label="Questions">
@@ -152,10 +155,10 @@ function Sit({ subject, minutes, items, started, onFinish }: { subject: SubjectI
       </div>
       <div className="spread" style={{ marginTop: '0.75rem' }}>
         <button className="btn" disabled={idx === 0} onClick={() => setIdx(idx - 1)}>
-          ← Previous
+          ← {t('Previous')}
         </button>
         <button className="btn" disabled={idx === items.length - 1} onClick={() => setIdx(idx + 1)}>
-          Next →
+          {t('Next')} →
         </button>
       </div>
     </div>
@@ -304,6 +307,7 @@ function MarkPhase({ subject, minutes, items, started, responses, onDone }: {
   responses: MockResponse[];
   onDone: (got: number, max: number, rows: { item: MockItem; got: number }[]) => void;
 }) {
+  const t = useT();
   const { logPractice, saveMock } = useStore();
   const auto = useMemo(() => items.map((it, i) => autoMark(it.q, responses[i])), [items, responses]);
   const selfItems = useMemo(() => {
@@ -339,24 +343,24 @@ function MarkPhase({ subject, minutes, items, started, responses, onDone }: {
     });
     const got = rows.reduce((s, r) => s + r.got, 0);
     const max = rows.reduce((s, r) => s + r.item.max, 0);
-    const t = Date.now();
+    const now = Date.now();
     const entries: PracticeLog[] = rows.map((r) => ({
       q: r.item.q.id,
       s: r.item.q.subject,
       tp: r.item.q.topic,
       r: resultFromMarks(r.got, r.item.max),
-      t,
+      t: now,
       m: r.got,
       mx: r.item.max,
     }));
     logPractice(entries);
-    saveMock({ id: `mock-${t.toString(36)}`, subject, t: started, minutes, got, max, items: items.length });
+    saveMock({ id: `mock-${now.toString(36)}`, subject, t: started, minutes, got, max, items: items.length });
     onDone(got, max, rows);
   };
 
   return (
     <div>
-      <h1>Mark your paper</h1>
+      <h1>{t('Mark your paper')}</h1>
       <p className="muted">
         Multiple choice, numeric and short-answer items have been marked automatically. Mark each written answer below against the scheme,
         strictly, as an examiner would.
@@ -389,7 +393,7 @@ function MarkPhase({ subject, minutes, items, started, responses, onDone }: {
           {self.filter((x) => x !== null).length} / {selfItems.length} marked
         </span>
         <button className="btn primary" disabled={!complete} onClick={finish}>
-          See results
+          {t('See results')}
         </button>
       </div>
     </div>
@@ -397,6 +401,7 @@ function MarkPhase({ subject, minutes, items, started, responses, onDone }: {
 }
 
 function Results({ subject, got, max, rows, onAgain }: { subject: SubjectId; got: number; max: number; rows: { item: MockItem; got: number }[]; onAgain: () => void }) {
+  const t = useT();
   const { data } = useStore();
   const pct = (100 * got) / max;
   const estimate = estimateGrade(data, subject);
@@ -411,10 +416,10 @@ function Results({ subject, got, max, rows, onAgain }: { subject: SubjectId; got
   const lost = rows.filter((r) => r.got < r.item.max).length;
   return (
     <div>
-      <h1>Mock results</h1>
+      <h1>{t('Mock results')}</h1>
       <div className="tiles">
         <div className="tile">
-          <div className="label">Score</div>
+          <div className="label">{t('Score')}</div>
           <div className="value">{Math.round(pct)}%</div>
           <div className="sub">
             {got} / {max} marks
@@ -432,7 +437,7 @@ function Results({ subject, got, max, rows, onAgain }: { subject: SubjectId; got
         </div>
       </div>
       <section className="card" style={{ marginTop: '1rem' }}>
-        <h2>By topic</h2>
+        <h2>{t('By topic')}</h2>
         <HBars items={[...byTopic].map(([tp, v]) => ({ key: tp, name: `${topicLabel(subject, tp)} (${v.got}/${v.max})`, value: v.got / v.max }))} />
       </section>
       <p className="small muted">
@@ -441,10 +446,10 @@ function Results({ subject, got, max, rows, onAgain }: { subject: SubjectId; got
       </p>
       <div className="row">
         <button className="btn primary" onClick={onAgain}>
-          New mock
+          {t('New mock')}
         </button>
         <a className="btn" href={href('/')}>
-          Dashboard
+          {t('Dashboard')}
         </a>
       </div>
     </div>

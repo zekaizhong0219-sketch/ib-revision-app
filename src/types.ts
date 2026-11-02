@@ -123,6 +123,8 @@ export interface Settings {
   hiddenSubjects: SubjectId[];
   /** Automatically turn questions you get wrong into review cards. */
   mistakeCards: boolean;
+  /** Interface language (content stays in each subject's language). */
+  uiLang: 'en' | 'es' | 'zh';
 }
 
 export interface AppData {

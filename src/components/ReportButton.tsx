@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useT } from '../i18n';
 import { useStore } from '../store';
 import type { SubjectId } from '../types';
 
 /** Small "Report a mistake" control that saves a note about a card or question. */
 export function ReportButton({ item, subject, excerpt }: { item: string; subject: SubjectId; excerpt: string }) {
+  const t = useT();
   const { addReport } = useStore();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState('');
@@ -12,7 +14,7 @@ export function ReportButton({ item, subject, excerpt }: { item: string; subject
   if (!open) {
     return (
       <button type="button" className="btn small ghost" onClick={() => setOpen(true)} title="Report a possible mistake in this item">
-        ⚑ Report a mistake
+        ⚑ {t('Report a mistake')}
       </button>
     );
   }
@@ -32,7 +34,7 @@ export function ReportButton({ item, subject, excerpt }: { item: string; subject
           Save report
         </button>
         <button className="btn small ghost" type="button" onClick={() => setOpen(false)}>
-          Cancel
+          {t('Cancel')}
         </button>
       </div>
     </form>

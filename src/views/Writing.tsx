@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useT } from '../i18n';
 import { useStore } from '../store';
 import { ALL_ESSAYS } from '../data/essays';
 import { getRubric, rubricMax, type Rubric } from '../data/rubrics';
@@ -14,6 +15,7 @@ import type { EssayAttempt, EssayPrompt, SubjectId } from '../types';
 const AUTOSAVE_MS = 1500;
 
 export default function Writing({ route }: { route: Route }) {
+  const t = useT();
   const { data, visibleSubjects, deleteEssay } = useStore();
   const essaySubjects = useMemo(() => visibleSubjects.filter((s) => ALL_ESSAYS.some((e) => e.subject === s.id)), [visibleSubjects]);
   const param = route.params.get('subject') as SubjectId | null;
@@ -40,7 +42,7 @@ export default function Writing({ route }: { route: Route }) {
   if (!subject) {
     return (
       <div>
-        <h1>Timed writing</h1>
+        <h1>{t('Timed writing')}</h1>
         <div className="empty">Timed writing is available for Spanish A, English B and History. Unhide one of them in Settings.</div>
       </div>
     );
@@ -68,12 +70,12 @@ export default function Writing({ route }: { route: Route }) {
 
   return (
     <div>
-      <h1>Timed writing</h1>
+      <h1>{t('Timed writing')}</h1>
       <p className="muted">
         Exam-style essays under real time limits, with a live word count. Drafts save automatically. When you finish, mark yourself against the
         criteria; scores feed your topic accuracy at single weight, because self-marking is less reliable than auto-marking.
       </p>
-      <div className="row" role="group" aria-label="Subject">
+      <div className="row" role="group" aria-label={t('Subject')}>
         {essaySubjects.map((s) => (
           <button key={s.id} className="chip" aria-pressed={s.id === subject} onClick={() => navigate('/writing', { subject: s.id })}>
             <SubjectDot subject={s.id} /> {s.name}
@@ -102,7 +104,7 @@ export default function Writing({ route }: { route: Route }) {
                 <MathText text={p.prompt} className="small" />
               </details>
               <button className="btn primary small" style={{ marginTop: '0.5rem' }} onClick={() => start(p)}>
-                {draft ? 'Resume draft' : 'Start'}
+                {draft ? t('Resume draft') : t('Start')}
               </button>
             </div>
           );
@@ -148,7 +150,7 @@ export default function Writing({ route }: { route: Route }) {
                       if (window.confirm('Delete this attempt?')) deleteEssay(a.id);
                     }}
                   >
-                    Delete
+                    {t('Delete')}
                   </button>
                 </div>
               </details>
@@ -166,6 +168,7 @@ function firstLine(text: string): string {
 }
 
 function WriteSession({ prompt, initial, onFinish, onExit }: { prompt: EssayPrompt; initial: EssayAttempt; onFinish: (a: EssayAttempt) => void; onExit: () => void }) {
+  const t = useT();
   const { saveEssay } = useStore();
   const [text, setText] = useState(initial.text);
   const [hints, setHints] = useState(false);
@@ -222,7 +225,7 @@ function WriteSession({ prompt, initial, onFinish, onExit }: { prompt: EssayProm
         </span>
         <div className="row">
           <button className="btn small ghost" onClick={onExit}>
-            Save & exit
+            {t('Save & exit')}
           </button>
           <button
             className="btn small primary"
@@ -233,7 +236,7 @@ function WriteSession({ prompt, initial, onFinish, onExit }: { prompt: EssayProm
             }}
             disabled={!text.trim()}
           >
-            Finish & self-assess
+            {t('Finish & self-assess')}
           </button>
         </div>
       </div>
@@ -245,7 +248,7 @@ function WriteSession({ prompt, initial, onFinish, onExit }: { prompt: EssayProm
         {prompt.guidance && (
           <div style={{ marginTop: '0.5rem' }}>
             <button className="btn small ghost" onClick={() => setHints((h) => !h)} aria-expanded={hints}>
-              {hints ? 'Hide planning hints' : 'Show planning hints'}
+              {hints ? t('Hide planning hints') : t('Show planning hints')}
             </button>
             {hints && <MathText className="feedback info small" text={prompt.guidance} />}
           </div>
@@ -267,6 +270,7 @@ function WriteSession({ prompt, initial, onFinish, onExit }: { prompt: EssayProm
 }
 
 function Assess({ prompt, attempt, onDone }: { prompt: EssayPrompt; attempt: EssayAttempt; onDone: () => void }) {
+  const t = useT();
   const { saveEssay } = useStore();
   const r = getRubric(attempt.rubric) as Rubric;
   const [scores, setScores] = useState<Record<string, number>>(() => ({ ...attempt.scores }));
@@ -276,7 +280,7 @@ function Assess({ prompt, attempt, onDone }: { prompt: EssayPrompt; attempt: Ess
 
   return (
     <div>
-      <h1>Self-assessment</h1>
+      <h1>{t('Self-assessment')}</h1>
       <p className="muted">
         Read your answer as an examiner would, choose the band that fits best for each criterion, then pick a mark within it. These descriptors
         are short paraphrases; check the official guide with your teacher.
@@ -339,7 +343,7 @@ function Assess({ prompt, attempt, onDone }: { prompt: EssayPrompt; attempt: Ess
             onDone();
           }}
         >
-          Save marks
+          {t('Save marks')}
         </button>
       </div>
     </div>

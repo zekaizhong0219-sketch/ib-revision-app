@@ -28,6 +28,7 @@ export function defaultSettings(): Settings {
     enabledSubjects: [...SUBJECT_IDS],
     hiddenSubjects: [],
     mistakeCards: true,
+    uiLang: 'en',
   };
 }
 
@@ -173,6 +174,7 @@ function sanitizeSettings(v: unknown): Settings {
     // Never hide everything.
     hiddenSubjects: hidden.length >= SUBJECT_IDS.length ? [] : hidden,
     mistakeCards: typeof v.mistakeCards === 'boolean' ? v.mistakeCards : d.mistakeCards,
+    uiLang: v.uiLang === 'es' || v.uiLang === 'zh' || v.uiLang === 'en' ? v.uiLang : d.uiLang,
   };
 }
 

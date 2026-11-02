@@ -1,4 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
+import { useT } from '../i18n';
 import type { SubjectId } from '../types';
 import { SUBJECTS as SUBJECT_LIST, getSubject } from '../data/syllabus';
 import { useStore } from '../store';
@@ -30,11 +31,12 @@ export function SubjectDot({ subject }: { subject: SubjectId }) {
 }
 
 export function SubjectChips({ value, onChange, multi = true, all = false }: { value: SubjectId[]; onChange: (v: SubjectId[]) => void; multi?: boolean; all?: boolean }) {
+  const t = useT();
   const { visibleSubjects } = useStore();
   // `all` shows hidden subjects too (used in Settings, where you choose what to hide).
   const list = all ? SUBJECT_LIST : visibleSubjects;
   return (
-    <div className="row" role="group" aria-label="Subjects">
+    <div className="row" role="group" aria-label={t('Subjects')}>
       {list.map((s) => {
         const on = value.includes(s.id);
         return (
@@ -59,6 +61,7 @@ export function SubjectChips({ value, onChange, multi = true, all = false }: { v
 
 /** Topic multi-select grouped by theme. Value uses "subject|topic" keys; empty array = all. */
 export function TopicPicker({ subjects, value, onChange }: { subjects: SubjectId[]; value: string[]; onChange: (v: string[]) => void }) {
+  const t = useT();
   const [open, setOpen] = useState(value.length > 0);
   const groups = useMemo(() => {
     const out: { label: string; subject: SubjectId; topics: { key: string; id: string; name: string; ahl?: boolean }[] }[] = [];
@@ -79,12 +82,12 @@ export function TopicPicker({ subjects, value, onChange }: { subjects: SubjectId
     <div>
       <div className="row">
         <button type="button" className="btn small" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-          {open ? 'Hide topics' : 'Choose topics'}
+          {open ? t('Hide topics') : t('Choose topics')}
         </button>
-        <span className="muted small">{valid.length ? `${valid.length} topic${valid.length > 1 ? 's' : ''} selected` : 'All topics'}</span>
+        <span className="muted small">{valid.length ? `${valid.length} topic${valid.length > 1 ? 's' : ''} selected` : t('All topics')}</span>
         {valid.length > 0 && (
           <button type="button" className="btn small ghost" onClick={() => onChange([])}>
-            Clear
+            {t('Clear')}
           </button>
         )}
       </div>

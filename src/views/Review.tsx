@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useT } from '../i18n';
 import { ReportButton } from '../components/ReportButton';
 import { useStore } from '../store';
 import { buildQueue, matchesFilter, queueCounts, shuffle } from '../lib/queue';
@@ -24,6 +25,7 @@ function isTyping(e: KeyboardEvent) {
 }
 
 export default function Review({ route }: { route: Route }) {
+  const t = useT();
   const { data, cards, activeSubjectIds } = useStore();
   const enabled = activeSubjectIds;
   const subjParam = route.params.get('subjects');
@@ -56,37 +58,37 @@ export default function Review({ route }: { route: Route }) {
 
   return (
     <div>
-      <h1>Flashcard review</h1>
+      <h1>{t('Flashcard review')}</h1>
       <div className="card stack">
         <div>
-          <h3>Subjects</h3>
+          <h3>{t('Subjects')}</h3>
           <SubjectChips value={subjects} onChange={(v) => setParams({ subjects: v })} />
         </div>
         <div>
-          <h3>Topics</h3>
+          <h3>{t('Topics')}</h3>
           <TopicPicker subjects={subjects} value={topics} onChange={(v) => setParams({ topics: v })} />
         </div>
       </div>
 
       <div className="grid grid-2" style={{ marginTop: '1rem' }}>
         <div className="card">
-          <h2>Scheduled review</h2>
+          <h2>{t('Scheduled review')}</h2>
           <p className="muted">
             <strong>{counts.due}</strong> due · <strong>{counts.newToday}</strong> new (of {counts.unseen} unseen; daily limit {data.settings.newPerDay})
           </p>
           <button className="btn primary" disabled={counts.due + counts.newToday === 0} onClick={() => start(false)} autoFocus={!cram}>
-            Start review
+            {t('Start review')}
           </button>
           {counts.due + counts.newToday === 0 && <p className="small muted" style={{ marginTop: '0.5rem' }}>All caught up for this selection 🎉</p>}
         </div>
         <div className="card">
-          <h2>Cram mode</h2>
+          <h2>{t('Cram mode')}</h2>
           <p className="muted">
             Up to {CRAM_SIZE} random cards from the selection ({cramPool} available). Answers count towards your topic accuracy but do{' '}
             <em>not</em> change the review schedule — ideal the night before a test.
           </p>
           <button className="btn" disabled={cramPool === 0} onClick={() => start(true)} autoFocus={cram}>
-            Start cram session
+            {t('Start cram session')}
           </button>
         </div>
       </div>
@@ -98,6 +100,7 @@ export default function Review({ route }: { route: Route }) {
 }
 
 function Session({ initialQueue, cram, onExit }: { initialQueue: Card[]; cram: boolean; onExit: () => void }) {
+  const t = useT();
   const { data, gradeCard } = useStore();
   const [queue, setQueue] = useState(initialQueue);
   const [idx, setIdx] = useState(0);
@@ -147,16 +150,16 @@ function Session({ initialQueue, cram, onExit }: { initialQueue: Card[]; cram: b
     const total = tally.again + tally.hard + tally.good + tally.easy;
     return (
       <div className="card center">
-        <h1>Session complete ✅</h1>
+        <h1>{t('Session complete')} ✅</h1>
         <p className="muted">
           {total} answers · {tally.good + tally.easy} good/easy · {tally.hard} hard · {tally.again} again
         </p>
         <div className="row" style={{ justifyContent: 'center' }}>
           <button className="btn primary" onClick={onExit} autoFocus>
-            Back
+            {t('Back')}
           </button>
           <a className="btn" href={href('/')}>
-            Dashboard
+            {t('Dashboard')}
           </a>
         </div>
       </div>
@@ -170,7 +173,7 @@ function Session({ initialQueue, cram, onExit }: { initialQueue: Card[]; cram: b
           {idx + 1} / {queue.length} {cram && <span className="badge">cram</span>}
         </span>
         <button className="btn small ghost" onClick={onExit}>
-          End session
+          {t('End session')}
         </button>
       </div>
       <ProgressBar value={idx / queue.length} />
@@ -190,13 +193,13 @@ function Session({ initialQueue, cram, onExit }: { initialQueue: Card[]; cram: b
       </div>
       {!revealed ? (
         <button className="btn primary" style={{ width: '100%', marginTop: '1rem', minHeight: 52 }} onClick={() => setRevealed(true)} autoFocus>
-          Show answer <kbd className="kbd-hint">Space</kbd>
+          {t('Show answer')} <kbd className="kbd-hint">Space</kbd>
         </button>
       ) : (
         <div className="grade-bar">
           {GRADES.map(({ g, label, key }) => (
             <button key={g} className={`btn grade-${g}`} onClick={() => grade(g)}>
-              {label}
+              {t(label)}
               <small>
                 {cram ? '—' : formatInterval(intervals![g])} <kbd className="kbd-hint">{key}</kbd>
               </small>

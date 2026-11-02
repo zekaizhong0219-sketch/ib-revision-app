@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { UI_LANGS, useT } from '../i18n';
 import { useStore } from '../store';
 import { defaultData, exportData, importData, mergeData } from '../lib/storage';
 import { SubjectChips } from '../components/ui';
@@ -9,6 +10,7 @@ import { SHORTCUTS } from '../components/Shortcuts';
 import type { AppData, ContentReport, ThemePref } from '../types';
 
 export default function Settings() {
+  const t = useT();
   const { data, updateSettings, replaceData, saveOk, clearReports, cardById } = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<AppData | null>(null);
@@ -43,7 +45,7 @@ export default function Settings() {
 
   return (
     <div>
-      <h1>Settings</h1>
+      <h1>{t('Settings')}</h1>
       {!saveOk && (
         <div className="feedback no" style={{ marginBottom: '1rem' }}>
           Your browser is blocking local storage (private mode or storage full). Progress will be lost when you close this tab — export a backup.
@@ -51,7 +53,7 @@ export default function Settings() {
       )}
 
       <section className="card stack">
-        <h2>Appearance</h2>
+        <h2>{t('Appearance')}</h2>
         <div className="row" role="group" aria-label="Theme">
           {(['system', 'light', 'dark'] as ThemePref[]).map((t) => (
             <button key={t} className="chip" aria-pressed={s.theme === t} onClick={() => updateSettings({ theme: t })}>
@@ -59,12 +61,23 @@ export default function Settings() {
             </button>
           ))}
         </div>
+        <div>
+          <h3>{t('Interface language')}</h3>
+          <div className="row" role="group" aria-label="Interface language">
+            {UI_LANGS.map((l) => (
+              <button key={l.id} className="chip" aria-pressed={s.uiLang === l.id} onClick={() => updateSettings({ uiLang: l.id })}>
+                {l.label}
+              </button>
+            ))}
+          </div>
+          <p className="small muted">Changes menus and buttons. Study content stays in each subject's own language.</p>
+        </div>
       </section>
 
       <section className="card stack">
-        <h2>Study</h2>
+        <h2>{t('Study')}</h2>
         <div>
-          <h3>My subjects</h3>
+          <h3>{t('My subjects')}</h3>
           <p className="small muted">Subjects you don't take can be hidden everywhere. Your progress in them is kept.</p>
           <SubjectChips
             all
@@ -97,7 +110,7 @@ export default function Settings() {
       </section>
 
       <section className="card stack">
-        <h2>Mistake notebook</h2>
+        <h2>{t('Mistake notebook')}</h2>
         <label className="row" style={{ cursor: 'pointer' }}>
           <input type="checkbox" checked={s.mistakeCards} onChange={(e) => updateSettings({ mistakeCards: e.target.checked })} />
           Turn practice and mock questions I get wrong (or partly wrong) into review cards
@@ -106,13 +119,13 @@ export default function Settings() {
       </section>
 
       <section className="card stack">
-        <h2>Backup</h2>
+        <h2>{t('Backup')}</h2>
         <p className="muted small">
           All progress lives only in this browser’s local storage. Export a JSON backup regularly (e.g. weekly) and import it to restore or to move to another device.
         </p>
         <div className="row">
-          <button className="btn primary" onClick={doExport}>Export backup</button>
-          <button className="btn" onClick={() => fileRef.current?.click()}>Import backup…</button>
+          <button className="btn primary" onClick={doExport}>{t('Export backup')}</button>
+          <button className="btn" onClick={() => fileRef.current?.click()}>{t('Import backup…')}</button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={(e) => onFile(e.target.files?.[0])} />
         </div>
         {pending && (
@@ -128,7 +141,7 @@ export default function Settings() {
               <button className="btn danger" onClick={() => { replaceData(pending); setPending(null); setMsg({ ok: true, text: 'Data replaced from backup.' }); }}>
                 Replace everything
               </button>
-              <button className="btn ghost" onClick={() => setPending(null)}>Cancel</button>
+              <button className="btn ghost" onClick={() => setPending(null)}>{t('Cancel')}</button>
             </div>
           </div>
         )}
@@ -158,7 +171,7 @@ export default function Settings() {
                 Export as Markdown
               </button>
               <button className="btn danger" onClick={() => window.confirm('Delete all reports?') && clearReports()}>
-                Clear
+                {t('Clear')}
               </button>
             </div>
           </>
@@ -166,7 +179,7 @@ export default function Settings() {
       </section>
 
       <section className="card stack">
-        <h2>Keyboard shortcuts</h2>
+        <h2>{t('Keyboard shortcuts')}</h2>
         <table className="keys">
           <tbody>
             {SHORTCUTS.map(([k, d]) => (
@@ -177,7 +190,7 @@ export default function Settings() {
       </section>
 
       <section className="card stack">
-        <h2>Danger zone</h2>
+        <h2>{t('Danger zone')}</h2>
         <button
           className="btn danger"
           onClick={() => {
@@ -187,7 +200,7 @@ export default function Settings() {
             }
           }}
         >
-          Reset all data
+          {t('Reset all data')}
         </button>
       </section>
 

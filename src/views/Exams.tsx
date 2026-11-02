@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useT } from '../i18n';
 import { buildIcs } from '../lib/ics';
 import { useStore } from '../store';
 import { getSubject } from '../data/syllabus';
@@ -23,19 +24,20 @@ export function splitDuration(ms: number) {
 }
 
 function Countdown({ target, now }: { target: number; now: number }) {
+  const t = useT();
   const d = splitDuration(target - now);
   return (
     <div className="countdown" aria-label={`${d.days} days ${d.hours} hours ${d.minutes} minutes`}>
       {(
         [
-          ['days', d.days],
-          ['hrs', d.hours],
-          ['min', d.minutes],
-          ['sec', d.seconds],
+          [t('days'), d.days],
+          [t('hrs'), d.hours],
+          [t('min'), d.minutes],
+          [t('sec'), d.seconds],
         ] as const
       ).map(([l, v]) => (
         <div className="unit" key={l}>
-          <div className="num">{l === 'days' ? v : String(v).padStart(2, '0')}</div>
+          <div className="num">{l === t('days') ? v : String(v).padStart(2, '0')}</div>
           <div className="lbl">{l}</div>
         </div>
       ))}
@@ -46,6 +48,7 @@ function Countdown({ target, now }: { target: number; now: number }) {
 const sortExams = (exams: Exam[]) => [...exams].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
 export function NextExamBanner() {
+  const t = useT();
   const { data } = useStore();
   const now = useNow();
   const upcoming = sortExams(data.settings.exams).filter((e) => new Date(e.date).getTime() > now);
@@ -62,7 +65,7 @@ export function NextExamBanner() {
   return (
     <a href={href('/exams')} className="card spread" style={{ marginTop: '1rem', textDecoration: 'none', color: 'inherit' }}>
       <div>
-        <div className="small muted">{next.kind === 'deadline' ? 'Next deadline' : 'Next exam'}</div>
+        <div className="small muted">{next.kind === 'deadline' ? t('Next deadline') : t('Next exam')}</div>
         <strong>
           {next.subject && <SubjectDot subject={next.subject} />} {next.name}
         </strong>
@@ -81,6 +84,7 @@ export function NextExamBanner() {
 const blank = (): Exam => ({ id: `ex-${Date.now().toString(36)}`, name: '', date: '', kind: 'exam' });
 
 export default function Exams() {
+  const t = useT();
   const { data, updateSettings, visibleSubjects } = useStore();
   const now = useNow();
   const [draft, setDraft] = useState<Exam>(blank);
@@ -96,7 +100,7 @@ export default function Exams() {
 
   return (
     <div>
-      <h1>Exams & deadlines</h1>
+      <h1>{t('Exams & deadlines')}</h1>
       <p className="muted">
         Add each paper from your official timetable, plus coursework and oral deadlines (IO, History IA, EE, TOK). Exams within 30 days boost that
         subject in the recommendations and the daily plan; deadlines are shown as reminders only.
@@ -105,8 +109,8 @@ export default function Exams() {
       <div className="list">
         {exams.length === 0 && <div className="empty">No exams yet — add one below.</div>}
         {exams.map((e) => {
-          const t = new Date(e.date).getTime();
-          const past = t <= now;
+          const when = new Date(e.date).getTime();
+          const past = when <= now;
           return (
             <div className="list-item spread" key={e.id}>
               <div>
@@ -114,17 +118,17 @@ export default function Exams() {
                   {e.subject && <SubjectDot subject={e.subject} />} {e.name} {e.kind === 'deadline' && <span className="badge">deadline</span>}
                 </strong>
                 <div className="small muted">
-                  {Number.isFinite(t) ? new Date(t).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'Invalid date'}
+                  {Number.isFinite(when) ? new Date(when).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'Invalid date'}
                   {e.subject && ` · ${getSubject(e.subject).name}`}
                 </div>
               </div>
               <div className="row">
-                {past ? <span className="badge">done</span> : <Countdown target={t} now={now} />}
+                {past ? <span className="badge">done</span> : <Countdown target={when} now={now} />}
                 <button className="btn small" onClick={() => setDraft(e)}>
-                  Edit
+                  {t('Edit')}
                 </button>
                 <button className="btn small danger" onClick={() => remove(e.id)} aria-label={`Delete ${e.name}`}>
-                  Delete
+                  {t('Delete')}
                 </button>
               </div>
             </div>
@@ -163,7 +167,7 @@ export default function Exams() {
             </select>
           </label>
           <label className="field">
-            <span>Type</span>
+            <span>{t('Type')}</span>
             <select value={draft.kind ?? 'exam'} onChange={(e) => setDraft({ ...draft, kind: e.target.value as Exam['kind'] })}>
               <option value="exam">Exam paper</option>
               <option value="deadline">Deadline (IO, IA, EE, TOK…)</option>
@@ -171,10 +175,10 @@ export default function Exams() {
           </label>
           <div className="row" style={{ alignSelf: 'end' }}>
             <button className="btn primary" type="submit">
-              Save
+              {t('Save')}
             </button>
             <button className="btn ghost" type="button" onClick={() => setDraft(blank())}>
-              Cancel
+              {t('Cancel')}
             </button>
           </div>
         </form>
@@ -184,6 +188,7 @@ export default function Exams() {
 }
 
 function CalendarExport() {
+  const t = useT();
   const { data } = useStore();
   const [reminder, setReminder] = useState(true);
   const [time, setTime] = useState('18:00');
@@ -200,7 +205,7 @@ function CalendarExport() {
   };
   return (
     <section className="card stack" style={{ marginTop: '1.5rem' }}>
-      <h2>Add to your calendar</h2>
+      <h2>{t('Add to your calendar')}</h2>
       <p className="small muted">
         Downloads an .ics file with every exam and deadline (each with a reminder the day before). Open it on your phone or import it into Google
         Calendar (Settings → Import) or Apple Calendar. Re-export after changing dates; importing again replaces events with the same id in most apps.
@@ -213,7 +218,7 @@ function CalendarExport() {
       </label>
       <div>
         <button className="btn primary" onClick={download} disabled={data.settings.exams.length === 0}>
-          Download .ics
+          {t('Download .ics')}
         </button>
       </div>
     </section>
