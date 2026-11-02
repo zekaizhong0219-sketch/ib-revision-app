@@ -7,8 +7,8 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 | | |
 |---|---|
 | Flashcards | **1,183**: Physics 279 · Chemistry 219 · Math AA 161 · Spanish A 152 · English B 155 · History 217 (including IB command terms) |
-| Practice questions | **518**, all original: Physics 127 · Chemistry 103 · Math 103 · Spanish A 64 · English B 57 · History 64 |
-| Structured (Paper 2-style) questions | **58** of the above, 221 parts with mark schemes: Physics 21 · Chemistry 16 · Math 17 · English B reading texts 4 |
+| Practice questions | **531**, all original: Physics 131 · Chemistry 107 · Math 108 · Spanish A 64 · English B 57 · History 64 |
+| Structured (exam-style) questions | **71** of the above, 296 parts with mark schemes: Paper 2-style (Physics 21 · Chemistry 16 · Math 17 · English B reading texts 4), **Paper 1B data-based** (Physics 4 · Chemistry 4) and **Math AA HL Paper 3 investigations** (5) |
 | Timed writing tasks | **38**: Spanish A Paper 1 (3 original texts) and Paper 2 (9) · English B Paper 1 (10) · History Paper 2 (16) |
 | Model answers (exemplars) | **6** annotated: Spanish A Paper 1 and Paper 2 · History Paper 2 (×2) · English B Paper 1 (speech, blog) |
 | Listening | **4** original English B recordings (29 questions) played by text-to-speech, plus a strategy guide |
@@ -34,7 +34,8 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 - **History SL**: dated events, people and concepts for PS3 (Japan 1931–41; Germany and Italy 1933–40), OPVL source skills, WWI, WWII, the Spanish Civil War, the Cold War (origins, leaders, crises, détente and end) and historiography. Dates were double-checked; still confirm anything you quote in an exam against your textbook.
 
 ### 2. Timed practice
-- Pick subjects, topics and a duration from 5 to 45 minutes.
+- Pick subjects, topics and a duration from 5 to 60 minutes.
+- **Format** filter: all questions, Paper 2-style structured questions, Paper 1B data-based questions (sciences: data tables, data processing, uncertainties, evaluation) or Paper 3 investigations (Math AA HL: pattern → conjecture → proof → extension).
 - **Multiple choice** questions are marked automatically.
 - **Numeric** questions are marked automatically within a tolerance (±2 % by default, or set per question). Accepted formats include `12.5`, `12,5` (decimal comma), `3.2e-5`, `3.2×10^-5`, `3.2·10⁻⁵`, `1/3` and `9.81 m s^-2`.
 - **Short answer** questions are marked automatically; accents, capitals and a leading article are ignored (e.g. *metafora* = *metáfora*).
@@ -44,15 +45,24 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 - The results screen gives your score, average time per question, accuracy per topic, and worked solutions for every question you missed.
 
 ### Mock exams (Practice → Mock exam mode, or press `m`)
+- Choose **Mixed**, **Paper 1B data-based** (Physics, Chemistry) or **Paper 3 investigations** (Math). Paper 3 investigations are never mixed into ordinary papers because each is 20+ marks.
 - A 30, 60 or 90-minute paper is assembled from the question bank and spread across topics: short items first, then structured questions (about 60 % of the marks when available), sized at about 1 mark per 1.3 minutes.
 - **No feedback while you sit it**, like a real exam. A question palette shows what you've answered.
 - Afterwards, auto-markable answers are scored and you mark the written ones against the scheme. You then get a score, a by-topic breakdown and a rough grade.
 - **Grade estimates** on the Dashboard combine your recent mocks and, for essay subjects, your self-assessed essays. They are shown as a range that reflects how much your results vary. The thresholds (7 ≥ 70 %, 6 ≥ 58 %, 5 ≥ 46 %, 4 ≥ 35 %, 3 ≥ 24 %, 2 ≥ 13 %) are a rough guide, **not** real IB boundaries, which differ by subject and session and include internal assessment.
+- **School results** (Dashboard): enter marks from real school tests and mocks. For each one the app recomputes its own estimate as of that date and shows the gap per subject (e.g. *+8 points* means your self-marking is probably lenient) and an **adjusted estimate**. Treat it as provisional until you have three comparisons.
 
 ### Timed writing (Writing tab)
 - Real paper timings (e.g. English B Paper 1: 90 min, 450–600 words; Spanish Paper 1 SL: 75 min; History Paper 2: 45 min per essay), a live word count against the word range, optional planning hints, and drafts that **autosave**.
 - When you finish, mark yourself against each criterion. The bands are short **paraphrases** of the IB criteria; check the official wording with your teacher. Your score history is charted per subject, and essay scores feed topic accuracy at single weight.
 - **Exemplars**: some tasks have an annotated model answer (written for the app) with an estimated score and a note per criterion. Try the task first; the app asks before showing it if you haven't completed an attempt. Scores are estimates, not official marking.
+- **Get outside feedback**: after self-marking (or from any saved attempt) copy or download a ready-made request containing the task, the paraphrased criteria with their bands, your answer and your marks, to paste into Claude or send to your teacher. Spanish A requests are written in Spanish. The app itself sends nothing.
+
+### History Paper 1 workshop (Practice or Writing → Paper 1)
+- No source texts are bundled with the app: you enter four sources on one focus (from your textbook, class packs, past papers or public-domain archives such as the Avalon Project, the League of Nations archives or Hansard). For a cartoon or poster, describe it (caption, figures, symbols).
+- From a focus phrase the app writes a Paper 1-style set: 1a [3], 1b [2], 2 [4] (value and limitations from origin, purpose and content), 3 [6] (compare and contrast) and 4 [9] (sources + own knowledge). The wording can be edited.
+- Sit it with 5 minutes' reading time and a 1-hour timer, then mark each answer against paraphrased marking guidance and the question-4 markbands. The result counts as a History mock and topic practice, and can be exported as a feedback request.
+- Your sources stay on your device and in your JSON backups; they are never published.
 
 ### English B listening (Practice → Listening trainer)
 - Four original recordings (radio interview, podcast, school news report, talk) across the five themes, read aloud by your browser's speech synthesis with a different voice per speaker where the device has several. Quality depends on the voices installed on your system; Chrome, Edge and Safari work best.
@@ -180,8 +190,11 @@ P: «Te lo he dicho mil veces» => hipérbole
 ### Structured questions: `src/data/questions/*Structured.ts`, `englishReading.ts`
 
 ```
-@struct A.2
+@struct A.2                ← optional: style=P1B (data-based) or style=P3 (Math Paper 3)
 Q: Stem / context
+| t / s | 0 | 2 |         ← rows like this form a table; |---|---| makes the first row a header
+|---|---|---|
+| x / m | 0 | 4.0 |
 a) [2] Calculate the common velocity.
 = 7.5 unit=m s^-1          ← optional: numeric auto-marking (default ±2 %)
 M: mark-scheme point (1) ¶ next point (1)
@@ -223,7 +236,8 @@ src/
   data/rubrics.ts, data/essays/   assessment criteria (paraphrased) and timed-writing tasks
   data/exemplars/   annotated model answers, each linked to one writing task
   data/listening.ts  English B listening scripts, questions and strategy guide
-  views/       Dashboard, Review, Practice, Mock, Listening, Writing, Cards (library), Exams, Settings
+  data/paper1.ts     History Paper 1 question templates and marking guidance (paraphrased)
+  views/       Dashboard, Review, Practice, Mock, Listening, Sources (Paper 1 workshop), Writing, Cards (library), Exams, Settings
   components/  MathText, charts, UI primitives, keyboard help
 ```
 
