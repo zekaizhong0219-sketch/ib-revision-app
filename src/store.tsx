@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AppData, Card, EssayAttempt, Grade, PracticeLog, Settings, Subject } from './types';
+import type { AppData, Card, EssayAttempt, Grade, MockRecord, PracticeLog, Question, Settings, Subject } from './types';
+import { ALL_QUESTIONS } from './data/questions';
+import { addMistakeCards } from './lib/mistakes';
 import { SUBJECTS } from './data/syllabus';
 import { loadData, saveData } from './lib/storage';
 import { schedule } from './lib/srs';
@@ -16,6 +18,7 @@ interface Store {
   activeSubjectIds: Subject['id'][];
   saveOk: boolean;
   saveEssay: (attempt: EssayAttempt) => void;
+  saveMock: (record: MockRecord) => void;
   deleteEssay: (id: string) => void;
   gradeCard: (card: Card, grade: Grade, opts?: { cram?: boolean }) => void;
   logPractice: (entries: PracticeLog[]) => void;
@@ -28,6 +31,9 @@ interface Store {
 }
 
 const Ctx = createContext<Store | null>(null);
+
+/** Built-in questions by id (mistake cards are only created for these, not for flashcard prompts). */
+const QUESTION_BY_ID = new Map(ALL_QUESTIONS.map((q) => [q.id, q]));
 
 export function StoreProvider({ children, initial }: { children: ReactNode; initial?: AppData }) {
   const [data, setData] = useState<AppData>(() => initial ?? loadData());
@@ -79,8 +85,14 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
 
   const logPractice = useCallback((entries: PracticeLog[]) => {
     if (!entries.length) return;
-    setData((d) => ({ ...d, practice: [...d.practice, ...entries] }));
+    setData((d) => {
+      const failed = d.settings.mistakeCards
+        ? entries.filter((e) => e.r !== 'correct').map((e) => QUESTION_BY_ID.get(e.q)).filter((q): q is Question => !!q)
+        : [];
+      return { ...d, practice: [...d.practice, ...entries], customCards: addMistakeCards(d, failed) };
+    });
   }, []);
+  const saveMock = useCallback((record: MockRecord) => setData((d) => ({ ...d, mocks: [...d.mocks, record] })), []);
 
   const upsertCustomCard = useCallback((card: Card) => {
     setData((d) => {
@@ -124,11 +136,11 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
 
   const value = useMemo<Store>(
     () => ({
-      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay,
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock,
       gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
     }),
     [
-      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay,
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock,
       gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
     ],
   );

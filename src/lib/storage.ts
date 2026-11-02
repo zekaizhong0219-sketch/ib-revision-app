@@ -1,4 +1,4 @@
-import type { AppData, Card, CardState, EssayAttempt, Exam, PracticeLog, ReviewLog, Settings, SubjectId } from '../types';
+import type { AppData, Card, CardState, EssayAttempt, Exam, MockRecord, PracticeLog, ReviewLog, Settings, SubjectId } from '../types';
 import { SUBJECT_IDS, isSubjectId } from '../data/subjectIds';
 
 export const STORAGE_KEY = 'ib-revision:data';
@@ -27,6 +27,7 @@ export function defaultSettings(): Settings {
     exams: defaultExams(),
     enabledSubjects: [...SUBJECT_IDS],
     hiddenSubjects: [],
+    mistakeCards: true,
   };
 }
 
@@ -38,6 +39,7 @@ export function defaultData(): AppData {
     practice: [],
     customCards: [],
     essays: [],
+    mocks: [],
     settings: defaultSettings(),
   };
 }
@@ -123,6 +125,19 @@ function sanitizeEssay(v: unknown): EssayAttempt | null {
   };
 }
 
+function sanitizeMock(v: unknown): MockRecord | null {
+  if (!isObj(v) || !isStr(v.id) || !isSubject(v.subject) || !isNum(v.t) || !isNum(v.max) || !isNum(v.got) || v.max <= 0) return null;
+  return {
+    id: v.id,
+    subject: v.subject,
+    t: v.t,
+    minutes: isNum(v.minutes) ? Math.max(0, v.minutes) : 0,
+    max: v.max,
+    got: Math.min(v.max, Math.max(0, v.got)),
+    items: isNum(v.items) ? Math.max(0, Math.floor(v.items)) : 0,
+  };
+}
+
 function sanitizeSettings(v: unknown): Settings {
   const d = defaultSettings();
   if (!isObj(v)) return d;
@@ -151,6 +166,7 @@ function sanitizeSettings(v: unknown): Settings {
     enabledSubjects: enabled.length ? Array.from(new Set(enabled)) : d.enabledSubjects,
     // Never hide everything.
     hiddenSubjects: hidden.length >= SUBJECT_IDS.length ? [] : hidden,
+    mistakeCards: typeof v.mistakeCards === 'boolean' ? v.mistakeCards : d.mistakeCards,
   };
 }
 
@@ -206,6 +222,7 @@ export function sanitizeData(input: unknown): AppData {
     practice: practice.slice(-MAX_LOG_ENTRIES),
     customCards,
     essays: essays.slice(-MAX_ESSAYS),
+    mocks: (Array.isArray(raw.mocks) ? raw.mocks : []).map(sanitizeMock).filter((x): x is MockRecord => !!x).slice(-MAX_ESSAYS),
     settings: sanitizeSettings(raw.settings),
   };
 }
@@ -293,6 +310,7 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
   const practice = dedupe([...current.practice, ...incoming.practice], prKey).sort((a, b) => a.t - b.t);
   const custom = dedupe([...current.customCards, ...incoming.customCards], (c) => c.id);
   const essays = dedupe([...current.essays, ...incoming.essays], (e) => e.id).sort((a, b) => a.t - b.t);
+  const mocks = dedupe([...current.mocks, ...incoming.mocks], (m) => m.id).sort((a, b) => a.t - b.t);
   return {
     version: DATA_VERSION,
     cards,
@@ -300,6 +318,7 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
     practice: practice.slice(-MAX_LOG_ENTRIES),
     customCards: custom,
     essays: essays.slice(-MAX_ESSAYS),
+    mocks: mocks.slice(-MAX_ESSAYS),
     settings: incoming.settings,
   };
 }

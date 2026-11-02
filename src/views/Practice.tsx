@@ -85,6 +85,13 @@ export default function Practice({ route }: { route: Route }) {
         short-answer, ordering and matching questions are marked automatically; open questions and flashcard prompts are self-marked against a model
         answer. For timed essays use <a href="#/writing">Writing</a>.
       </p>
+      <a className="card spread" href="#/mock" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
+        <div>
+          <strong>Mock exam mode</strong>
+          <div className="small muted">A full timed paper with no feedback until the end, self-marking against mark schemes and a grade estimate.</div>
+        </div>
+        <span className="btn small">Open</span>
+      </a>
       <div className="card stack">
         <div>
           <h3>Subjects</h3>

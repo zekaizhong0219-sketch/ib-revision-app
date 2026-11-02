@@ -5,6 +5,8 @@ import { activityByDay, currentStreak, dueForecast, longestStreak, recommend, to
 import { queueCounts } from '../lib/queue';
 import { ALL_QUESTIONS } from '../data/questions';
 import { planDay, reviewLoad, type PlanItem } from '../lib/planner';
+import { estimateGrade } from '../lib/grades';
+import { isLeech } from '../lib/mistakes';
 import { BarChart, HBars } from '../components/Charts';
 import { ProgressBar, SubjectDot, Tile } from '../components/ui';
 import { href } from '../router';
@@ -26,6 +28,7 @@ export default function Dashboard() {
   const plan = useMemo(() => planDay(data, cards, enabled, now, PRACTICE_TOPICS), [data, cards, enabled, now]);
   const load = useMemo(() => reviewLoad(data, cards, enabled, now, 7), [data, cards, enabled, now]);
   const streak = currentStreak(data, now);
+  const leeches = Object.values(data.cards).filter(isLeech).length;
   const best = longestStreak(data);
   const todayCount = activity[activity.length - 1];
   const studied = Object.values(data.cards).filter((s) => s.last > 0).length;
@@ -191,6 +194,39 @@ export default function Dashboard() {
           />
         </section>
       </div>
+
+      <section className="card" style={{ marginTop: '1rem' }}>
+        <div className="spread">
+          <h2 style={{ margin: 0 }}>Grade estimates</h2>
+          <a className="btn small" href={href('/mock')}>
+            Take a mock
+          </a>
+        </div>
+        <div className="tiles" style={{ marginTop: '0.75rem' }}>
+          {visibleSubjects.map((s) => {
+            const e = estimateGrade(data, s.id);
+            return (
+              <div className="tile" key={s.id}>
+                <div className="label">
+                  <SubjectDot subject={s.id} /> {s.short}
+                </div>
+                <div className="value">{e ? (e.low === e.high ? e.grade : `${e.low}–${e.high}`) : '—'}</div>
+                <div className="sub">{e ? `${Math.round(e.percent)}% · ${e.n} results` : 'needs 2 mocks / essays'}</div>
+              </div>
+            );
+          })}
+        </div>
+        <p className="small muted" style={{ marginTop: '0.5rem' }}>
+          From your recent mock papers and self-assessed essays, with a range reflecting how much your results vary. Rough guide only: real
+          boundaries differ by subject and session, and internal assessment is not included.
+        </p>
+        {leeches > 0 && (
+          <p className="small" style={{ color: 'var(--warn)' }}>
+            {leeches} card{leeches === 1 ? '' : 's'} you keep forgetting (5+ lapses).{' '}
+            <a href={href('/cards', { status: 'leech' })}>Review and rewrite them</a>: splitting a card into smaller ones usually helps.
+          </p>
+        )}
+      </section>
 
       <section className="card" style={{ marginTop: '1rem' }}>
         <div className="spread" style={{ marginBottom: '0.75rem' }}>

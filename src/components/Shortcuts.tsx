@@ -6,6 +6,7 @@ export const SHORTCUTS: [string, string][] = [
   ['r', 'Flashcard review'],
   ['p', 'Timed practice'],
   ['w', 'Timed writing (essays)'],
+  ['m', 'Mock exam'],
   ['c', 'Card library'],
   ['e', 'Exam countdown'],
   ['s', 'Settings'],

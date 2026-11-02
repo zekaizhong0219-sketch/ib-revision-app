@@ -121,19 +121,24 @@ export function checkText(input: string, answers: string[], strict = false): boo
 }
 
 /**
- * Scores an ordering answer: the fraction of adjacent pairs in the response that also
- * appear adjacent and in the same order in the correct sequence (1 = perfect).
+ * Scores an ordering answer with Kendall's τ clipped at 0:
+ * (pairs in the right relative order − pairs in the wrong order) / all pairs.
+ * 1 = perfect, 0 = reversed or no better than a random shuffle (so guessing earns nothing).
  */
 export function scoreOrder(response: string[], correct: string[]): number {
   if (response.length !== correct.length || correct.length < 2) return 0;
   const pos = new Map(correct.map((x, i) => [x, i]));
-  let good = 0;
-  for (let i = 0; i < response.length - 1; i++) {
-    const a = pos.get(response[i]);
-    const b = pos.get(response[i + 1]);
-    if (a !== undefined && b !== undefined && b === a + 1) good++;
+  const ranks = response.map((x) => pos.get(x));
+  if (ranks.some((r) => r === undefined) || new Set(ranks).size !== ranks.length) return 0;
+  let concordant = 0;
+  let discordant = 0;
+  for (let i = 0; i < ranks.length; i++) {
+    for (let j = i + 1; j < ranks.length; j++) {
+      if (ranks[i]! < ranks[j]!) concordant++;
+      else discordant++;
+    }
   }
-  return good / (correct.length - 1);
+  return Math.max(0, (concordant - discordant) / (concordant + discordant));
 }
 
 /** Fraction of left items matched to the correct right item. */

@@ -119,10 +119,12 @@ describe('ordering and matching', () => {
   const correct = ['a', 'b', 'c', 'd'];
   it('scores perfect, partial and reversed orders', () => {
     expect(scoreOrder(['a', 'b', 'c', 'd'], correct)).toBe(1);
-    expect(scoreOrder(['a', 'b', 'd', 'c'], correct)).toBeCloseTo(1 / 3);
+    expect(scoreOrder(['a', 'b', 'd', 'c'], correct)).toBeCloseTo(2 / 3); // one swapped pair: (5 − 1) / 6
     expect(scoreOrder(['d', 'c', 'b', 'a'], correct)).toBe(0);
-    expect(scoreOrder(['b', 'c', 'd', 'a'], correct)).toBeCloseTo(2 / 3);
+    expect(scoreOrder(['b', 'c', 'd', 'a'], correct)).toBe(0); // 3 right, 3 wrong
+    expect(scoreOrder(['a', 'c', 'b', 'd'], correct)).toBeCloseTo(2 / 3);
     expect(scoreOrder(['a'], correct)).toBe(0);
+    expect(scoreOrder(['a', 'a', 'b', 'c'], correct)).toBe(0); // invalid response
   });
   it('scores matches', () => {
     const pairs: [string, string][] = [['x', '1'], ['y', '2'], ['z', '3']];

@@ -121,6 +121,8 @@ export interface Settings {
   enabledSubjects: SubjectId[];
   /** Subjects hidden from the whole interface (you don't take them). */
   hiddenSubjects: SubjectId[];
+  /** Automatically turn questions you get wrong into review cards. */
+  mistakeCards: boolean;
 }
 
 export interface AppData {
@@ -130,7 +132,20 @@ export interface AppData {
   practice: PracticeLog[];
   customCards: Card[];
   essays: EssayAttempt[];
+  mocks: MockRecord[];
   settings: Settings;
+}
+
+/** Result of a completed mock paper. */
+export interface MockRecord {
+  id: string;
+  subject: SubjectId;
+  /** Start time (ms) */
+  t: number;
+  minutes: number;
+  got: number;
+  max: number;
+  items: number;
 }
 
 /** A timed writing attempt with self-assessed criterion scores. */

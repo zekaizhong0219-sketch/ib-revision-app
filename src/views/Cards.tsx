@@ -4,18 +4,20 @@ import { SUBJECTS, getSubject, topicLabel } from '../data/syllabus';
 import { MathText } from '../components/MathText';
 import { SubjectDot } from '../components/ui';
 import { formatInterval } from '../lib/srs';
+import { isLeech, isMistakeCard } from '../lib/mistakes';
 import type { Card, CardKind, SubjectId } from '../types';
+import type { Route } from '../router';
 
 const KINDS: CardKind[] = ['definition', 'formula', 'unit', 'command', 'concept', 'fact'];
 const PAGE = 40;
 
-type Status = 'all' | 'new' | 'learning' | 'mature' | 'suspended' | 'mine';
+type Status = 'all' | 'new' | 'learning' | 'mature' | 'suspended' | 'mine' | 'mistake' | 'leech';
 
 function emptyDraft(subject: SubjectId = 'physics'): Card {
   return { id: '', subject, topic: getSubject(subject).topics[0].id, front: '', back: '', kind: 'concept', custom: true };
 }
 
-export default function Cards() {
+export default function Cards({ route }: { route?: Route }) {
   const { cards: allCards, data, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, visibleSubjects } = useStore();
   const cards = useMemo(() => allCards.filter((c) => !data.settings.hiddenSubjects.includes(c.subject)), [allCards, data.settings.hiddenSubjects]);
   const [query, setQuery] = useState('');
@@ -23,7 +25,7 @@ export default function Cards() {
   const [subject, setSubject] = useState<SubjectId | 'all'>('all');
   const [topic, setTopic] = useState('all');
   const [kind, setKind] = useState<CardKind | 'all'>('all');
-  const [status, setStatus] = useState<Status>('all');
+  const [status, setStatus] = useState<Status>(() => (route?.params.get('status') as Status | null) ?? 'all');
   const [limit, setLimit] = useState(PAGE);
   const [draft, setDraft] = useState<Card | null>(null);
 
@@ -37,7 +39,9 @@ export default function Cards() {
       if (status === 'learning' && !(st && st.last > 0 && st.interval < 21)) return false;
       if (status === 'mature' && !(st && st.interval >= 21)) return false;
       if (status === 'suspended' && !st?.suspended) return false;
-      if (status === 'mine' && !c.custom) return false;
+      if (status === 'mine' && (!c.custom || isMistakeCard(c))) return false;
+      if (status === 'mistake' && !isMistakeCard(c)) return false;
+      if (status === 'leech' && !isLeech(st)) return false;
       if (q && !(c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q))) return false;
       return true;
     });
@@ -96,6 +100,8 @@ export default function Cards() {
               <option value="mature">Mature (≥ 21 d)</option>
               <option value="suspended">Suspended</option>
               <option value="mine">My cards</option>
+              <option value="mistake">Mistake notebook</option>
+              <option value="leech">Leeches (5+ lapses)</option>
             </select>
           </label>
         </div>

@@ -97,6 +97,15 @@ export default function Settings() {
       </section>
 
       <section className="card stack">
+        <h2>Mistake notebook</h2>
+        <label className="row" style={{ cursor: 'pointer' }}>
+          <input type="checkbox" checked={s.mistakeCards} onChange={(e) => updateSettings({ mistakeCards: e.target.checked })} />
+          Turn practice and mock questions I get wrong (or partly wrong) into review cards
+        </label>
+        <p className="small muted">Find them in the Library under Status → Mistake notebook. They are scheduled like any other card.</p>
+      </section>
+
+      <section className="card stack">
         <h2>Backup</h2>
         <p className="muted small">
           All progress lives only in this browser’s local storage. Export a JSON backup regularly (e.g. weekly) and import it to restore or to move to another device.
