@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReportButton } from '../components/ReportButton';
 import { useStore } from '../store';
 import { ALL_QUESTIONS } from '../data/questions';
 import { topicLabel } from '../data/syllabus';
@@ -221,6 +222,11 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
           {q.type === 'match' && <MatchAnswer key={i} q={q} done={current} onAnswer={record} />}
           {q.type === 'structured' && <StructuredAnswer key={i} q={q} done={current} onAnswer={record} />}
         </div>
+        {current && (
+          <div style={{ marginTop: '0.5rem', textAlign: 'right' }}>
+            <ReportButton key={q.id + i} item={q.id} subject={q.subject} excerpt={q.prompt} />
+          </div>
+        )}
         {current && q.solution && (
           <div className="feedback info">
             <strong className="small">Solution</strong>

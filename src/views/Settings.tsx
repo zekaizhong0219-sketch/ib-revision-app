@@ -6,10 +6,10 @@ import { SUBJECT_IDS } from '../data/subjectIds';
 import { ALL_CARDS } from '../data/cards';
 import { ALL_QUESTIONS } from '../data/questions';
 import { SHORTCUTS } from '../components/Shortcuts';
-import type { AppData, ThemePref } from '../types';
+import type { AppData, ContentReport, ThemePref } from '../types';
 
 export default function Settings() {
-  const { data, updateSettings, replaceData, saveOk } = useStore();
+  const { data, updateSettings, replaceData, saveOk, clearReports, cardById } = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<AppData | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -136,6 +136,36 @@ export default function Settings() {
       </section>
 
       <section className="card stack">
+        <h2>Reported mistakes ({data.reports.length})</h2>
+        {data.reports.length === 0 ? (
+          <p className="small muted">Use "⚑ Report a mistake" under any card or question to note a possible error. Your notes are listed here.</p>
+        ) : (
+          <>
+            <div className="list">
+              {data.reports.map((r) => (
+                <div className="list-item small" key={r.id}>
+                  <div className="meta muted">
+                    {new Date(r.t).toLocaleDateString()} · {r.subject} · <code>{r.item}</code>
+                    {cardById.has(r.item) ? '' : ' (question)'}
+                  </div>
+                  <div className="muted">{r.excerpt}</div>
+                  <div>→ {r.note}</div>
+                </div>
+              ))}
+            </div>
+            <div className="row">
+              <button className="btn" onClick={() => downloadText(`ib-revision-reports-${new Date().toISOString().slice(0, 10)}.md`, reportsMarkdown(data.reports))}>
+                Export as Markdown
+              </button>
+              <button className="btn danger" onClick={() => window.confirm('Delete all reports?') && clearReports()}>
+                Clear
+              </button>
+            </div>
+          </>
+        )}
+      </section>
+
+      <section className="card stack">
         <h2>Keyboard shortcuts</h2>
         <table className="keys">
           <tbody>
@@ -166,4 +196,23 @@ export default function Settings() {
       </p>
     </div>
   );
+}
+
+function reportsMarkdown(reports: ContentReport[]): string {
+  const lines = ['# Reported content mistakes', '', `Exported ${new Date().toISOString().slice(0, 10)}. Item ids refer to src/data in the ib-revision-app repository.`, ''];
+  for (const r of reports) {
+    lines.push(`## ${r.subject} · \`${r.item}\``, '', `> ${r.excerpt.replace(/\n/g, ' ')}`, '', r.note, '', `_${new Date(r.t).toISOString().slice(0, 10)}_`, '');
+  }
+  return lines.join('\n');
+}
+
+function downloadText(name: string, text: string) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

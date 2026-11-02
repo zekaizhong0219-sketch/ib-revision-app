@@ -1,4 +1,5 @@
 import { useDeferredValue, useMemo, useState } from 'react';
+import { ReportButton } from '../components/ReportButton';
 import { useStore } from '../store';
 import { SUBJECTS, getSubject, topicLabel } from '../data/syllabus';
 import { MathText } from '../components/MathText';
@@ -131,6 +132,7 @@ export default function Cards({ route }: { route?: Route }) {
                 <div className="row" style={{ marginTop: '0.5rem' }}>
                   <button className="btn small" onClick={() => setSuspended(c.id, !st?.suspended)}>{st?.suspended ? 'Unsuspend' : 'Suspend'}</button>
                   {st && st.last > 0 && <button className="btn small" onClick={() => resetCard(c.id)}>Reset progress</button>}
+                  {!c.custom && <ReportButton item={c.id} subject={c.subject} excerpt={c.front} />}
                   {c.custom && (
                     <>
                       <button className="btn small" onClick={() => { setDraft(c); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Edit</button>

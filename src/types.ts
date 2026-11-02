@@ -133,7 +133,20 @@ export interface AppData {
   customCards: Card[];
   essays: EssayAttempt[];
   mocks: MockRecord[];
+  reports: ContentReport[];
   settings: Settings;
+}
+
+/** A user's note that a card or question may contain a mistake. */
+export interface ContentReport {
+  id: string;
+  /** Card or question id */
+  item: string;
+  subject: SubjectId;
+  /** Short excerpt of the item for context */
+  excerpt: string;
+  note: string;
+  t: number;
 }
 
 /** Result of a completed mock paper. */

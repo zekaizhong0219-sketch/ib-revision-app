@@ -1,4 +1,4 @@
-import type { AppData, Card, CardState, EssayAttempt, Exam, MockRecord, PracticeLog, ReviewLog, Settings, SubjectId } from '../types';
+import type { AppData, Card, CardState, ContentReport, EssayAttempt, Exam, MockRecord, PracticeLog, ReviewLog, Settings, SubjectId } from '../types';
 import { SUBJECT_IDS, isSubjectId } from '../data/subjectIds';
 
 export const STORAGE_KEY = 'ib-revision:data';
@@ -40,6 +40,7 @@ export function defaultData(): AppData {
     customCards: [],
     essays: [],
     mocks: [],
+    reports: [],
     settings: defaultSettings(),
   };
 }
@@ -123,6 +124,11 @@ function sanitizeEssay(v: unknown): EssayAttempt | null {
     scores,
     done: v.done === true,
   };
+}
+
+function sanitizeReport(v: unknown): ContentReport | null {
+  if (!isObj(v) || !isStr(v.id) || !isStr(v.item) || !isSubject(v.subject) || !isStr(v.note) || !isNum(v.t)) return null;
+  return { id: v.id, item: v.item, subject: v.subject, excerpt: isStr(v.excerpt) ? v.excerpt.slice(0, 300) : '', note: v.note.slice(0, 2000), t: v.t };
 }
 
 function sanitizeMock(v: unknown): MockRecord | null {
@@ -223,6 +229,7 @@ export function sanitizeData(input: unknown): AppData {
     customCards,
     essays: essays.slice(-MAX_ESSAYS),
     mocks: (Array.isArray(raw.mocks) ? raw.mocks : []).map(sanitizeMock).filter((x): x is MockRecord => !!x).slice(-MAX_ESSAYS),
+    reports: (Array.isArray(raw.reports) ? raw.reports : []).map(sanitizeReport).filter((x): x is ContentReport => !!x).slice(-500),
     settings: sanitizeSettings(raw.settings),
   };
 }
@@ -311,6 +318,7 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
   const custom = dedupe([...current.customCards, ...incoming.customCards], (c) => c.id);
   const essays = dedupe([...current.essays, ...incoming.essays], (e) => e.id).sort((a, b) => a.t - b.t);
   const mocks = dedupe([...current.mocks, ...incoming.mocks], (m) => m.id).sort((a, b) => a.t - b.t);
+  const reports = dedupe([...current.reports, ...incoming.reports], (r) => r.id).sort((a, b) => a.t - b.t);
   return {
     version: DATA_VERSION,
     cards,
@@ -319,6 +327,7 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
     customCards: custom,
     essays: essays.slice(-MAX_ESSAYS),
     mocks: mocks.slice(-MAX_ESSAYS),
+    reports: reports.slice(-500),
     settings: incoming.settings,
   };
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { buildIcs } from '../lib/ics';
 import { useStore } from '../store';
 import { getSubject } from '../data/syllabus';
 import { SubjectDot } from '../components/ui';
@@ -131,6 +132,8 @@ export default function Exams() {
         })}
       </div>
 
+      <CalendarExport />
+
       <section className="card" style={{ marginTop: '1.5rem' }}>
         <h2>{data.settings.exams.some((e) => e.id === draft.id) ? 'Edit' : 'Add exam or deadline'}</h2>
         <form
@@ -177,5 +180,42 @@ export default function Exams() {
         </form>
       </section>
     </div>
+  );
+}
+
+function CalendarExport() {
+  const { data } = useStore();
+  const [reminder, setReminder] = useState(true);
+  const [time, setTime] = useState('18:00');
+  const download = () => {
+    const ics = buildIcs(data.settings.exams, { dailyReminder: reminder ? time : null, reminderMinutes: data.settings.dailyMinutes });
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ib-exams.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  return (
+    <section className="card stack" style={{ marginTop: '1.5rem' }}>
+      <h2>Add to your calendar</h2>
+      <p className="small muted">
+        Downloads an .ics file with every exam and deadline (each with a reminder the day before). Open it on your phone or import it into Google
+        Calendar (Settings → Import) or Apple Calendar. Re-export after changing dates; importing again replaces events with the same id in most apps.
+      </p>
+      <label className="row" style={{ cursor: 'pointer' }}>
+        <input type="checkbox" checked={reminder} onChange={(e) => setReminder(e.target.checked)} />
+        Also add a daily study session at
+        <input type="time" value={time} onChange={(e) => setTime(e.target.value)} disabled={!reminder} style={{ width: 'auto' }} aria-label="Daily study time" />
+        ({data.settings.dailyMinutes} min, until your last exam)
+      </label>
+      <div>
+        <button className="btn primary" onClick={download} disabled={data.settings.exams.length === 0}>
+          Download .ics
+        </button>
+      </div>
+    </section>
   );
 }

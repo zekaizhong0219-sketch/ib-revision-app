@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReportButton } from '../components/ReportButton';
 import { useStore } from '../store';
 import { buildQueue, matchesFilter, queueCounts, shuffle } from '../lib/queue';
 import { formatInterval, previewIntervals } from '../lib/srs';
@@ -181,6 +182,11 @@ function Session({ initialQueue, cram, onExit }: { initialQueue: Card[]; cram: b
         </div>
         <MathText className="front" text={card.front} />
         {revealed && <MathText className="back" text={card.back} />}
+        {revealed && (
+          <div style={{ marginTop: '0.75rem', textAlign: 'right' }}>
+            <ReportButton key={card.id + idx} item={card.id} subject={card.subject} excerpt={card.front} />
+          </div>
+        )}
       </div>
       {!revealed ? (
         <button className="btn primary" style={{ width: '100%', marginTop: '1rem', minHeight: 52 }} onClick={() => setRevealed(true)} autoFocus>

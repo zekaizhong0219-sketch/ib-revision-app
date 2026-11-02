@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AppData, Card, EssayAttempt, Grade, MockRecord, PracticeLog, Question, Settings, Subject } from './types';
+import type { AppData, Card, ContentReport, EssayAttempt, Grade, MockRecord, PracticeLog, Question, Settings, Subject } from './types';
 import { ALL_QUESTIONS } from './data/questions';
 import { addMistakeCards } from './lib/mistakes';
 import { SUBJECTS } from './data/syllabus';
@@ -19,6 +19,8 @@ interface Store {
   saveOk: boolean;
   saveEssay: (attempt: EssayAttempt) => void;
   saveMock: (record: MockRecord) => void;
+  addReport: (r: Omit<ContentReport, 'id' | 't'>) => void;
+  clearReports: () => void;
   deleteEssay: (id: string) => void;
   gradeCard: (card: Card, grade: Grade, opts?: { cram?: boolean }) => void;
   logPractice: (entries: PracticeLog[]) => void;
@@ -93,6 +95,11 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
     });
   }, []);
   const saveMock = useCallback((record: MockRecord) => setData((d) => ({ ...d, mocks: [...d.mocks, record] })), []);
+  const addReport = useCallback(
+    (r: Omit<ContentReport, 'id' | 't'>) => setData((d) => ({ ...d, reports: [...d.reports, { ...r, id: `rp-${Date.now().toString(36)}`, t: Date.now() }] })),
+    [],
+  );
+  const clearReports = useCallback(() => setData((d) => ({ ...d, reports: [] })), []);
 
   const upsertCustomCard = useCallback((card: Card) => {
     setData((d) => {
@@ -136,11 +143,11 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
 
   const value = useMemo<Store>(
     () => ({
-      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock,
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock, addReport, clearReports,
       gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
     }),
     [
-      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock,
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock, addReport, clearReports,
       gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
     ],
   );
