@@ -137,6 +137,10 @@ const es: Dict = {
   hrs: 'h',
   min: 'min',
   sec: 's',
+  'Scheduling algorithm': 'Algoritmo de repaso',
+  recommended: 'recomendado',
+  classic: 'clásico',
+  'Target recall': 'Recuerdo objetivo',
   'Report a mistake': 'Señalar un error',
 };
 
@@ -254,6 +258,10 @@ const zh: Dict = {
   hrs: '时',
   min: '分',
   sec: '秒',
+  'Scheduling algorithm': '复习算法',
+  recommended: '推荐',
+  classic: '经典',
+  'Target recall': '目标记忆率',
 };
 
 export const DICTIONARIES: Record<Exclude<UiLang, 'en'>, Dict> = { es, zh };

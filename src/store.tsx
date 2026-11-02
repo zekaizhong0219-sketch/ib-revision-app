@@ -4,7 +4,7 @@ import { ALL_QUESTIONS } from './data/questions';
 import { addMistakeCards } from './lib/mistakes';
 import { SUBJECTS } from './data/syllabus';
 import { loadData, saveData } from './lib/storage';
-import { schedule } from './lib/srs';
+import { scheduleWith } from './lib/srs';
 import { ALL_CARDS } from './data/cards';
 
 interface Store {
@@ -80,7 +80,7 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
     const now = Date.now();
     setData((d) => ({
       ...d,
-      cards: opts?.cram ? d.cards : { ...d.cards, [card.id]: schedule(d.cards[card.id], grade, now) },
+      cards: opts?.cram ? d.cards : { ...d.cards, [card.id]: scheduleWith(d.settings, d.cards[card.id], grade, now) },
       reviews: [...d.reviews, { c: card.id, s: card.subject, tp: card.topic, g: grade, t: now }],
     }));
   }, []);

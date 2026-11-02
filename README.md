@@ -7,19 +7,24 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 | | |
 |---|---|
 | Flashcards | **1,183**: Physics 279 · Chemistry 219 · Math AA 161 · Spanish A 152 · English B 155 · History 217 (including IB command terms) |
-| Practice questions | **327**, all original: Physics 67 · Chemistry 57 · Math 54 · Spanish A 48 · English B 45 · History 56 |
+| Practice questions | **378**, all original: Physics 85 · Chemistry 71 · Math 69 · Spanish A 48 · English B 49 · History 56 |
+| Structured (Paper 2-style) questions | **51** of the above, 196 parts with mark schemes: Physics 18 · Chemistry 14 · Math 15 · English B reading texts 4 |
 | Timed writing tasks | **31**: Spanish A Paper 1 (3 original texts) and Paper 2 (6) · English B Paper 1 (10) · History Paper 2 (12) |
 | Syllabus | Physics & Chemistry: first assessment 2025. Math AA: first assessment 2021, topics 1–5. Spanish A Lang & Lit: first assessment 2021. English B: first assessment 2020 (five themes). History: prescribed subject 3 *The move to global war*, world history topics 11 *Causes and effects of 20th-century wars* (examples: WWI, WWII, Spanish Civil War) and 12 *The Cold War*. AHL content is tagged. |
 
 ## Features
 
 ### 1. Flashcards with spaced repetition
-- **SM-2 scheduler** (`src/lib/srs.ts`). The four grades map to SM-2 quality scores: Again = 2, Hard = 3, Good = 4, Easy = 5. The ease factor (EF) updates by the standard SM-2 formula and never drops below 1.3. A card's first intervals are 1 day, then 6 days, then the previous interval × EF. Hard multiplies the interval by 1.2 and Easy adds a ×1.3 bonus. Intervals are capped at 365 days.
+- **FSRS-4.5 scheduler** (default, `src/lib/fsrs.ts`) with the published default parameters. Each card has a memory *stability* (days until your chance of recall falls to 90 %) and a *difficulty* (1–10). A card comes back when its predicted recall drops to your **target recall** (default 90 %, adjustable from 80 to 97 % in Settings). FSRS usually needs fewer reviews than SM-2 for the same retention.
+- **SM-2** (`src/lib/srs.ts`) is still available in Settings. Existing SM-2 progress converts to FSRS automatically the next time each card is reviewed: stability ≈ the current interval, difficulty mapped from the ease factor. You can switch back at any time. Intervals are capped at 365 days.
 - A failed card ("Again") comes back after 10 minutes and again later in the same session.
 - New cards are limited per day (default 20, configurable) and interleaved across subjects.
 - **Cram mode** shows up to 30 random cards from chosen topics without changing the schedule. Use it the night before a test.
 - All maths renders with **KaTeX**. Chemical equations use `\ce{}` (mhchem).
 - **Card library**: search and filter by subject, topic, type and status; suspend cards or reset their progress; **add, edit and delete your own cards** with a live preview.
+- **Mistake notebook**: questions you get wrong or only partly right in Practice or a mock automatically become review cards (Library → Status → Mistake notebook). This can be switched off in Settings.
+- **Leeches**: cards you have forgotten 5 or more times are flagged on the Dashboard and in the Library, so you can rewrite or split them.
+- **Report a mistake** (⚑) under any card or question saves a note. Settings lists your notes and exports them as Markdown.
 
 ### Subjects in detail
 - **Spanish A** (written in Spain's Spanish, following RAE norms): rhetorical figures with public-domain examples, genres and metre, non-literary text types and image analysis, literary movements, the course framework (areas of exploration, concepts, global-issue fields), and Paper 1 / Paper 2 / IO strategy. **Mis obras** is an empty topic for cards about *your* set works (quotes, characters, symbols); add them in the Library.
@@ -33,7 +38,14 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 - **Short answer** questions are marked automatically; accents, capitals and a leading article are ignored (e.g. *metafora* = *metáfora*).
 - **Put in order** (chronology, essay structure) and **matching** questions give partial credit.
 - **Open** questions are self-marked (Missed / Partly / Got it) against a model answer. You can optionally mix in flashcard recall prompts.
+- **Structured questions** (Paper 2 style) are answered part by part, e.g. (a) [2], (b) [3]. Numeric and short-answer parts are auto-marked, and you can override for method marks. For explanation parts you write on paper, then mark yourself against the mark scheme. Marks are recorded and feed topic accuracy exactly.
 - The results screen gives your score, average time per question, accuracy per topic, and worked solutions for every question you missed.
+
+### Mock exams (Practice → Mock exam mode, or press `m`)
+- A 30, 60 or 90-minute paper is assembled from the question bank and spread across topics: short items first, then structured questions (about 60 % of the marks when available), sized at about 1 mark per 1.3 minutes.
+- **No feedback while you sit it**, like a real exam. A question palette shows what you've answered.
+- Afterwards, auto-markable answers are scored and you mark the written ones against the scheme. You then get a score, a by-topic breakdown and a rough grade.
+- **Grade estimates** on the Dashboard combine your recent mocks and, for essay subjects, your self-assessed essays. They are shown as a range that reflects how much your results vary. The thresholds (7 ≥ 70 %, 6 ≥ 58 %, 5 ≥ 46 %, 4 ≥ 35 %, 3 ≥ 24 %, 2 ≥ 13 %) are a rough guide, **not** real IB boundaries, which differ by subject and session and include internal assessment.
 
 ### Timed writing (Writing tab)
 - Real paper timings (e.g. English B Paper 1: 90 min, 450–600 words; Spanish Paper 1 SL: 75 min; History Paper 2: 45 min per essay), a live word count against the word range, optional planning hints, and drafts that **autosave**.
@@ -50,16 +62,19 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 ### 4. Exams & deadlines
 - Add each paper with a date, time and optional subject. The next exam shows on the dashboard with a live countdown.
 - Add **deadlines** too (Spanish IO, English IO, History IA, EE, TOK). They show as reminders but don't change the recommendations.
+- **Calendar export**: download an `.ics` file with every exam and deadline, each with a reminder the day before, plus an optional daily study session until your last exam. It imports into Google Calendar or Apple Calendar.
 - Exams less than 30 days away push their subject up in the recommendations.
 - The default entry is a **placeholder**: replace it with your official timetable.
 
 ### 5. Look and feel
 - Light, dark or system theme. Responsive layout with a bottom tab bar on phones. Installable and works offline.
+- **Interface language**: English, Español or 中文 (Settings). Menus and buttons change; study content stays in each subject's own language.
 - **Keyboard shortcuts** (press `?` in the app):
 
 | Key | Action |
 |---|---|
 | `d` `r` `p` `w` `c` `e` `s` | Dashboard, Review, Practice, Writing, Library (cards), Exams, Settings |
+| `m` | Mock exam |
 | `t` | Cycle theme |
 | `Space` / `Enter` | Show answer (then `Enter` = Good) |
 | `1` `2` `3` `4` | Again / Hard / Good / Easy, or choose an MC option (`A`–`D` also work) |
@@ -154,6 +169,21 @@ P: «Luchó como un león» => símil
 P: «Te lo he dicho mil veces» => hipérbole
 ```
 
+### Structured questions: `src/data/questions/*Structured.ts`, `englishReading.ts`
+
+```
+@struct A.2
+Q: Stem / context
+a) [2] Calculate the common velocity.
+= 7.5 unit=m s^-1          ← optional: numeric auto-marking (default ±2 %)
+M: mark-scheme point (1) ¶ next point (1)
+b) [1] Which word means "quick"?
+~ swift | rapid            ← optional: short-text auto-marking
+M: swift (1)
+c) [2] Explain…
+M: point (1) ¶ point (1)
+```
+
 ### Timed writing tasks: `src/data/essays/*.ts`
 
 ```
@@ -188,6 +218,9 @@ src/
 ```
 
 ## Accuracy and disclaimer
+
+A full content audit is documented in [`docs/AUDIT.md`](docs/AUDIT.md): method, corrections made, and the automated guards now enforced by the tests (data-booklet constants, History years, Spanish house style, no placeholders).
+
 
 All definitions and formulas were written for this app and checked against standard physics, chemistry and mathematics (IB data-booklet notation and constants where relevant). Every numeric practice answer was independently recomputed. If you find a mistake, fix it in `src/data/`; the tests will catch formatting errors.
 

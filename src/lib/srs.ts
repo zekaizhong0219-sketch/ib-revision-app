@@ -1,4 +1,5 @@
-import type { CardState, Grade } from '../types';
+import type { CardState, Grade, Settings } from '../types';
+import { fsrsPreview, fsrsSchedule } from './fsrs';
 
 /**
  * Spaced-repetition scheduler: a variant of SuperMemo SM-2.
@@ -112,4 +113,17 @@ export function previewIntervals(state: CardState | undefined, now: number): Rec
     good: nextInterval(s, 'good'),
     easy: nextInterval(s, 'easy'),
   };
+}
+
+/** Schedules with the algorithm chosen in Settings. */
+export function scheduleWith(settings: Pick<Settings, 'scheduler' | 'retention'>, state: CardState | undefined, grade: Grade, now: number): CardState {
+  if (settings.scheduler === 'fsrs') return fsrsSchedule(state, grade, now, settings.retention);
+  // SM-2 doesn't maintain FSRS memory fields; drop them so FSRS re-derives them if re-enabled.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { s, d, ...rest } = schedule(state, grade, now);
+  return rest;
+}
+
+export function previewWith(settings: Pick<Settings, 'scheduler' | 'retention'>, state: CardState | undefined, now: number): Record<Grade, number> {
+  return settings.scheduler === 'sm2' ? previewIntervals(state, now) : fsrsPreview(state, now, settings.retention);
 }

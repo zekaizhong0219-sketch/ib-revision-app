@@ -110,6 +110,40 @@ export default function Settings() {
       </section>
 
       <section className="card stack">
+        <h2>{t('Scheduling algorithm')}</h2>
+        <div className="row" role="group" aria-label="Scheduling algorithm">
+          <button className="chip" aria-pressed={s.scheduler === 'fsrs'} onClick={() => updateSettings({ scheduler: 'fsrs' })}>
+            FSRS-4.5 ({t('recommended')})
+          </button>
+          <button className="chip" aria-pressed={s.scheduler === 'sm2'} onClick={() => updateSettings({ scheduler: 'sm2' })}>
+            SM-2 ({t('classic')})
+          </button>
+        </div>
+        {s.scheduler === 'fsrs' && (
+          <label className="field">
+            <span>
+              {t('Target recall')}: {Math.round(s.retention * 100)}%
+            </span>
+            <input
+              type="range"
+              min={0.8}
+              max={0.97}
+              step={0.01}
+              value={s.retention}
+              onChange={(e) => updateSettings({ retention: Number(e.target.value) })}
+              aria-label="Target recall"
+            />
+          </label>
+        )}
+        <p className="small muted">
+          FSRS models each card's memory stability and difficulty, and schedules it when your chance of recalling it drops to the target. It
+          usually needs fewer reviews than SM-2 for the same retention. Higher targets mean more reviews: 90% is a good default, 93–95% in the
+          last weeks before exams. Existing progress converts automatically the next time each card is reviewed, and you can switch back at any
+          time.
+        </p>
+      </section>
+
+      <section className="card stack">
         <h2>{t('Mistake notebook')}</h2>
         <label className="row" style={{ cursor: 'pointer' }}>
           <input type="checkbox" checked={s.mistakeCards} onChange={(e) => updateSettings({ mistakeCards: e.target.checked })} />

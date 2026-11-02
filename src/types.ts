@@ -65,6 +65,9 @@ export interface CardState {
   /** Last review time (ms since epoch). */
   last: number;
   suspended?: boolean;
+  /** FSRS stability (days) and difficulty (1–10); absent for cards only scheduled by SM-2. */
+  s?: number;
+  d?: number;
 }
 
 export type Grade = 'again' | 'hard' | 'good' | 'easy';
@@ -125,6 +128,10 @@ export interface Settings {
   mistakeCards: boolean;
   /** Interface language (content stays in each subject's language). */
   uiLang: 'en' | 'es' | 'zh';
+  /** Spaced-repetition algorithm. */
+  scheduler: 'fsrs' | 'sm2';
+  /** FSRS target probability of recall at review time (0.80–0.97). */
+  retention: number;
 }
 
 export interface AppData {

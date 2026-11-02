@@ -3,7 +3,7 @@ import { useT } from '../i18n';
 import { ReportButton } from '../components/ReportButton';
 import { useStore } from '../store';
 import { buildQueue, matchesFilter, queueCounts, shuffle } from '../lib/queue';
-import { formatInterval, previewIntervals } from '../lib/srs';
+import { formatInterval, previewWith } from '../lib/srs';
 import { topicLabel } from '../data/syllabus';
 import { MathText } from '../components/MathText';
 import { ProgressBar, SubjectChips, SubjectDot, TopicPicker } from '../components/ui';
@@ -108,7 +108,7 @@ function Session({ initialQueue, cram, onExit }: { initialQueue: Card[]; cram: b
   const [tally, setTally] = useState<Record<Grade, number>>({ again: 0, hard: 0, good: 0, easy: 0 });
   const card = queue[idx];
   const done = idx >= queue.length;
-  const intervals = card ? previewIntervals(data.cards[card.id], Date.now()) : null;
+  const intervals = card ? previewWith(data.settings, data.cards[card.id], Date.now()) : null;
 
   const grade = useCallback(
     (g: Grade) => {

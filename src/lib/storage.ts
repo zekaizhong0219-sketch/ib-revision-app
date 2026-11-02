@@ -29,6 +29,8 @@ export function defaultSettings(): Settings {
     hiddenSubjects: [],
     mistakeCards: true,
     uiLang: 'en',
+    scheduler: 'fsrs',
+    retention: 0.9,
   };
 }
 
@@ -75,6 +77,8 @@ function sanitizeCardState(v: unknown): CardState | null {
     due: v.due,
     last: isNum(v.last) ? v.last : 0,
     ...(v.suspended === true ? { suspended: true } : {}),
+    ...(isNum(v.s) && v.s > 0 ? { s: v.s } : {}),
+    ...(isNum(v.d) ? { d: Math.min(10, Math.max(1, v.d)) } : {}),
   };
 }
 
@@ -175,6 +179,8 @@ function sanitizeSettings(v: unknown): Settings {
     hiddenSubjects: hidden.length >= SUBJECT_IDS.length ? [] : hidden,
     mistakeCards: typeof v.mistakeCards === 'boolean' ? v.mistakeCards : d.mistakeCards,
     uiLang: v.uiLang === 'es' || v.uiLang === 'zh' || v.uiLang === 'en' ? v.uiLang : d.uiLang,
+    scheduler: v.scheduler === 'sm2' || v.scheduler === 'fsrs' ? v.scheduler : d.scheduler,
+    retention: isNum(v.retention) ? Math.min(0.97, Math.max(0.8, v.retention)) : d.retention,
   };
 }
 
