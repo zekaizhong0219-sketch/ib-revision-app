@@ -64,5 +64,124 @@ export const PAPER1_SOURCE_TEXT: Record<string, { url: string; text: string }> =
   "chamberlain-1939": {
     "url": "https://api.parliament.uk/historic-hansard/commons/1939/sep/03/prime-ministers-announcement",
     "text": "This is a sad day for all of us, and to none is it sadder than to me. Everything that I have worked for, everything that I have hoped for, everything that I have believed in during my public life, has crashed into ruins. There is only one thing left for me to do; that is, to devote what strength and powers I have to forwarding the victory of the cause for which we have to sacrifice so much. I cannot tell what part I may be allowed to play myself; I trust I may live to see the day when Hitlerism has been destroyed and a liberated Europe has been re-established."
+  },
+  "covenant-art16": {
+    "url": "https://avalon.law.yale.edu/20th_century/leagcov.asp",
+    "text": "Should any Member of the League resort to war in disregard of its covenants under Articles 12, 13 or 15, it shall ipso facto be deemed to have committed an act of war against all other Members of the League, which hereby undertake immediately to subject it to the severance of all trade or financial relations, the prohibition of all intercourse between their nationals and the nationals of the covenant-breaking State, and the prevention of all financial, commercial or personal intercourse between the nationals of the covenant-breaking State and the nationals of any other State, whether a Member of the League or not.\n\nIt shall be the duty of the Council in such case to recommend to the several Governments concerned what effective military, naval or air force the Members of the League shall severally contribute to the armed forces to be used to protect the covenants of the League."
+  },
+  "baldwin-1935": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1935/dec/10/italy-and-abyssinia",
+    "text": "The House is aware that the Committee of Co-ordination at Geneva has approved negotiations by the French and United Kingdom Governments in an attempt to find a basis for the settlement of the Italo-Abyssinian dispute. Such a basis would, of course, have to be submitted for the views of the parties. The Foreign Secretary, in passing through Paris, had conversations on this subject on Saturday and Sunday with M. Laval, and certain proposals, both as to substance and procedure, were discussed between them. No suggested basis has at present been submitted for the views of either Italy or Abyssinia, and it would clearly he premature to make a statement on the subject at present."
+  },
+  "hoare-1935": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1935/dec/19/personal-explanation",
+    "text": "In any case, about a fortnight ago it was clear that a new situation was about to be created by the questionn of the oil embargo. It seemed clear that, supposing an oil embargo were to be imposed and that the non-member States took an effective part in it, the oil embargo might have such an effect upon the hostilities as to force their termination. Just because of the effectiveness of the oil sanction, provided that the non-member States had a full part in it, the situation immediately became more dangerous from the point of view of Italian resistance. From all sides we received reports that no responsible Government could disregard that Italy would regard the oil embargo as a military sanction or an act involving war against her.\n\n[…]\n\nWhat was in our mind was something very different, that an isolated attack of this kind launched upon one Power without it may be—and I shall refer to this subject again in a minute—without it may be the full support of the other Powers, would, it seemed to me, almost inevitably lead to the dissolution of the League."
+  },
+  "attlee-1935": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1935/dec/19/league-of-nations-and-abyssinia",
+    "text": "I beg to move, That the terms put forward by His Majesty's Government as a basis for an Italo-Abyssinian settlement reward the declared aggressor at the expense of the victim, destroy collective security, and conflict with the expressed will of the country and with the Covenant of the League of Nations, to the support of which the honour of Great Britain is pledged; this House, therefore, demands that these terms be immediately repudiated.\n\n[…]\n\nSecondly, there is the honour of this country. You can plead the very great dangers: I admit them. You can plead the overmastering need for peace: We are with you in that. But you have to see too that by your actions you are not deliberately provoking war. The failure in this field was worse than never having entered upon it at all, because you have the brave words of a great experiment, of how this country was standing firm for a new system. If you turn and run away from the aggressor, you kill the League, and you do worse than that, or as bad as that: you kill all faith in the word of honour of this country."
+  },
+  "hull-1937": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d242",
+    "text": "This country constantly and consistently advocates maintenance of peace. We advocate national and international self-restraint. We advocate abstinence by all nations from use of force in pursuit of policy and from interference in the internal affairs of other nations. We advocate adjustment of problems in international relations by processes of peaceful negotiation and agreement. We advocate faithful observance of international agreements."
+  },
+  "quarantine-1937": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d283",
+    "text": "Innocent peoples and nations are being cruelly sacrificed to a greed for power and supremacy which is devoid of all sense of justice and humane consideration.\n\n[…]\n\nIt seems to be unfortunately true that the epidemic of world lawlessness is spreading.\n\nWhen an epidemic of physical disease starts to spread, the community approves and joins in a quarantine of the patients in order to protect the health of the community against the spread of the disease.\n\n[…]\n\nIt is my determination to pursue a policy of peace and to adopt every practicable measure to avoid involvement in war. It ought to be inconceivable that in this modern era, and in the face of experience, any nation could be so foolish and ruthless as to run the risk of plunging the whole world into war by invading and violating in contravention of solemn treaties the territory of other nations that have done them no real harm and which are too weak to protect themselves adequately."
+  },
+  "new-order-1938": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d329",
+    "text": "By the august virtue of His Majesty, our naval and military forces have captured Canton and the three cities of Wuhan; and all the vital areas of China have thus fallen into our hands. The Kuomintang Government exists no longer except as a mere local régime. However, so long as it persists in its anti-Japanese and pro-communist policy our country will not lay down its arms—never until that regime is crushed.\n\nWhat Japan seeks is the establishment of a new order which will insure the permanent stability of East Asia. In this lies the ultimate purpose of our present military campaign.\n\nThis new order has for its foundation a tripartite relationship of mutual aid and co-ordination between Japan, Manchoukuo and China in political, economic, cultural and other fields. Its object is to secure international justice, to perfect the joint defence against Communism, and to create a new culture and realize a close economic cohesion throughout East Asia. This indeed is the way to contribute toward the stabilization of East Asia and the progress of the world."
+  },
+  "us-note-1938": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d617",
+    "text": "This Government is well aware that the situation has changed. This Government is also well aware that many of the changes have been brought about by the action of Japan. This Government does not admit, however, that there is need or warrant for any one Power to take upon itself to prescribe what shall be the terms and conditions of a “new order” in areas not under its sovereignty and to constitute itself the repository of authority and the agent of destiny in regard thereto."
+  },
+  "eden-1936": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1936/mar/09/rhineland-military-occupation",
+    "text": "The Memorandum falls into two parts. In the first part the German Government have developed at considerable length their objections to the Franco-Soviet Pact and the reasons why, in their-view, the intention of the French Government to conclude this pact has created an entirely new situation and destroyed the political system of the Locarno Treaty. The German Government hold that for these reasons the Locarno Treaty has ceased in practice to exist, and that Germany consequently regards herself for her part as no longer bound by this no longer valid Treaty. The Memorandum then announces that the German Government has restored the full and unrestricted sovereignty of Germany in the demilitarised zone of the Rhineland.\n\n[…]\n\nThere is, I am thankful to say, no reason to suppose that the present German action implies a threat of hostilities. The German Government speak in their Memorandum of their \"unchangeable longing for a real pacification of Europe\" and express their willingness to conclude a non-aggression pact with France and Belgium. But in case there should be any misunderstanding about our position as a signatory of the Locarno Treaty, His Majesty's Government think it necessary to say that, should there take place during the period which will be necessary for the consideration of the new situation which has arisen any actual attack upon France or Belgium which would constitute a violation of Article II of Locarno, His Majesty's Government in the United Kingdom, notwithstanding the German repudiation of the Treaty, would regard themselves as in honour bound to come in the manner provided in the Treaty to the assistance of the country attacked."
+  },
+  "neurath-1938": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1938/mar/14/foreign-affairs-austria",
+    "text": "In the name of the German Government, I must state in reply that the British Government is not within its right in claiming the role of a protector of the independence of Austria. In the course of the diplomatic conversations regarding the Austrian question the German Government have never left the British Government in doubt that the form of the relations between the Reich and Austria can only be regarded as an internal affair of the German people which is no concern of third Powers. It is superfluous to recapitulate the historical and political bases of this standpoint. For this reason the German Government must from the outset reject as inadmissible the protest lodged by the British Government, even though only conditional."
+  },
+  "chamberlain-austria-1938": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1938/mar/14/foreign-affairs-austria",
+    "text": "It is quite untrue to suggest that we have ever given Germany our assent or our encouragement to the effective absorption of Austria into the German Reich. We have, indeed, never refused to recognise the special interest that Germany had in the development of relations between Austria and herself, having regard to the close affinities existing between the two countries. But on every occasion on which any representative of His Majesty's Government has had opportunities to discuss these matters with representatives of the German Government, it has always been made plain that His Majesty's Government would strongly disapprove of the application to the solution of these problems of violent methods.\n\n[…]\n\nIn appraising recent events it is necessary to face facts, however we may judge them, however we may anticipate that they will react upon the international position as it exists to-day. The hard fact is—and of its truth every hon. Member can judge for himself—that nothing could have arrested this action by Germany unless we and others with us had been prepared to use force to prevent it."
+  },
+  "churchill-austria-1938": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1938/mar/14/foreign-affairs-austria",
+    "text": "The gravity of the event of 11th March cannot be exaggerated. Europe is confronted with a programme of aggression, nicely calculated and timed, unfolding stage by stage, and there is only one choice open, not only to us, but to other countries who are unfortunately concerned—either to submit, like Austria, or else to take effective measures while time remains to ward off the danger and, if it cannot be warded off, to cope with it.\n\n[…]\n\nIf we were to delay, if we were to go on waiting upon events for a considerable period of time, how much should we throw away of resources which are now available for our security and for the maintenance of peace? How many friends would be alienated, how many potential allies should we see go, one by one, down the grisly gulf, how many times will bluff succeed, until behind bluff ever gathering forces have accumulated reality?"
+  }
+};
+
+export const COLD_WAR_QUOTES: Record<string, { url: string; text: string }> = {
+  "yalta-1945": {
+    "url": "https://avalon.law.yale.edu/wwii/yalta.asp",
+    "text": "to form interim governmental authorities broadly representative of all democratic elements in the population and pledged to the earliest possible establishment through free elections of Governments responsive to the will of the people"
+  },
+  "kennan-insecurity": {
+    "url": "https://history.state.gov/historicaldocuments/frus1946v06/d475",
+    "text": "At bottom of Kremlin’s neurotic view of world affairs is traditional and instinctive Russian sense of insecurity."
+  },
+  "kennan-force": {
+    "url": "https://history.state.gov/historicaldocuments/frus1946v06/d475",
+    "text": "In summary, we have here a political force committed fanatically to the belief that with US there can be no permanent modus vivendi, that it is desirable and necessary that the internal harmony of our society be disrupted, our traditional way of life be destroyed, the international authority of our state be broken, if Soviet power is to be secure."
+  },
+  "truman-doctrine": {
+    "url": "https://avalon.law.yale.edu/20th_century/trudoc.asp",
+    "text": "At the present moment in world history nearly every nation must choose between alternative ways of life. The choice is too often not a free one. […] I believe that it must be the policy of the United States to support free peoples who are resisting attempted subjugation by armed minorities or by outside pressures."
+  },
+  "truman-misery": {
+    "url": "https://avalon.law.yale.edu/20th_century/trudoc.asp",
+    "text": "The seeds of totalitarian regimes are nurtured by misery and want. They spread and grow in the evil soil of poverty and strife. They reach their full growth when the hope of a people for a better life has died."
+  },
+  "nato-art5": {
+    "url": "https://avalon.law.yale.edu/20th_century/nato.asp",
+    "text": "The Parties agree that an armed attack against one or more of them in Europe or North America shall be considered an attack against them all"
+  },
+  "nsc68-faith": {
+    "url": "https://history.state.gov/historicaldocuments/frus1950v01/d85",
+    "text": "Second, the Soviet Union, unlike previous aspirants to hegemony, is animated by a new fanatic faith, antithetical to our own, and seeks to impose its absolute authority over the rest of the world."
+  },
+  "nsc68-design": {
+    "url": "https://history.state.gov/historicaldocuments/frus1950v01/d85",
+    "text": "The fundamental design of those who control the Soviet Union and the international communist movement is to retain and solidify their absolute power, first in the Soviet Union and second in the areas now under their control."
+  },
+  "warsaw-art4": {
+    "url": "https://avalon.law.yale.edu/20th_century/warsaw.asp",
+    "text": "In the event of armed attack in Europe on one or more of the Parties to the Treaty by any state or group of states, each of the Parties to the Treaty, in the exercise of its right to individual or collective self-defence in accordance with Article 51 of the Charter of the United Nations Organization, shall immediately, either individually or in agreement with other Parties to the Treaty, come to the assistance of the state or states attacked with all such means as it deems necessary, including armed force."
+  },
+  "jfk-missiles": {
+    "url": "https://www.presidency.ucsb.edu/documents/radio-and-television-report-the-american-people-the-soviet-arms-buildup-cuba",
+    "text": "Within the past week, unmistakable evidence has established the fact that a series of offensive missile sites is now in preparation on that imprisoned island. The purpose of these bases can be none other than to provide a nuclear strike capability against the Western Hemisphere."
+  },
+  "jfk-quarantine": {
+    "url": "https://www.presidency.ucsb.edu/documents/radio-and-television-report-the-american-people-the-soviet-arms-buildup-cuba",
+    "text": "To halt this offensive buildup, a strict quarantine on all offensive military equipment under shipment to Cuba is being initiated. All ships of any kind bound for Cuba from whatever nation or port will, if found to contain cargoes of offensive weapons, be turned back."
+  },
+  "khrushchev-knot": {
+    "url": "https://history.state.gov/historicaldocuments/frus1961-63v06/d65",
+    "text": "we and you ought not now to pull on the ends of the rope in which you have tied the knot of war, because the more the two of us pull, the tighter that knot will be tied."
+  },
+  "khrushchev-offer": {
+    "url": "https://history.state.gov/historicaldocuments/frus1961-63v06/d65",
+    "text": "We, for our part, will declare that our ships, bound for Cuba, will not carry any kind of armaments. You would declare that the United States will not invade Cuba with its forces and will not support any sort of forces which might intend to carry out an invasion of Cuba. Then the necessity for the presence of our military specialists in Cuba would disappear."
+  },
+  "jfk-berlin": {
+    "url": "https://www.presidency.ucsb.edu/documents/remarks-the-rudolph-wilde-platz-berlin",
+    "text": "There are some who say that communism is the wave of the future. Let them come to Berlin. […] Freedom has many difficulties and democracy is not perfect, but we have never had to put a wall up to keep our people in, to prevent them from leaving us."
+  },
+  "basic-principles-1972": {
+    "url": "https://www.presidency.ucsb.edu/documents/text-the-basic-principles-relations-between-the-united-states-america-and-the-union-soviet",
+    "text": "They will proceed from the common determination that in the nuclear age there is no alternative to conducting their mutual relations on the basis of peaceful coexistence."
+  },
+  "reagan-evil-empire": {
+    "url": "https://www.presidency.ucsb.edu/documents/remarks-the-annual-convention-the-national-association-evangelicals-orlando-florida",
+    "text": "label both sides equally at fault, to ignore the facts of history and the aggressive impulses of an evil empire, to simply call the arms race a giant misunderstanding and thereby remove yourself from the struggle between right and wrong and good and evil."
+  },
+  "reagan-wall": {
+    "url": "https://www.presidency.ucsb.edu/documents/remarks-east-west-relations-the-brandenburg-gate-west-berlin",
+    "text": "General Secretary Gorbachev, if you seek peace, if you seek prosperity for the Soviet Union and Eastern Europe, if you seek liberalization: Come here to this gate! Mr. Gorbachev, open this gate! Mr. Gorbachev, tear down this wall!"
   }
 };

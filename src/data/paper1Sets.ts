@@ -355,5 +355,252 @@ export const BUILTIN_SOURCE_SETS: (Omit<SourceSet, 'attempts'> & { builtin: true
         ],
       },
     ],
+  },  {
+    id: 'p1b-abyssinia',
+    builtin: true,
+    title: 'Abyssinia, the League and the Hoare–Laval Plan (1935)',
+    topic: 'PS3.EU',
+    t: 0,
+    sources: [
+      src(
+        'covenant-art16',
+        'Covenant of the League of Nations, Article 16, paragraphs 1 and 2 (agreed in 1919 as part of the peace treaties; text as amended, 1924). The Avalon Project, Yale Law School.',
+      ),
+      src(
+        'attlee-1935',
+        'Clement Attlee, Leader of the Labour Opposition, moving a censure motion in the House of Commons, 19 December 1935. Hansard, HC Deb vol. 307. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.',
+      ),
+      src(
+        'hoare-1935',
+        'Sir Samuel Hoare, statement to the House of Commons on 19 December 1935, the day after he resigned as Foreign Secretary over the Hoare–Laval proposals. Hansard, HC Deb vol. 307. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.',
+      ),
+      src(
+        'baldwin-1935',
+        'Stanley Baldwin, British Prime Minister, answer in the House of Commons, 10 December 1935, two days after Sir Samuel Hoare\'s talks in Paris with the French Prime Minister, Pierre Laval. Hansard, HC Deb vol. 307. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.',
+      ),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, what were members of the League obliged to do if another member resorted to war in disregard of the Covenant?',
+        scheme: [
+          'Treat the war as an act of war against all members of the League.',
+          'Immediately cut all trade and financial relations with the covenant-breaking state.',
+          'Prohibit all contact between their nationals and those of that state, and prevent its nationals\' dealings with any other state.',
+          'Contribute armed forces recommended by the Council to protect the Covenant.',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source D?',
+        scheme: [
+          'The Anglo-French negotiations were approved by the League\'s Committee of Co-ordination, so the government presents itself as acting within the League.',
+          'No proposals have yet been put to Italy or Abyssinia, so it is too early to disclose them: Baldwin avoids revealing the terms.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt:
+          'Referring to its origin, purpose and content, assess the value and limitations of Source C for a historian studying the reasons for the Hoare–Laval proposals.',
+        scheme: [
+          'Value (origin): the Foreign Secretary who negotiated the proposals, speaking within days, so he had first-hand knowledge of the government\'s reasoning.',
+          'Value (content): explains the fear that an oil embargo would be treated by Italy as an act of war, and that an isolated war without other powers would dissolve the League.',
+          'Limitation (purpose): a resignation statement to justify himself after a public outcry; he stresses the danger to the League rather than British and French interests.',
+          'Limitation (content): omits France\'s wish to keep Italy as a partner against Germany (Stresa Front, April 1935) and the weakness of British forces in the Mediterranean.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast what Sources C and D reveal about British policy towards the Italo-Abyssinian war in December 1935.',
+        scheme: [
+          'Similarity: both present the government as working through the League (D: approved by the Committee of Co-ordination; C: the "collective front" at Geneva).',
+          'Similarity: both indicate that a negotiated settlement was being sought alongside sanctions.',
+          'Difference: D says no basis has been submitted and gives no details; C openly explains the reasons and the danger of war.',
+          'Difference: D is a brief, neutral procedural answer; C is a personal defence after the plan had failed.',
+          'Difference: C admits the fear that an oil embargo meant war with Italy; D does not mention sanctions or risks at all.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine the reasons why the League of Nations failed to stop Italian aggression against Abyssinia (1935–1936).',
+        scheme: [
+          'Sources: A shows what collective security required; C and D show Britain and France negotiating behind the League\'s sanctions; C shows fear of war with Italy; B shows the outrage at rewarding the aggressor.',
+          'Own knowledge: the Walwal incident (December 1934); the Stresa Front (April 1935) and Britain and France\'s wish to keep Italy against Germany; the Anglo-German Naval Agreement (June 1935).',
+          'Sanctions (October–November 1935) were limited: no oil, coal or steel embargo; the Suez Canal stayed open; the US was not a member.',
+          'The Hoare–Laval Plan was leaked and abandoned; Italy used poison gas; Addis Ababa fell (May 1936); sanctions were lifted (July 1936); Germany remilitarised the Rhineland during the crisis (March 1936).',
+          'Weighing: the structural weakness of collective security versus the choices of Britain and France.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'p1b-new-order',
+    builtin: true,
+    title: 'The Sino-Japanese War and the "New Order" (1937–1938)',
+    topic: 'PS3.JP',
+    t: 0,
+    sources: [
+      src(
+        'hull-1937',
+        `Cordell Hull, US Secretary of State, statement of the principles of US foreign policy, issued as a press release on 16 July 1937, nine days after the Marco Polo Bridge Incident. Published in ${FRUS1}.`,
+      ),
+      src(
+        'quarantine-1937',
+        `Franklin D. Roosevelt, US President, address delivered in Chicago, 5 October 1937 (the "Quarantine Speech"). Published in ${FRUS1}.`,
+      ),
+      src(
+        'new-order-1938',
+        `Statement by the Japanese government (Prime Minister Konoe Fumimaro), 3 November 1938, after the capture of Canton and Wuhan (English translation). Published in ${FRUS1}.`,
+      ),
+      src(
+        'us-note-1938',
+        `Note from Joseph C. Grew, US Ambassador in Japan, to the Japanese Foreign Minister, Arita Hachirō, on the instructions of the US government, Tokyo, 30 December 1938. Published in ${FRUS1}.`,
+      ),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, what principles did the United States advocate in international relations?',
+        scheme: [
+          'Maintenance of peace and national and international self-restraint.',
+          'No use of force in pursuit of policy and no interference in the internal affairs of other nations.',
+          'Settling problems by peaceful negotiation and agreement.',
+          'Faithful observance of international agreements.',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source B?',
+        scheme: [
+          'Lawlessness by aggressor nations is spreading like an epidemic and threatens the peace and security of every nation, including the US.',
+          'Peace-loving nations should isolate ("quarantine") aggressors, as a community does with disease, though the US remains committed to peace.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt: 'Referring to its origin, purpose and content, assess the value and limitations of Source C for a historian studying Japanese aims in China.',
+        scheme: [
+          'Value (origin): an official statement of the Japanese government at the height of its military success (Canton and Wuhan captured).',
+          'Value (content): states the aim explicitly: a "new order" of Japan, Manchukuo and China, joint defence against communism and economic cohesion; the Kuomintang must be crushed unless it changes.',
+          'Limitation (purpose): a public statement aimed at Chinese and foreign audiences, so it presents domination as cooperation and stability.',
+          'Limitation (content): says nothing of the brutality of the war (e.g. Nanjing, December 1937) or of disagreements between the army and the government; a translation.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast what Sources C and D reveal about the "new order" in East Asia.',
+        scheme: [
+          'Similarity: both agree that the situation in East Asia has changed because of Japanese action.',
+          'Similarity: both use the term "new order" and concern authority over China.',
+          'Difference: C presents the new order as cooperation for stability, justice and progress; D sees it as one power arbitrarily imposing terms on areas outside its sovereignty.',
+          'Difference: C claims a leading role for Japan in East Asia; D denies any power the right to be "the agent of destiny" there.',
+          'Difference: C dismisses the Kuomintang as a "local régime"; D implies that treaty rights and the existing order remain valid.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine the international response to Japanese expansion in China in 1937–1938.',
+        scheme: [
+          'Sources: A and B show US statements of principle; B hints at collective action but proposes no measures; D rejects the "new order" diplomatically but threatens nothing.',
+          'Own knowledge: the Marco Polo Bridge Incident (July 1937) and full-scale war; the League condemned Japan (October 1937) but imposed no sanctions; the Brussels Conference (November 1937) failed.',
+          'US isolationism and the Neutrality Acts; hostile reaction to the Quarantine Speech; the Panay incident (December 1937) was settled by apology and compensation.',
+          'Britain and France were preoccupied with Germany and Italy; Soviet aid to China and border clashes with Japan (Lake Khasan, 1938); first US loans to China (December 1938).',
+          'Weighing: verbal condemnation without economic or military pressure, which encouraged Japan until 1940–1941.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'p1b-rhineland-anschluss',
+    builtin: true,
+    title: 'The Rhineland and the Anschluss (1936–1938)',
+    topic: 'PS3.EU',
+    t: 0,
+    sources: [
+      src(
+        'eden-1936',
+        'Anthony Eden, British Foreign Secretary, statement to the House of Commons, 9 March 1936, two days after German troops entered the demilitarised Rhineland. Hansard, HC Deb vol. 309. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.',
+      ),
+      src(
+        'neurath-1938',
+        'Letter from Baron Konstantin von Neurath, on behalf of the German government, to the British Ambassador in Berlin, replying to the British protest of 11 March 1938; read out by Neville Chamberlain in the House of Commons, 14 March 1938. Hansard, HC Deb vol. 333. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.',
+      ),
+      src(
+        'chamberlain-austria-1938',
+        'Neville Chamberlain, British Prime Minister, statement to the House of Commons on the German annexation of Austria, 14 March 1938. Hansard, HC Deb vol. 333. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.',
+      ),
+      src(
+        'churchill-austria-1938',
+        'Winston Churchill, Conservative MP (not then a minister), speech in the House of Commons, 14 March 1938. Hansard, HC Deb vol. 333. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.',
+      ),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, what did the German memorandum of 7 March 1936 state?',
+        scheme: [
+          'The Franco-Soviet Pact had created a new situation and destroyed the political system of the Locarno Treaty.',
+          'Locarno had therefore ceased to exist and Germany was no longer bound by it.',
+          'Germany had restored full sovereignty in the demilitarised zone of the Rhineland.',
+          'Germany expressed a "longing" for the pacification of Europe and offered non-aggression pacts to France and Belgium.',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source B?',
+        scheme: [
+          'Relations between Germany and Austria are an internal affair of the German people, of no concern to other powers.',
+          'Britain has no right to act as Austria\'s protector, so its protest is rejected as inadmissible.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt: 'Referring to its origin, purpose and content, assess the value and limitations of Source C for a historian studying British reactions to the Anschluss.',
+        scheme: [
+          'Value (origin): the Prime Minister\'s official statement to Parliament three days after German troops entered Austria, so it gives the government\'s authoritative position.',
+          'Value (content): shows that Britain denied encouraging the Anschluss, disapproved of "violent methods" and accepted that only force could have stopped it.',
+          'Limitation (purpose): a public defence of government policy against the charge of having encouraged Germany (e.g. Halifax\'s visit, November 1937); it may hide private views.',
+          'Limitation (content): does not reveal Cabinet discussions or what Britain was prepared to do next, e.g. over Czechoslovakia.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast what Sources C and D reveal about the significance of the Anschluss.',
+        scheme: [
+          'Similarity: both see the event as serious (C: insecurity and effects "which cannot yet be measured"; D: its gravity "cannot be exaggerated").',
+          'Similarity: both imply that only force or "effective measures" could stop German action.',
+          'Similarity: both are concerned with the future peace of Europe.',
+          'Difference: C treats it as a regrettable event that has happened, stressing Britain\'s innocence; D sees it as one stage in a calculated "programme of aggression".',
+          'Difference: C stresses that Britain disapproved of violent methods; D demands resistance now, before allies are lost.',
+          'Difference: C links it to economic recovery and appeasement; D warns that bluff will keep succeeding if Britain waits.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine the reasons why Germany was able to remilitarise the Rhineland (1936) and achieve the Anschluss (1938) without war.',
+        scheme: [
+          'Sources: A shows Britain\'s limited response in 1936; B shows German refusal of foreign interference; C admits only force could have stopped the Anschluss; D criticises the lack of resistance.',
+          'Rhineland: a breach of Versailles and Locarno; France, in an election period and with a defensive (Maginot) strategy, would not act without Britain; many in Britain saw it as Germany entering its "own back garden"; the Abyssinian crisis divided the powers.',
+          'Anschluss: the Berchtesgaden meeting (February 1938), Schuschnigg\'s plebiscite and the German ultimatum; German troops entered on 12 March; Mussolini now accepted it (Rome–Berlin Axis, unlike 1934); France was in a government crisis; Britain had no commitment to Austria.',
+          'The April 1938 plebiscite (over 99 % "yes") and support for union within Austria.',
+          'Weighing: Hitler\'s opportunism and willingness to gamble versus the weakness and division of Britain, France and Italy.',
+        ],
+      },
+    ],
   },
 ];

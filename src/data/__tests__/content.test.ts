@@ -230,3 +230,18 @@ describe('built-in History Paper 1 sets (real sources)', () => {
     }
   });
 });
+
+describe('Cold War source-quote cards', () => {
+  it('quotes every generated Cold War excerpt verbatim, with origin and usage notes', async () => {
+    const { COLD_WAR_QUOTES } = await import('../paper1Sources.generated');
+    const quoteCards = ALL_CARDS.filter((c) => c.kind === 'quote' && c.front.startsWith('**Source quote**'));
+    expect(quoteCards.length).toBeGreaterThanOrEqual(15);
+    expect(new Set(quoteCards.map((c) => c.topic))).toEqual(new Set(['W12.RMA', 'W12.CR', 'W12.END']));
+    for (const [key, q] of Object.entries(COLD_WAR_QUOTES)) {
+      expect(quoteCards.some((c) => c.back.includes(q.text)), key).toBe(true);
+      expect(q.url).toMatch(/^https:\/\/(history\.state\.gov|avalon\.law\.yale\.edu|www\.presidency\.ucsb\.edu)\//);
+      expect(q.text.split(/\s+/).length, key).toBeLessThanOrEqual(100);
+    }
+    for (const c of quoteCards) expect(c.back).toMatch(/\*\*Use it:\*\* .{40,}/);
+  });
+});
