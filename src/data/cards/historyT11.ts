@@ -22,7 +22,7 @@ export const historyT11Source = String.raw`
 [y] Bosnian Crisis :: 1908 — Austria-Hungary annexed Bosnia-Herzegovina, angering Serbia and Russia.
 [y] Balkan Wars :: 1912–1913 — the Balkan League defeated the Ottoman Empire, then fought over the spoils; Serbia emerged stronger, alarming Austria-Hungary.
 [y] Assassination of Archduke Franz Ferdinand :: 28 June 1914 in Sarajevo, by Gavrilo Princip, a Bosnian Serb linked to the Black Hand.
-[y] July Crisis — key steps :: Germany's "blank cheque" to Austria-Hungary (5–6 July); Austrian ultimatum to Serbia (23 July); Austria declares war on Serbia (28 July); Russian mobilisation; Germany declares war on Russia (1 Aug) and France (3 Aug); invades Belgium; Britain declares war (4 Aug).
+[y] July Crisis (1914) — key steps :: Germany's "blank cheque" to Austria-Hungary (5–6 July); Austrian ultimatum to Serbia (23 July); Austria declares war on Serbia (28 July); Russian mobilisation; Germany declares war on Russia (1 Aug) and France (3 Aug); invades Belgium; Britain declares war (4 Aug).
 [d] Schlieffen Plan :: German plan to defeat France quickly by sweeping through Belgium, then turn east against Russia; it required rapid mobilisation and brought Britain into the war.
 [k] Why did Britain enter the war in August 1914? :: German violation of Belgian neutrality (guaranteed by the 1839 Treaty of London), commitments to France under the Entente, and fear of German domination of the continent.
 [k] Fischer thesis :: Fritz Fischer (1961) argued Germany had expansionist war aims and bore primary responsibility for the war — challenging the view that all powers "slithered" into war.

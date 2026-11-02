@@ -51,7 +51,7 @@ export const spanishToolsSource = String.raw`
 [f] Silva :: Combinación libre de endecasílabos y heptasílabos con rima consonante libre (algunos versos pueden quedar sueltos).
 [d] Verso libre y verso blanco :: Verso libre: sin medida ni rima regulares. Verso blanco (suelto): con medida pero sin rima.
 [d] Encabalgamiento :: La unidad sintáctica no termina al final del verso y continúa en el siguiente; crea tensión o realza la palabra desplazada.
-[d] Tipos de narrador :: Omnisciente (tercera persona, lo sabe todo); equisciente o testigo (sabe lo mismo que un personaje u observa desde fuera); protagonista (primera persona); objetivo (cuenta solo lo observable, como una cámara).
+[d] Tipos de narrador :: Omnisciente (tercera persona, lo sabe todo, incluso lo que piensan los personajes); equisciente (tercera persona, sabe lo mismo que un personaje); protagonista (primera persona, cuenta su propia historia); testigo (primera persona, personaje secundario que relata lo que observa); objetivo (tercera persona, cuenta solo lo observable, como una cámara).
 [d] Estilo directo, indirecto e indirecto libre :: Directo: se reproducen literalmente las palabras del personaje. Indirecto: el narrador las refiere con nexo subordinante («dijo que…»). Indirecto libre: el narrador reproduce los pensamientos del personaje sin verbo introductorio, mezclando ambas voces.
 [d] Monólogo interior :: Técnica que reproduce el flujo de pensamiento de un personaje, a menudo desordenado y sin marcas del narrador.
 [d] Analepsis y prolepsis :: Analepsis (flashback): salto atrás en el tiempo del relato. Prolepsis: anticipación de hechos futuros.
