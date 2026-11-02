@@ -3,6 +3,7 @@ import katex from 'katex';
 import 'katex/contrib/mhchem';
 import { ALL_CARDS } from '../cards';
 import { SUBJECTS } from '../syllabus';
+import { toHtml } from '../../lib/markup';
 
 function mathSegments(raw: string): string[] {
   const text = raw.replace(/\\\$/g, '');
@@ -166,6 +167,31 @@ describe('listening items', () => {
         const v = p.numeric.value;
         expect(text.includes(String(v)) || (words[v] !== undefined && text.includes(words[v])), `${l.title} (${p.label}) ${v}`).toBe(true);
       }
+    }
+  });
+});
+
+describe('exam-style formats (Paper 1B, Paper 3)', () => {
+  const styled = ALL_QUESTIONS.filter((q) => q.type === 'structured' && q.style);
+  it('has data-based questions for both sciences and Paper 3 investigations for math only', () => {
+    const count = (s: string, st: string) => styled.filter((q) => q.subject === s && q.type === 'structured' && q.style === st).length;
+    expect(count('physics', 'P1B')).toBeGreaterThanOrEqual(4);
+    expect(count('chemistry', 'P1B')).toBeGreaterThanOrEqual(4);
+    expect(count('math', 'P3')).toBeGreaterThanOrEqual(5);
+    expect(styled.every((q) => (q.subject === 'math') === (q.type === 'structured' && q.style === 'P3'))).toBe(true);
+  });
+  it('gives every data-based question a rendered data table', () => {
+    for (const q of styled.filter((x) => x.type === 'structured' && x.style === 'P1B')) {
+      expect(toHtml(q.prompt), q.id).toMatch(/<table class="data"><thead>/);
+    }
+  });
+  it('makes Paper 3 investigations long, multi-step and partly auto-marked', () => {
+    for (const q of styled.filter((x) => x.type === 'structured' && x.style === 'P3')) {
+      if (q.type !== 'structured') continue;
+      const marks = q.parts.reduce((s, p) => s + p.marks, 0);
+      expect(marks, q.id).toBeGreaterThanOrEqual(18);
+      expect(q.parts.length, q.id).toBeGreaterThanOrEqual(6);
+      expect(q.parts.filter((p) => p.numeric).length, q.id).toBeGreaterThanOrEqual(3);
     }
   });
 });

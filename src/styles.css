@@ -314,3 +314,8 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 
 .exemplar { line-height: 1.7; }
 .exemplar-para { margin-bottom: 0.9rem; }
+
+.table-wrap { overflow-x: auto; margin: 0.5rem 0; }
+table.data { border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+table.data th, table.data td { border: 1px solid var(--border); padding: 0.3rem 0.6rem; text-align: center; white-space: nowrap; }
+table.data th { background: var(--surface-2); font-weight: 600; }

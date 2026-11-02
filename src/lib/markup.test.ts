@@ -26,4 +26,20 @@ describe('toHtml', () => {
   it('does not throw on invalid TeX', () => {
     expect(() => toHtml('$\\frac{$')).not.toThrow();
   });
+  it('renders pipe tables with a header row and math in cells', () => {
+    const html = toHtml('Data:\n| $t$ / s | $x$ / m |\n|---|---|\n| 0 | 1.5 |\n| 2 | **3** |\nThen answer.');
+    expect(html).toMatch(/^Data:<div class="table-wrap"><table class="data"><thead><tr><th><span class="katex">/);
+    expect(html).toContain('<td>1.5</td>');
+    expect(html).toContain('<td><strong>3</strong></td>');
+    expect(html.match(/<tr>/g)).toHaveLength(3);
+    expect(html).toMatch(/<\/table><\/div>Then answer\.$/);
+  });
+  it('leaves a single pipe line and absolute values alone', () => {
+    expect(toHtml('|x| is the modulus')).not.toContain('<table');
+    expect(toHtml('| a |')).not.toContain('<table');
+    expect(toHtml('$|z| = 3$')).not.toContain('<table');
+  });
+  it('escapes HTML inside table cells', () => {
+    expect(toHtml('| <b> | x |\n| 1 | 2 |')).toContain('&lt;b&gt;');
+  });
 });

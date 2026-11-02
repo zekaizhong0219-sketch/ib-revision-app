@@ -259,9 +259,13 @@ export interface StructuredPart {
 }
 
 /** Multi-part exam-style question with marks per part. */
+/** Exam format a structured question imitates: Paper 1B (data-based, sciences) or Paper 3 (Math AA HL investigation). */
+export type QuestionStyle = 'P1B' | 'P3';
+
 export interface StructuredQuestion extends QuestionBase {
   type: 'structured';
   parts: StructuredPart[];
+  style?: QuestionStyle;
 }
 
 export type Question = MCQuestion | NumericQuestion | OpenQuestion | TextQuestion | OrderQuestion | MatchQuestion | StructuredQuestion;

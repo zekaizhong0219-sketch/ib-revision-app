@@ -1,4 +1,4 @@
-import type { Question, SubjectId } from '../types';
+import type { Question, QuestionStyle, SubjectId } from '../types';
 import { checkMC, checkNumeric, checkText, scoreMatch, scoreOrder } from './answer';
 import { shuffle } from './queue';
 
@@ -43,9 +43,32 @@ export const MINUTES_PER_MARK = 1.3;
  * exist, about 60 % of the marks come from them (Paper 2 style), the rest from short items.
  * Questions are spread across topics by round-robin over shuffled topics.
  */
-export function buildMock(bank: Question[], subject: SubjectId, minutes: number, seed = Date.now(), topics?: string[]): MockItem[] {
+export function buildMock(
+  bank: Question[],
+  subject: SubjectId,
+  minutes: number,
+  seed = Date.now(),
+  topics?: string[],
+  style?: QuestionStyle,
+): MockItem[] {
   const target = Math.max(5, Math.round(minutes / MINUTES_PER_MARK));
-  const pool = bank.filter((q) => q.subject === subject && (!topics?.length || topics.includes(q.topic)));
+  const inTopics = (q: Question) => q.subject === subject && (!topics?.length || topics.includes(q.topic));
+  if (style) {
+    // A paper made only of one exam style (Paper 3 investigations or Paper 1B data-based questions).
+    const styled = spread(bank.filter((q) => inTopics(q) && q.type === 'structured' && q.style === style), seed);
+    const items: MockItem[] = [];
+    let marks = 0;
+    for (const q of styled) {
+      const m = itemMax(q);
+      if (items.length && marks + m > target * 1.15) continue;
+      items.push({ q, max: m });
+      marks += m;
+      if (marks >= target * 0.85) break;
+    }
+    return items;
+  }
+  // Paper 3 investigations are far longer than a mixed paper allows; they have their own mode.
+  const pool = bank.filter((q) => inTopics(q) && !(q.type === 'structured' && q.style === 'P3'));
   const structured = spread(pool.filter((q) => q.type === 'structured'), seed);
   const short = spread(pool.filter((q) => q.type !== 'structured'), seed + 1);
   const items: MockItem[] = [];

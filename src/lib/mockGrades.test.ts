@@ -65,6 +65,17 @@ describe('buildMock', () => {
     const only = buildMock(ALL_QUESTIONS, 'history', 30, 1, ['W12.CR']);
     expect(only.every((i) => i.q.topic === 'W12.CR')).toBe(true);
   });
+  it('keeps Paper 3 investigations out of mixed papers and builds style-only papers', () => {
+    for (let seed = 0; seed < 20; seed++) {
+      expect(buildMock(ALL_QUESTIONS, 'math', 90, seed).some((i) => i.q.type === 'structured' && i.q.style === 'P3')).toBe(false);
+    }
+    const p3 = buildMock(ALL_QUESTIONS, 'math', 60, 3, undefined, 'P3');
+    expect(p3.length).toBeGreaterThanOrEqual(2);
+    expect(p3.every((i) => i.q.type === 'structured' && i.q.style === 'P3')).toBe(true);
+    const p1b = buildMock(ALL_QUESTIONS, 'chemistry', 30, 3, undefined, 'P1B');
+    expect(p1b.length).toBeGreaterThanOrEqual(2);
+    expect(p1b.every((i) => i.q.type === 'structured' && i.q.style === 'P1B')).toBe(true);
+  });
 });
 
 describe('grades', () => {
