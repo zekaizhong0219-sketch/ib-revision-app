@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-export type RoutePath = '/' | '/review' | '/practice' | '/cards' | '/exams' | '/settings';
-export const ROUTES: RoutePath[] = ['/', '/review', '/practice', '/cards', '/exams', '/settings'];
+export type RoutePath = '/' | '/review' | '/practice' | '/writing' | '/cards' | '/exams' | '/settings';
+export const ROUTES: RoutePath[] = ['/', '/review', '/practice', '/writing', '/cards', '/exams', '/settings'];
 
 export interface Route {
   path: RoutePath;

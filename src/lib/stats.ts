@@ -1,5 +1,6 @@
 import type { AppData, Card, Exam, Grade, PracticeResult, SubjectId } from '../types';
 import { DAY_MS, isDue, isMature } from './srs';
+import { getRubric, rubricMax } from '../data/rubrics';
 
 /** Local-time calendar day key, e.g. "2026-11-02". */
 export function dayKey(t: number): string {
@@ -19,10 +20,11 @@ export const GRADE_SCORE: Record<Grade, number> = { again: 0, hard: 0.5, good: 1
 export const RESULT_SCORE: Record<PracticeResult, number> = { incorrect: 0, partial: 0.5, correct: 1 };
 
 /** Set of day keys with any study activity. */
-export function activeDays(data: Pick<AppData, 'reviews' | 'practice'>): Set<string> {
+export function activeDays(data: Pick<AppData, 'reviews' | 'practice'> & { essays?: AppData['essays'] }): Set<string> {
   const days = new Set<string>();
   for (const r of data.reviews) days.add(dayKey(r.t));
   for (const p of data.practice) days.add(dayKey(p.t));
+  for (const e of data.essays ?? []) if (e.done) days.add(dayKey(e.t));
   return days;
 }
 
@@ -30,7 +32,7 @@ export function activeDays(data: Pick<AppData, 'reviews' | 'practice'>): Set<str
  * Current streak in days. Counts back from today; if nothing has been done today yet,
  * the streak is still alive if yesterday was active.
  */
-export function currentStreak(data: Pick<AppData, 'reviews' | 'practice'>, now: number): number {
+export function currentStreak(data: Pick<AppData, 'reviews' | 'practice'> & { essays?: AppData['essays'] }, now: number): number {
   const days = activeDays(data);
   let cursor = startOfDay(now);
   if (!days.has(dayKey(cursor))) cursor -= DAY_MS;
@@ -44,7 +46,7 @@ export function currentStreak(data: Pick<AppData, 'reviews' | 'practice'>, now: 
   return streak;
 }
 
-export function longestStreak(data: Pick<AppData, 'reviews' | 'practice'>): number {
+export function longestStreak(data: Pick<AppData, 'reviews' | 'practice'> & { essays?: AppData['essays'] }): number {
   const keys = [...activeDays(data)].sort();
   let best = 0;
   let run = 0;
@@ -110,6 +112,18 @@ export function topicStats(data: AppData, cards: Card[], now: number, windowDays
       v.attempts += 2;
     }
   }
+  for (const e of data.essays ?? []) {
+    if (!e.done) continue;
+    const pct = essayPercent(e);
+    if (pct === null) continue;
+    const v = get(e.subject, e.topic);
+    v.practiceAttempts++;
+    if (e.t >= since) {
+      // Self-assessed essays count once: valuable, but self-marking is less reliable.
+      v.scoreSum += pct;
+      v.attempts += 1;
+    }
+  }
   const out = new Map<string, TopicStats>();
   for (const [k, v] of map) {
     const { scoreSum, attempts, ...rest } = v;
@@ -122,6 +136,7 @@ export function topicStats(data: AppData, cards: Card[], now: number, windowDays
 export function daysToExam(exams: Exam[], subject: SubjectId | null, now: number): number | null {
   let best: number | null = null;
   for (const e of exams) {
+    if (e.kind === 'deadline') continue;
     if (subject && e.subject && e.subject !== subject) continue;
     const t = new Date(e.date).getTime();
     if (!Number.isFinite(t) || t < now) continue;
@@ -207,4 +222,14 @@ export function dueForecast(data: AppData, cards: Card[], now: number, n = 14): 
     if (i < n) out[i]++;
   }
   return out;
+}
+
+/** Self-assessed essay score as a fraction 0..1, or null if the rubric is unknown or unscored. */
+export function essayPercent(e: Pick<AppData['essays'][number], 'rubric' | 'scores'>): number | null {
+  const r = getRubric(e.rubric);
+  if (!r) return null;
+  const max = rubricMax(r);
+  if (!max || !Object.keys(e.scores).length) return null;
+  const got = r.criteria.reduce((s, c) => s + Math.min(c.max, Math.max(0, e.scores[c.id] ?? 0)), 0);
+  return got / max;
 }

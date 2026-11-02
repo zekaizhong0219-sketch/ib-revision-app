@@ -22,6 +22,7 @@ export function defaultSettings(): Settings {
   return {
     theme: 'system',
     newPerDay: 20,
+    dailyMinutes: 60,
     maxReviewsPerSession: 100,
     exams: defaultExams(),
     enabledSubjects: [...SUBJECT_IDS],
@@ -138,6 +139,7 @@ function sanitizeSettings(v: unknown): Settings {
   return {
     theme,
     newPerDay: isNum(v.newPerDay) ? Math.min(500, Math.max(0, Math.floor(v.newPerDay))) : d.newPerDay,
+    dailyMinutes: isNum(v.dailyMinutes) ? Math.min(600, Math.max(10, Math.round(v.dailyMinutes))) : d.dailyMinutes,
     maxReviewsPerSession: isNum(v.maxReviewsPerSession)
       ? Math.min(1000, Math.max(5, Math.floor(v.maxReviewsPerSession)))
       : d.maxReviewsPerSession,

@@ -110,6 +110,8 @@ export type ThemePref = 'system' | 'light' | 'dark';
 export interface Settings {
   theme: ThemePref;
   newPerDay: number;
+  /** Daily study-time budget used by the planner (minutes). */
+  dailyMinutes: number;
   maxReviewsPerSession: number;
   exams: Exam[];
   /** Subjects that appear in review queues / recommendations. */

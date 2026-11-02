@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useStore } from '../store';
 import { defaultData, exportData, importData, mergeData } from '../lib/storage';
 import { SubjectChips } from '../components/ui';
+import { SUBJECT_IDS } from '../data/subjectIds';
 import { ALL_CARDS } from '../data/cards';
 import { ALL_QUESTIONS } from '../data/questions';
 import { SHORTCUTS } from '../components/Shortcuts';
@@ -63,7 +64,16 @@ export default function Settings() {
       <section className="card stack">
         <h2>Study</h2>
         <div>
-          <h3>Subjects in reviews & recommendations</h3>
+          <h3>My subjects</h3>
+          <p className="small muted">Subjects you don't take can be hidden everywhere. Your progress in them is kept.</p>
+          <SubjectChips
+            all
+            value={SUBJECT_IDS.filter((id) => !s.hiddenSubjects.includes(id))}
+            onChange={(shown) => updateSettings({ hiddenSubjects: SUBJECT_IDS.filter((id) => !shown.includes(id)) })}
+          />
+        </div>
+        <div>
+          <h3>Included in reviews, recommendations and the daily plan</h3>
           <SubjectChips value={s.enabledSubjects} onChange={(v) => updateSettings({ enabledSubjects: v })} />
         </div>
         <div className="form-grid">
@@ -72,13 +82,17 @@ export default function Settings() {
             <input type="number" min={0} max={500} value={s.newPerDay} onChange={(e) => updateSettings({ newPerDay: Math.max(0, Math.min(500, Number(e.target.value) || 0)) })} />
           </label>
           <label className="field">
+            <span>Daily study budget (minutes)</span>
+            <input type="number" min={10} max={600} step={5} value={s.dailyMinutes} onChange={(e) => updateSettings({ dailyMinutes: Math.max(10, Math.min(600, Number(e.target.value) || 10)) })} />
+          </label>
+          <label className="field">
             <span>Max cards per session</span>
             <input type="number" min={5} max={1000} value={s.maxReviewsPerSession} onChange={(e) => updateSettings({ maxReviewsPerSession: Math.max(5, Math.min(1000, Number(e.target.value) || 5)) })} />
           </label>
         </div>
         <p className="small muted">
           With ≈ {ALL_CARDS.length} built-in cards, 20 new cards per day covers everything in about {Math.ceil(ALL_CARDS.length / 20)} days. Reviews of
-          learned cards are always shown regardless of this limit.
+          learned cards are always shown regardless of this limit. The daily budget drives the plan on the Dashboard.
         </p>
       </section>
 

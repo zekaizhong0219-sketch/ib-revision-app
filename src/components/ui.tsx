@@ -14,6 +14,7 @@ const ICON_PATHS: Record<string, string> = {
   moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
   auto: 'M12 3a9 9 0 1 0 0 18V3z M12 3a9 9 0 0 1 0 18',
   keyboard: 'M3 6h18v12H3zM7 10h.01M11 10h.01M15 10h.01M7 14h10',
+  pen: 'M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4',
 };
 
 export function Icon({ name, className = 'icon' }: { name: string; className?: string }) {

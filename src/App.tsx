@@ -8,6 +8,7 @@ import type { ThemePref } from './types';
 
 const Review = lazy(() => import('./views/Review'));
 const Practice = lazy(() => import('./views/Practice'));
+const Writing = lazy(() => import('./views/Writing'));
 const Cards = lazy(() => import('./views/Cards'));
 const Exams = lazy(() => import('./views/Exams'));
 const Settings = lazy(() => import('./views/Settings'));
@@ -16,6 +17,7 @@ const NAV: { path: RoutePath; label: string; icon: string; key: string }[] = [
   { path: '/', label: 'Home', icon: 'home', key: 'd' },
   { path: '/review', label: 'Review', icon: 'cards', key: 'r' },
   { path: '/practice', label: 'Practice', icon: 'timer', key: 'p' },
+  { path: '/writing', label: 'Writing', icon: 'pen', key: 'w' },
   { path: '/cards', label: 'Library', icon: 'library', key: 'c' },
   { path: '/exams', label: 'Exams', icon: 'calendar', key: 'e' },
   { path: '/settings', label: 'Settings', icon: 'settings', key: 's' },
@@ -101,6 +103,7 @@ export default function App() {
           {route.path === '/' && <Dashboard />}
           {route.path === '/review' && <Review route={route} />}
           {route.path === '/practice' && <Practice route={route} />}
+          {route.path === '/writing' && <Writing route={route} />}
           {route.path === '/cards' && <Cards />}
           {route.path === '/exams' && <Exams />}
           {route.path === '/settings' && <Settings />}

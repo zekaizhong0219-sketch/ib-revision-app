@@ -3,6 +3,7 @@ import { useStore } from '../store';
 import { getSubject, topicLabel } from '../data/syllabus';
 import { activityByDay, currentStreak, dueForecast, longestStreak, recommend, topicStats } from '../lib/stats';
 import { queueCounts } from '../lib/queue';
+import { planDay, reviewLoad, type PlanItem } from '../lib/planner';
 import { BarChart, HBars } from '../components/Charts';
 import { ProgressBar, SubjectDot, Tile } from '../components/ui';
 import { href } from '../router';
@@ -21,6 +22,8 @@ export default function Dashboard() {
   const recs = useMemo(() => recommend(data, cards, now, 5), [data, cards, now]);
   const activity = useMemo(() => activityByDay(data, now, 30), [data, now]);
   const forecast = useMemo(() => dueForecast(data, cards, now, 14), [data, cards, now]);
+  const plan = useMemo(() => planDay(data, cards, enabled, now), [data, cards, enabled, now]);
+  const load = useMemo(() => reviewLoad(data, cards, enabled, now, 7), [data, cards, enabled, now]);
   const streak = currentStreak(data, now);
   const best = longestStreak(data);
   const todayCount = activity[activity.length - 1];
@@ -88,6 +91,35 @@ export default function Dashboard() {
         <Tile label="Streak" value={`${streak} 🔥`} sub={`best ${best} day${best === 1 ? '' : 's'}`} />
         <Tile label="Today" value={todayCount.reviews + todayCount.practice} sub={`${todayCount.reviews} cards · ${todayCount.practice} questions`} />
         <Tile label="Cards studied" value={studied} sub={`of ${cards.length}`} />
+      </div>
+
+      <div className="grid grid-2" style={{ marginTop: '1rem' }}>
+        <section className="card">
+          <div className="spread">
+            <h2 style={{ margin: 0 }}>Today's plan</h2>
+            <span className="small muted">
+              ≈ {plan.total} of {plan.budget} min · <a href={href('/settings')}>change budget</a>
+            </span>
+          </div>
+          {plan.overBudget && (
+            <p className="small" style={{ color: 'var(--warn)' }}>
+              Your due reviews alone exceed today's budget: do them first, or lower "new cards per day" in Settings.
+            </p>
+          )}
+          {plan.items.length === 0 && <p className="muted">Nothing scheduled: enable some subjects in Settings.</p>}
+          {plan.items.map((it, i) => (
+            <PlanRow key={i} item={it} />
+          ))}
+        </section>
+        <section className="card">
+          <h2>Review load — next 7 days (min)</h2>
+          <BarChart
+            title="Estimated review minutes per day by subject"
+            labels={['today', '+1', '+2', '+3', '+4', '+5', '+6']}
+            series={enabled.map((s) => ({ label: getSubject(s).short, values: load[s], color: getSubject(s).color }))}
+          />
+          <p className="small muted">Estimated at about 10 s per review; new cards and practice come on top.</p>
+        </section>
       </div>
 
       <div className="grid grid-2" style={{ marginTop: '1rem' }}>
@@ -175,6 +207,33 @@ export default function Dashboard() {
           Accuracy over the last 90 days: flashcards count Good/Easy as correct and Hard as half; practice questions count double.
         </p>
       </section>
+    </div>
+  );
+}
+
+const KIND_LABEL: Record<PlanItem['kind'], string> = { review: 'Flashcards', practice: 'Practice', writing: 'Timed writing' };
+
+function PlanRow({ item }: { item: PlanItem }) {
+  const link =
+    item.kind === 'review'
+      ? href('/review', { subjects: item.subject })
+      : item.kind === 'practice'
+        ? href('/practice', { subject: item.subject, topics: item.topic ? `${item.subject}|${item.topic}` : undefined })
+        : href('/writing', { subject: item.subject });
+  return (
+    <div className="plan-item">
+      <div>
+        <div>
+          <SubjectDot subject={item.subject} /> <strong>{KIND_LABEL[item.kind]}</strong> · {getSubject(item.subject).short}
+          {item.topic && item.kind !== 'review' ? ` · ${topicLabel(item.subject, item.topic)}` : ''}
+        </div>
+        <div className="small muted">
+          ~{item.minutes} min · {item.reason}
+        </div>
+      </div>
+      <a className="btn small" href={link}>
+        Start
+      </a>
     </div>
   );
 }
