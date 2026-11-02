@@ -41,3 +41,35 @@ describe('buildFeedbackPrompt', () => {
     expect(text).not.toContain('—');
   });
 });
+
+describe('Paper 1 workshop', () => {
+  it('builds the five standard questions (24 marks) around the focus', async () => {
+    const { paper1Questions, PAPER1_GUIDE } = await import('../data/paper1');
+    const qs = paper1Questions('the causes of the Manchurian crisis');
+    expect(qs.map((q) => q.label)).toEqual(['1a', '1b', '2', '3', '4']);
+    expect(qs.reduce((s, q) => s + q.marks, 0)).toBe(24);
+    expect(qs.filter((q) => q.prompt.includes('the causes of the Manchurian crisis'))).toHaveLength(4);
+    for (const q of qs) expect(PAPER1_GUIDE[q.label]).toBeDefined();
+  });
+  it('puts sources, questions, answers and self-marks in the feedback request', async () => {
+    const { buildSourceFeedbackPrompt } = await import('./feedback');
+    const { paper1Questions, PAPER1_GUIDE } = await import('../data/paper1');
+    const set = {
+      id: 'p1',
+      title: 'Test set',
+      topic: 'PS3.JP',
+      t: 0,
+      sources: [{ origin: 'Origin A', text: 'Text of A' }, { origin: '', text: 'Cartoon B' }],
+      questions: paper1Questions('x'),
+      attempts: [],
+    };
+    const text = buildSourceFeedbackPrompt(set, { t: 0, sec: 3000, answers: ['ans 1a'], scores: [2, 1, 3, 4, 6] }, PAPER1_GUIDE, ['7–9: top band']);
+    expect(text).toContain('### Source A\n*Origin A*\n\nText of A');
+    expect(text).toContain('*(origin not given)*');
+    expect(text).toContain('My mark: 2/3');
+    expect(text).toContain('ans 1a');
+    expect(text).toContain('(no answer)');
+    expect(text).toContain('7–9: top band');
+    expect(text).toContain('total /24, 50 min used');
+  });
+});

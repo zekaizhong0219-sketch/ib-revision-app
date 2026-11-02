@@ -1,4 +1,4 @@
-import type { EssayAttempt, EssayPrompt } from '../types';
+import type { EssayAttempt, EssayPrompt, SourceAttempt, SourceSet } from '../types';
 import type { Rubric } from '../data/rubrics';
 
 /**
@@ -76,5 +76,47 @@ export function buildFeedbackPrompt(prompt: EssayPrompt, attempt: EssayAttempt, 
     '2. The difference between your marks and my self-assessment, and why.',
     '3. The three changes that would raise the mark most, in priority order.',
     '4. One of my paragraphs rewritten at the level of the top band, with the changes explained.',
+  ].join('\n');
+}
+
+/** Feedback request for a History Paper 1 attempt on a user-entered source set. */
+export function buildSourceFeedbackPrompt(set: SourceSet, attempt: SourceAttempt, guide: Record<string, { marking: string[] }>, q4Bands: string[]): string {
+  const letters = 'ABCDEF';
+  const sources = set.sources
+    .map((s, i) => `### Source ${letters[i]}\n*${s.origin.trim() || '(origin not given)'}*\n\n${s.text.trim() || '(empty)'}`)
+    .join('\n\n');
+  const answers = set.questions
+    .map((q, i) => {
+      const g = guide[q.label]?.marking ?? [];
+      const bands = q.label === '4' ? q4Bands : [];
+      return [
+        `### Question ${q.label} [${q.marks}]: ${q.prompt}`,
+        g.length || bands.length ? `Marking guidance: ${[...g, ...bands].join(' ')}` : '',
+        `My mark: ${attempt.scores[i] ?? '–'}/${q.marks}`,
+        '',
+        (attempt.answers[i] ?? '').trim() || '(no answer)',
+      ]
+        .filter((x, k) => x || k === 3)
+        .join('\n');
+    })
+    .join('\n\n');
+  const total = set.questions.reduce((s, q) => s + q.marks, 0);
+  return [
+    `# Feedback request: History Paper 1 (${set.title})`,
+    '',
+    'Act as an experienced IB History examiner. Mark my Paper 1 answers using the sources and the marking guidance (a paraphrase, not the official markscheme). Be strict and justify each mark with reference to my answer and the sources.',
+    '',
+    '## Sources',
+    sources,
+    '',
+    `## My answers (total /${total}, ${Math.max(1, Math.round(attempt.sec / 60))} min used)`,
+    answers,
+    '',
+    '## What I need',
+    '1. A mark for each question with a short justification.',
+    '2. For question 2: whether my value and limitation points are tied to origin, purpose and content.',
+    '3. For question 3: which comparisons and contrasts were valid, and any I missed.',
+    '4. For question 4: the markband, how well I integrated sources with own knowledge, and specific own knowledge I should have used.',
+    '5. The three changes that would raise my total most.',
   ].join('\n');
 }

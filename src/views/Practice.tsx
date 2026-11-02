@@ -133,6 +133,13 @@ export default function Practice({ route }: { route: Route }) {
         </div>
         <span className="btn small">{t('Open')}</span>
       </a>
+      <a className="card spread" href="#/sources" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
+        <div>
+          <strong>History Paper 1 workshop</strong>
+          <div className="small muted">Your own sources, a Paper 1-style question set, a 1-hour timer and marking guidance.</div>
+        </div>
+        <span className="btn small">{t('Open')}</span>
+      </a>
       <div className="card stack">
         <div>
           <h3>{t('Subjects')}</h3>

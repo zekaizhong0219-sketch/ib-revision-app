@@ -134,6 +134,16 @@ export default function Writing({ route }: { route: Route }) {
         })}
       </div>
 
+      {subject === 'history' && (
+        <a className="card spread" href="#/sources" style={{ textDecoration: 'none', color: 'inherit', marginTop: '1rem' }}>
+          <div>
+            <strong>Paper 1 (source analysis)</strong>
+            <div className="small muted">Practise with your own sources in the Paper 1 workshop.</div>
+          </div>
+          <span className="btn small">{t('Open')}</span>
+        </a>
+      )}
+
       <div className="section-title">
         <h2>Your attempts — {getSubject(subject).name}</h2>
       </div>
