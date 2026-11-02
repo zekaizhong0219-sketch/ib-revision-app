@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import type { SubjectId } from '../types';
-import { SUBJECTS, getSubject } from '../data/syllabus';
+import { SUBJECTS as SUBJECT_LIST, getSubject } from '../data/syllabus';
+import { useStore } from '../store';
 
 const ICON_PATHS: Record<string, string> = {
   home: 'M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
@@ -27,10 +28,13 @@ export function SubjectDot({ subject }: { subject: SubjectId }) {
   return <span className="dot" style={{ background: getSubject(subject).color }} />;
 }
 
-export function SubjectChips({ value, onChange, multi = true }: { value: SubjectId[]; onChange: (v: SubjectId[]) => void; multi?: boolean }) {
+export function SubjectChips({ value, onChange, multi = true, all = false }: { value: SubjectId[]; onChange: (v: SubjectId[]) => void; multi?: boolean; all?: boolean }) {
+  const { visibleSubjects } = useStore();
+  // `all` shows hidden subjects too (used in Settings, where you choose what to hide).
+  const list = all ? SUBJECT_LIST : visibleSubjects;
   return (
     <div className="row" role="group" aria-label="Subjects">
-      {SUBJECTS.map((s) => {
+      {list.map((s) => {
         const on = value.includes(s.id);
         return (
           <button

@@ -23,8 +23,8 @@ function isTyping(e: KeyboardEvent) {
 }
 
 export default function Review({ route }: { route: Route }) {
-  const { data, cards } = useStore();
-  const enabled = data.settings.enabledSubjects;
+  const { data, cards, activeSubjectIds } = useStore();
+  const enabled = activeSubjectIds;
   const subjParam = route.params.get('subjects');
   const topicParam = route.params.get('topics');
   const subjects = useMemo(() => (subjParam?.split(',').filter(Boolean) as SubjectId[] | undefined) ?? enabled, [subjParam, enabled]);

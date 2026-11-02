@@ -17,6 +17,9 @@
   --c-physics: #2f6fed;
   --c-chemistry: #0f9d76;
   --c-math: #a24bd6;
+  --c-spanish: #d23f3f;
+  --c-english: #c27c00;
+  --c-history: #8a5a2b;
   --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 2px 8px rgb(16 24 40 / 6%);
   --radius: 14px;
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -43,6 +46,9 @@
     --c-physics: #6f9bff;
     --c-chemistry: #3fd3a5;
     --c-math: #cf8cff;
+    --c-spanish: #ff7b7b;
+    --c-english: #ffbf4d;
+    --c-history: #d9a066;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%);
     color-scheme: dark;
   }
@@ -67,6 +73,9 @@
   --c-physics: #6f9bff;
   --c-chemistry: #3fd3a5;
   --c-math: #cf8cff;
+  --c-spanish: #ff7b7b;
+  --c-english: #ffbf4d;
+  --c-history: #d9a066;
   --shadow: 0 1px 2px rgb(0 0 0 / 40%);
   color-scheme: dark;
 }
@@ -282,3 +291,10 @@ table.keys td { padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
 .empty { text-align: center; padding: 2rem 1rem; color: var(--muted); }
 .katex { font-size: 1.05em; }
 .flash .katex-display, .list-item .katex-display { overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+
+.order-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+.order-list .option { align-items: center; cursor: default; }
+.grow { flex: 1; min-width: 0; }
+.match-grid { display: grid; gap: 0.5rem; }
+.match-row { display: grid !important; grid-template-columns: 1fr minmax(140px, 45%); gap: 0.6rem; align-items: center; cursor: default; }
+@media (max-width: 520px) { .match-row { grid-template-columns: 1fr; } }

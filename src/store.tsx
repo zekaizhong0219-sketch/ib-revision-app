@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AppData, Card, Grade, PracticeLog, Settings } from './types';
+import type { AppData, Card, EssayAttempt, Grade, PracticeLog, Settings, Subject } from './types';
+import { SUBJECTS } from './data/syllabus';
 import { loadData, saveData } from './lib/storage';
 import { schedule } from './lib/srs';
 import { ALL_CARDS } from './data/cards';
@@ -9,7 +10,13 @@ interface Store {
   /** Built-in + custom cards. */
   cards: Card[];
   cardById: Map<string, Card>;
+  /** Subjects not hidden in Settings, in syllabus order. */
+  visibleSubjects: Subject[];
+  /** Visible subjects that are also enabled for reviews/recommendations. */
+  activeSubjectIds: Subject['id'][];
   saveOk: boolean;
+  saveEssay: (attempt: EssayAttempt) => void;
+  deleteEssay: (id: string) => void;
   gradeCard: (card: Card, grade: Grade, opts?: { cram?: boolean }) => void;
   logPractice: (entries: PracticeLog[]) => void;
   upsertCustomCard: (card: Card) => void;
@@ -48,6 +55,18 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
 
   const cards = useMemo(() => [...ALL_CARDS, ...data.customCards], [data.customCards]);
   const cardById = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards]);
+  const hidden = data.settings.hiddenSubjects;
+  const enabled = data.settings.enabledSubjects;
+  const visibleSubjects = useMemo(() => SUBJECTS.filter((s) => !hidden.includes(s.id)), [hidden]);
+  const activeSubjectIds = useMemo(() => visibleSubjects.map((s) => s.id).filter((id) => enabled.includes(id)), [visibleSubjects, enabled]);
+
+  const saveEssay = useCallback((attempt: EssayAttempt) => {
+    setData((d) => {
+      const exists = d.essays.some((e) => e.id === attempt.id);
+      return { ...d, essays: exists ? d.essays.map((e) => (e.id === attempt.id ? attempt : e)) : [...d.essays, attempt] };
+    });
+  }, []);
+  const deleteEssay = useCallback((id: string) => setData((d) => ({ ...d, essays: d.essays.filter((e) => e.id !== id) })), []);
 
   const gradeCard = useCallback((card: Card, grade: Grade, opts?: { cram?: boolean }) => {
     const now = Date.now();
@@ -104,8 +123,14 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
   const replaceData = useCallback((next: AppData) => setData(next), []);
 
   const value = useMemo<Store>(
-    () => ({ data, cards, cardById, saveOk, gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData }),
-    [data, cards, cardById, saveOk, gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData],
+    () => ({
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay,
+      gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
+    }),
+    [
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay,
+      gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
+    ],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

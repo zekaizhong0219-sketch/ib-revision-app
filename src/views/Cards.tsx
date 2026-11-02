@@ -16,7 +16,8 @@ function emptyDraft(subject: SubjectId = 'physics'): Card {
 }
 
 export default function Cards() {
-  const { cards, data, upsertCustomCard, deleteCustomCard, setSuspended, resetCard } = useStore();
+  const { cards: allCards, data, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, visibleSubjects } = useStore();
+  const cards = useMemo(() => allCards.filter((c) => !data.settings.hiddenSubjects.includes(c.subject)), [allCards, data.settings.hiddenSubjects]);
   const [query, setQuery] = useState('');
   const q = useDeferredValue(query.trim().toLowerCase());
   const [subject, setSubject] = useState<SubjectId | 'all'>('all');
@@ -52,7 +53,7 @@ export default function Cards() {
     <div>
       <div className="spread">
         <h1>Card library</h1>
-        <button className="btn primary" onClick={() => setDraft(emptyDraft(subject === 'all' ? 'physics' : subject))}>
+        <button className="btn primary" onClick={() => setDraft(emptyDraft(subject === 'all' ? (visibleSubjects[0]?.id ?? 'physics') : subject))}>
           + New card
         </button>
       </div>
@@ -69,7 +70,7 @@ export default function Cards() {
             <span>Subject</span>
             <select value={subject} onChange={(e) => { setSubject(e.target.value as SubjectId | 'all'); setTopic('all'); setLimit(PAGE); }}>
               <option value="all">All subjects</option>
-              {SUBJECTS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              {visibleSubjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </label>
           <label className="field">

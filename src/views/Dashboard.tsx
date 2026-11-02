@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useStore } from '../store';
-import { SUBJECTS, getSubject, topicLabel } from '../data/syllabus';
+import { getSubject, topicLabel } from '../data/syllabus';
 import { activityByDay, currentStreak, dueForecast, longestStreak, recommend, topicStats } from '../lib/stats';
 import { queueCounts } from '../lib/queue';
 import { BarChart, HBars } from '../components/Charts';
@@ -10,11 +10,12 @@ import { NextExamBanner } from './Exams';
 import type { SubjectId } from '../types';
 
 export default function Dashboard() {
-  const { data, cards } = useStore();
+  const { data, cards, visibleSubjects, activeSubjectIds } = useStore();
   const [now] = useState(() => Date.now());
-  const [subjectTab, setSubjectTab] = useState<SubjectId>('physics');
+  const [tab, setSubjectTab] = useState<SubjectId>(visibleSubjects[0]?.id ?? 'physics');
+  const subjectTab = visibleSubjects.some((s) => s.id === tab) ? tab : (visibleSubjects[0]?.id ?? 'physics');
 
-  const enabled = data.settings.enabledSubjects;
+  const enabled = activeSubjectIds;
   const counts = useMemo(() => queueCounts(data, cards, { subjects: enabled }, now), [data, cards, enabled, now]);
   const stats = useMemo(() => topicStats(data, cards, now), [data, cards, now]);
   const recs = useMemo(() => recommend(data, cards, now, 5), [data, cards, now]);
@@ -26,7 +27,7 @@ export default function Dashboard() {
   const studied = Object.values(data.cards).filter((s) => s.last > 0).length;
   const isFresh = data.reviews.length === 0 && data.practice.length === 0;
 
-  const subjectSummary = SUBJECTS.map((s) => {
+  const subjectSummary = visibleSubjects.map((s) => {
     let total = 0, seen = 0, due = 0, mature = 0, score = 0, weight = 0;
     for (const st of stats.values()) {
       if (st.subject !== s.id) continue;
@@ -162,7 +163,7 @@ export default function Dashboard() {
         <div className="spread" style={{ marginBottom: '0.75rem' }}>
           <h2 style={{ margin: 0 }}>Accuracy by topic</h2>
           <div className="row">
-            {SUBJECTS.map((s) => (
+            {visibleSubjects.map((s) => (
               <button key={s.id} className="chip" aria-pressed={subjectTab === s.id} onClick={() => setSubjectTab(s.id)}>
                 <SubjectDot subject={s.id} /> {s.short}
               </button>

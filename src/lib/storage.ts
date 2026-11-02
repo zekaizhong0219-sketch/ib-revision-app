@@ -1,11 +1,15 @@
-import type { AppData, Card, CardState, Exam, PracticeLog, ReviewLog, Settings, SubjectId } from '../types';
+import type { AppData, Card, CardState, EssayAttempt, Exam, PracticeLog, ReviewLog, Settings, SubjectId } from '../types';
+import { SUBJECT_IDS, isSubjectId } from '../data/subjectIds';
 
 export const STORAGE_KEY = 'ib-revision:data';
-export const DATA_VERSION = 1;
+export const DATA_VERSION = 2;
 /** Cap stored logs so localStorage (≈5 MB) never fills up. */
 export const MAX_LOG_ENTRIES = 30000;
+/** Cap on stored essay attempts (each can hold a few KB of text). */
+export const MAX_ESSAYS = 200;
+/** Subjects added in data version 2. */
+const V2_SUBJECTS: SubjectId[] = ['spanish', 'english', 'history'];
 
-const SUBJECTS: SubjectId[] = ['physics', 'chemistry', 'math'];
 
 export function defaultExams(): Exam[] {
   // Placeholders — the user is expected to edit these to match their official timetable.
@@ -20,7 +24,8 @@ export function defaultSettings(): Settings {
     newPerDay: 20,
     maxReviewsPerSession: 100,
     exams: defaultExams(),
-    enabledSubjects: [...SUBJECTS],
+    enabledSubjects: [...SUBJECT_IDS],
+    hiddenSubjects: [],
   };
 }
 
@@ -31,6 +36,7 @@ export function defaultData(): AppData {
     reviews: [],
     practice: [],
     customCards: [],
+    essays: [],
     settings: defaultSettings(),
   };
 }
@@ -49,7 +55,7 @@ function getStorage(): Storage | null {
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const isStr = (v: unknown): v is string => typeof v === 'string';
-const isSubject = (v: unknown): v is SubjectId => SUBJECTS.includes(v as SubjectId);
+const isSubject = isSubjectId;
 const GRADES = ['again', 'hard', 'good', 'easy'];
 const RESULTS = ['correct', 'partial', 'incorrect'];
 
@@ -81,7 +87,7 @@ function sanitizePractice(v: unknown): PracticeLog | null {
 
 function sanitizeCard(v: unknown): Card | null {
   if (!isObj(v) || !isStr(v.id) || !isSubject(v.subject) || !isStr(v.topic) || !isStr(v.front) || !isStr(v.back)) return null;
-  const kinds = ['definition', 'formula', 'unit', 'command', 'concept', 'fact'];
+  const kinds = ['definition', 'formula', 'unit', 'command', 'concept', 'fact', 'date', 'person', 'device', 'vocab', 'texttype', 'quote'];
   return {
     id: v.id,
     subject: v.subject,
@@ -90,6 +96,25 @@ function sanitizeCard(v: unknown): Card | null {
     back: v.back,
     kind: kinds.includes(v.kind as string) ? (v.kind as Card['kind']) : 'concept',
     custom: true,
+  };
+}
+
+function sanitizeEssay(v: unknown): EssayAttempt | null {
+  if (!isObj(v) || !isStr(v.id) || !isStr(v.prompt) || !isSubject(v.subject) || !isStr(v.topic) || !isStr(v.rubric) || !isNum(v.t)) return null;
+  const scores: Record<string, number> = {};
+  if (isObj(v.scores)) for (const [k, n] of Object.entries(v.scores)) if (isNum(n)) scores[k] = Math.max(0, n);
+  return {
+    id: v.id,
+    prompt: v.prompt,
+    subject: v.subject,
+    topic: v.topic,
+    rubric: v.rubric,
+    t: v.t,
+    sec: isNum(v.sec) ? Math.max(0, v.sec) : 0,
+    words: isNum(v.words) ? Math.max(0, Math.floor(v.words)) : 0,
+    text: isStr(v.text) ? v.text.slice(0, 20000) : '',
+    scores,
+    done: v.done === true,
   };
 }
 
@@ -105,9 +130,11 @@ function sanitizeSettings(v: unknown): Settings {
           name: e.name as string,
           date: e.date as string,
           ...(isSubject(e.subject) ? { subject: e.subject } : {}),
+          ...(e.kind === 'deadline' ? { kind: 'deadline' as const } : {}),
         }))
     : d.exams;
   const enabled = Array.isArray(v.enabledSubjects) ? v.enabledSubjects.filter(isSubject) : d.enabledSubjects;
+  const hidden = Array.isArray(v.hiddenSubjects) ? Array.from(new Set(v.hiddenSubjects.filter(isSubject))) : [];
   return {
     theme,
     newPerDay: isNum(v.newPerDay) ? Math.min(500, Math.max(0, Math.floor(v.newPerDay))) : d.newPerDay,
@@ -116,6 +143,8 @@ function sanitizeSettings(v: unknown): Settings {
       : d.maxReviewsPerSession,
     exams,
     enabledSubjects: enabled.length ? Array.from(new Set(enabled)) : d.enabledSubjects,
+    // Never hide everything.
+    hiddenSubjects: hidden.length >= SUBJECT_IDS.length ? [] : hidden,
   };
 }
 
@@ -126,6 +155,14 @@ export function migrate(raw: Record<string, unknown>): Record<string, unknown> {
   if (v < 1) {
     // v0 (pre-release) had no version field; nothing structural changed.
     out.version = 1;
+  }
+  if (v < 2) {
+    // v2 added Spanish A, English B and History: enable them for existing users.
+    if (isObj(out.settings) && Array.isArray(out.settings.enabledSubjects)) {
+      const en = out.settings.enabledSubjects as unknown[];
+      out.settings = { ...out.settings, enabledSubjects: [...en, ...V2_SUBJECTS.filter((s) => !en.includes(s))] };
+    }
+    out.version = 2;
   }
   return out;
 }
@@ -155,12 +192,14 @@ export function sanitizeData(input: unknown): AppData {
   const customCards = (Array.isArray(raw.customCards) ? raw.customCards : [])
     .map(sanitizeCard)
     .filter((x): x is Card => !!x);
+  const essays = (Array.isArray(raw.essays) ? raw.essays : []).map(sanitizeEssay).filter((x): x is EssayAttempt => !!x);
   return {
     version: DATA_VERSION,
     cards,
     reviews: reviews.slice(-MAX_LOG_ENTRIES),
     practice: practice.slice(-MAX_LOG_ENTRIES),
     customCards,
+    essays: essays.slice(-MAX_ESSAYS),
     settings: sanitizeSettings(raw.settings),
   };
 }
@@ -185,6 +224,7 @@ export function saveData(data: AppData, storage: Storage | null = getStorage()):
       ...data,
       reviews: data.reviews.slice(-MAX_LOG_ENTRIES),
       practice: data.practice.slice(-MAX_LOG_ENTRIES),
+      essays: data.essays.slice(-MAX_ESSAYS),
     };
     storage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
     return true;
@@ -246,12 +286,14 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
   const reviews = dedupe([...current.reviews, ...incoming.reviews], revKey).sort((a, b) => a.t - b.t);
   const practice = dedupe([...current.practice, ...incoming.practice], prKey).sort((a, b) => a.t - b.t);
   const custom = dedupe([...current.customCards, ...incoming.customCards], (c) => c.id);
+  const essays = dedupe([...current.essays, ...incoming.essays], (e) => e.id).sort((a, b) => a.t - b.t);
   return {
     version: DATA_VERSION,
     cards,
     reviews: reviews.slice(-MAX_LOG_ENTRIES),
     practice: practice.slice(-MAX_LOG_ENTRIES),
     customCards: custom,
+    essays: essays.slice(-MAX_ESSAYS),
     settings: incoming.settings,
   };
 }

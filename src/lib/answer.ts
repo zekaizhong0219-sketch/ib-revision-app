@@ -93,3 +93,63 @@ export function formatNumber(v: number, sig = 3): string {
   }
   return String(Number(v.toPrecision(sig)));
 }
+
+/**
+ * Normalises a short text answer for lenient comparison: lower case, accents removed,
+ * punctuation and quotes stripped, whitespace collapsed, a leading article dropped
+ * (the/a/an/el/la/los/las/un/una), and "&" read as "and".
+ */
+export function normaliseText(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[«»"'“”‘’.,;:!?¡¿()[\]{}]/g, ' ')
+    .replace(/[-–—]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^(the|a|an|el|la|los|las|un|una) /, '');
+}
+
+/** Checks a typed answer against accepted variants. Strict mode only trims and collapses spaces. */
+export function checkText(input: string, answers: string[], strict = false): boolean {
+  const norm = strict ? (x: string) => x.trim().replace(/\s+/g, ' ') : normaliseText;
+  const v = norm(input);
+  if (!v) return false;
+  return answers.some((a) => norm(a) === v);
+}
+
+/**
+ * Scores an ordering answer: the fraction of adjacent pairs in the response that also
+ * appear adjacent and in the same order in the correct sequence (1 = perfect).
+ */
+export function scoreOrder(response: string[], correct: string[]): number {
+  if (response.length !== correct.length || correct.length < 2) return 0;
+  const pos = new Map(correct.map((x, i) => [x, i]));
+  let good = 0;
+  for (let i = 0; i < response.length - 1; i++) {
+    const a = pos.get(response[i]);
+    const b = pos.get(response[i + 1]);
+    if (a !== undefined && b !== undefined && b === a + 1) good++;
+  }
+  return good / (correct.length - 1);
+}
+
+/** Fraction of left items matched to the correct right item. */
+export function scoreMatch(response: Record<string, string>, pairs: [string, string][]): number {
+  if (!pairs.length) return 0;
+  return pairs.filter(([l, r]) => response[l] === r).length / pairs.length;
+}
+
+/** Maps a 0–1 score to a practice result: 1 → correct, ≥ 0.5 → partial, else incorrect. */
+export function resultFromScore(score: number): 'correct' | 'partial' | 'incorrect' {
+  if (score >= 1 - 1e-9) return 'correct';
+  return score >= 0.5 ? 'partial' : 'incorrect';
+}
+
+/** Counts words like exam word counts do: sequences separated by whitespace. */
+export function countWords(text: string): number {
+  const t = text.trim();
+  return t ? t.split(/\s+/).length : 0;
+}

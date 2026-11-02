@@ -1,5 +1,6 @@
 import type { Card, SubjectId } from '../../types';
 import { hashString } from '../dsl';
+import { SUBJECT_PREFIX as PREFIX } from '../subjectIds';
 
 /**
  * IB command terms with explanations written in our own words (paraphrased,
@@ -48,7 +49,6 @@ export const COMMAND_TERMS: Record<string, string> = {
   'Write down': 'Give the answer directly — little or no calculation is needed and working need not be shown.',
 };
 
-const PREFIX: Record<SubjectId, string> = { physics: 'phy', chemistry: 'chem', math: 'math' };
 
 export function commandTermCards(subject: SubjectId, terms: string[]): Card[] {
   return terms.map((term) => {

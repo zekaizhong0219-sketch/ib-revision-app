@@ -150,7 +150,7 @@ export function recommend(data: AppData, cards: Card[], now: number, limit = 5):
   const stats = topicStats(data, cards, now);
   const recs: Recommendation[] = [];
   for (const s of stats.values()) {
-    if (!data.settings.enabledSubjects.includes(s.subject)) continue;
+    if (!data.settings.enabledSubjects.includes(s.subject) || data.settings.hiddenSubjects.includes(s.subject)) continue;
     if (s.total === 0 && s.practiceAttempts === 0) continue;
     const acc = s.accuracy ?? 0.5;
     const weakness = 1 - acc;

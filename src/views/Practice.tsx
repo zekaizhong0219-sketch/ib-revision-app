@@ -8,9 +8,19 @@ import { MathText } from '../components/MathText';
 import { HBars } from '../components/Charts';
 import { SubjectChips, SubjectDot, TopicPicker } from '../components/ui';
 import { navigate, type Route } from '../router';
+import { MatchAnswer, OrderAnswer, TextAnswer } from './PracticeAnswers';
 import type { Card, PracticeResult, Question, SubjectId } from '../types';
 
 const DURATIONS = [5, 10, 15, 20, 30, 45];
+
+const TYPE_LABEL: Record<Question['type'], string> = {
+  mc: 'multiple choice',
+  numeric: 'numeric',
+  open: 'open',
+  text: 'short answer',
+  order: 'put in order',
+  match: 'matching',
+};
 
 /** Turns a flashcard into a self-marked recall question. */
 function cardToQuestion(c: Card): Question {
@@ -41,9 +51,9 @@ interface Answered {
 }
 
 export default function Practice({ route }: { route: Route }) {
-  const { data, cards } = useStore();
+  const { data, cards, activeSubjectIds } = useStore();
   const p = route.params;
-  const subjects = (p.get('subject')?.split(',').filter(Boolean) as SubjectId[] | undefined) ?? [data.settings.enabledSubjects[0] ?? 'physics'];
+  const subjects = (p.get('subject')?.split(',').filter(Boolean) as SubjectId[] | undefined) ?? [activeSubjectIds[0] ?? 'physics'];
   const topics = p.get('topics')?.split(',').filter(Boolean) ?? [];
   const minutes = Number(p.get('min')) || 10;
   const includeCards = p.get('cards') !== '0';
@@ -69,8 +79,9 @@ export default function Practice({ route }: { route: Route }) {
     <div>
       <h1>Timed practice</h1>
       <p className="muted">
-        Short exam-style questions: multiple choice and numeric answers are marked automatically (decimal comma and forms like <code>3.2e-5</code> or{' '}
-        <code>3.2×10^-5</code> are accepted); open questions and flashcard prompts are self-marked against a model answer.
+        Short exam-style questions. Multiple choice, numeric (decimal comma and forms like <code>3.2e-5</code> or <code>3.2×10^-5</code> are accepted),
+        short-answer, ordering and matching questions are marked automatically; open questions and flashcard prompts are self-marked against a model
+        answer. For timed essays use <a href="#/writing">Writing</a>.
       </p>
       <div className="card stack">
         <div>
@@ -189,13 +200,16 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
       <div className="card">
         <div className="row small muted" style={{ marginBottom: '0.6rem' }}>
           <SubjectDot subject={q.subject} /> {topicLabel(q.subject, q.topic)}
-          <span className="badge">{q.type === 'mc' ? 'multiple choice' : q.type === 'numeric' ? 'numeric' : q.id.includes('-q-') ? 'open' : 'flashcard recall'}</span>
+          <span className="badge">{TYPE_LABEL[q.type] ?? q.type}{q.type === 'open' && !q.id.includes('-q-') ? ' (flashcard)' : ''}</span>
         </div>
         <MathText text={q.prompt} />
         <div style={{ marginTop: '1rem' }}>
           {q.type === 'mc' && <MCAnswer key={i} q={q} done={current} onAnswer={record} />}
           {q.type === 'numeric' && <NumericAnswer key={i} q={q} done={current} onAnswer={record} />}
           {q.type === 'open' && <OpenAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'text' && <TextAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'order' && <OrderAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'match' && <MatchAnswer key={i} q={q} done={current} onAnswer={record} />}
         </div>
         {current && q.solution && (
           <div className="feedback info">
@@ -425,6 +439,9 @@ function Results({ answered, minutes, onExit }: { answered: Answered[]; minutes:
                     </p>
                   )}
                   {a.q.type === 'open' && <MathText text={a.q.answer} />}
+                  {a.q.type === 'text' && <p>{a.q.answers.join(' / ')} — you wrote “{a.response}”</p>}
+                  {a.q.type === 'order' && <MathText text={a.q.items.map((x, k) => `${k + 1}. ${x}`).join('\n')} />}
+                  {a.q.type === 'match' && <MathText text={a.q.pairs.map(([l, r]) => `${l} → ${r}`).join('\n')} />}
                   {a.q.solution && <MathText className="small muted" text={a.q.solution} />}
                 </details>
               </div>

@@ -60,6 +60,9 @@ describe('practice questions', () => {
       const texts = [q.prompt, q.solution];
       if (q.type === 'mc') texts.push(...q.options);
       if (q.type === 'open') texts.push(q.answer);
+      if (q.type === 'text') texts.push(...q.answers);
+      if (q.type === 'order') texts.push(...q.items);
+      if (q.type === 'match') texts.push(...q.pairs.flat());
       for (const t of texts) {
         for (const seg of mathSegments(t)) {
           expect(() => katex.renderToString(seg, { throwOnError: true }), `${q.id}: ${seg}`).not.toThrow();
@@ -70,5 +73,36 @@ describe('practice questions', () => {
 
   it.each(SUBJECTS.map((s) => s.id))('%s has at least 40 questions', (id) => {
     expect(ALL_QUESTIONS.filter((q) => q.subject === id).length).toBeGreaterThanOrEqual(40);
+  });
+});
+
+import { ALL_ESSAYS } from '../essays';
+import { RUBRICS, getRubric, rubricMax } from '../rubrics';
+
+describe('essay prompts and rubrics', () => {
+  it('reference existing rubrics, topics and have unique ids', () => {
+    const ids = ALL_ESSAYS.map((e) => e.id);
+    expect(ids.filter((id, i) => ids.indexOf(id) !== i)).toEqual([]);
+    for (const e of ALL_ESSAYS) {
+      expect(getRubric(e.rubric), e.id).toBeDefined();
+      const subj = SUBJECTS.find((s) => s.id === e.subject)!;
+      expect(subj.topics.map((t) => t.id), e.id).toContain(e.topic);
+      if (e.minWords && e.maxWords) expect(e.minWords).toBeLessThan(e.maxWords);
+    }
+  });
+  it('rubric bands cover each criterion exactly once from 1 to max', () => {
+    for (const r of RUBRICS) {
+      for (const c of r.criteria) {
+        const covered = c.bands.flatMap((b) => Array.from({ length: b.max - b.min + 1 }, (_, k) => b.min + k)).sort((a, b) => a - b);
+        expect(covered, `${r.id} ${c.id}`).toEqual(Array.from({ length: c.max }, (_, k) => k + 1));
+      }
+    }
+  });
+  it('rubric totals match the IB papers', () => {
+    expect(rubricMax(getRubric('esp-p1')!)).toBe(20);
+    expect(rubricMax(getRubric('esp-p2')!)).toBe(30);
+    expect(rubricMax(getRubric('engb-p1')!)).toBe(30);
+    expect(rubricMax(getRubric('hist-p2')!)).toBe(15);
+    expect(rubricMax(getRubric('hist-p1-q4')!)).toBe(9);
   });
 });
