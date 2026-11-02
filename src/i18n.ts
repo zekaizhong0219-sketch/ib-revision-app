@@ -141,6 +141,7 @@ const es: Dict = {
   recommended: 'recomendado',
   classic: 'clásico',
   'Target recall': 'Recuerdo objetivo',
+  'View exemplar': 'Ver ejemplar',
   'Report a mistake': 'Señalar un error',
 };
 
@@ -262,6 +263,7 @@ const zh: Dict = {
   recommended: '推荐',
   classic: '经典',
   'Target recall': '目标记忆率',
+  'View exemplar': '查看范文',
 };
 
 export const DICTIONARIES: Record<Exclude<UiLang, 'en'>, Dict> = { es, zh };

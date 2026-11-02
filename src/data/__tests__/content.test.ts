@@ -110,9 +110,62 @@ describe('essay prompts and rubrics', () => {
   });
   it('rubric totals match the IB papers', () => {
     expect(rubricMax(getRubric('esp-p1')!)).toBe(20);
-    expect(rubricMax(getRubric('esp-p2')!)).toBe(30);
+    expect(rubricMax(getRubric('esp-p2')!)).toBe(25); // from May 2026: A, B1, B2, C, D × 5
     expect(rubricMax(getRubric('engb-p1')!)).toBe(30);
     expect(rubricMax(getRubric('hist-p2')!)).toBe(15);
     expect(rubricMax(getRubric('hist-p1-q4')!)).toBe(9);
+  });
+});
+
+import { EXEMPLARS } from '../exemplars';
+import { countWords } from '../../lib/answer';
+
+describe('exemplars', () => {
+  it('each matches one prompt and scores every rubric criterion within range', () => {
+    expect(EXEMPLARS.length).toBeGreaterThanOrEqual(6);
+    for (const ex of EXEMPLARS) {
+      const prompt = ALL_ESSAYS.find((e) => e.id === ex.promptId)!;
+      const r = getRubric(prompt.rubric)!;
+      expect(Object.keys(ex.scores).sort(), ex.title).toEqual(r.criteria.map((c) => c.id).sort());
+      for (const c of r.criteria) {
+        expect(ex.scores[c.id], `${ex.title} ${c.id}`).toBeGreaterThanOrEqual(0);
+        expect(ex.scores[c.id], `${ex.title} ${c.id}`).toBeLessThanOrEqual(c.max);
+        expect(ex.notes[c.id], `${ex.title} note ${c.id}`).toBeTruthy();
+      }
+      if (prompt.minWords && prompt.maxWords) {
+        const w = countWords(ex.text.replace(/\*\*/g, ''));
+        expect(w, `${ex.title} words`).toBeGreaterThanOrEqual(prompt.minWords);
+        expect(w, `${ex.title} words`).toBeLessThanOrEqual(prompt.maxWords);
+      }
+    }
+  });
+  it('Spanish exemplars follow the house style (no em dash)', () => {
+    for (const ex of EXEMPLARS.filter((e) => e.promptId.startsWith('esp-'))) expect(ex.text.includes('—'), ex.title).toBe(false);
+  });
+});
+
+import { LISTENING } from '../listening';
+
+describe('listening items', () => {
+  it('have scripts, unique ids and valid questions referencing English topics', () => {
+    expect(LISTENING.length).toBeGreaterThanOrEqual(4);
+    expect(new Set(LISTENING.map((l) => l.id)).size).toBe(LISTENING.length);
+    for (const l of LISTENING) {
+      expect(l.script.length).toBeGreaterThan(3);
+      for (const line of l.script) expect(l.speakers[line.speaker], `${l.title}: speaker ${line.speaker}`).toBeTruthy();
+      expect(l.question.parts.length).toBeGreaterThanOrEqual(6);
+      expect(SUBJECTS.find((s) => s.id === 'english')!.topics.map((t) => t.id)).toContain(l.theme);
+    }
+  });
+  it('every auto-marked numeric answer appears in the script (as digits or words)', () => {
+    const words: Record<number, string> = { 2: 'two', 3: 'three', 4: 'four', 5: 'five', 7: 'seven', 9: 'nine', 32: 'thirty-two', 2000: 'two thousand' };
+    for (const l of LISTENING) {
+      const text = l.script.map((s) => s.text).join(' ').toLowerCase();
+      for (const p of l.question.parts) {
+        if (!p.numeric) continue;
+        const v = p.numeric.value;
+        expect(text.includes(String(v)) || (words[v] !== undefined && text.includes(words[v])), `${l.title} (${p.label}) ${v}`).toBe(true);
+      }
+    }
   });
 });

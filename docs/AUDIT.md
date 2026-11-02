@@ -27,3 +27,7 @@ No other factual errors were found.
 
 ## Limits of this audit
 It was done by the same author who wrote the content, using scripted checks plus re-reading. It is not a substitute for a teacher's review. If you find an error, correct it in `src/data/` (the tests catch formatting problems) or note it for your teacher.
+
+## Update: assessment criteria (from the student's Paper 1 / Paper 2 skills)
+- **Spanish A Paper 2** is marked out of **25** from May 2026: A (5), B1 *Análisis de rasgos textuales y decisiones de los autores* (5), B2 *Análisis comparativo* (5), C (5), D (5). The rubric and the course cards previously used the pre-2026 scheme (A 10, B 10, C 5, D 5 = 30) and have been corrected. Essays self-assessed under the old scheme lose their old "B" mark in the estimate; re-mark them if needed.
+- Criterion C in Paper 1 and the IO is *Focalización y organización* (was written as "Enfoque y organización").

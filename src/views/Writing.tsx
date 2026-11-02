@@ -10,6 +10,7 @@ import { MathText } from '../components/MathText';
 import { BarChart } from '../components/Charts';
 import { SubjectDot } from '../components/ui';
 import { navigate, type Route } from '../router';
+import { EXEMPLAR_BY_PROMPT, type Exemplar } from '../data/exemplars';
 import type { EssayAttempt, EssayPrompt, SubjectId } from '../types';
 
 const AUTOSAVE_MS = 1500;
@@ -21,10 +22,13 @@ export default function Writing({ route }: { route: Route }) {
   const param = route.params.get('subject') as SubjectId | null;
   const subject = essaySubjects.find((s) => s.id === param)?.id ?? essaySubjects[0]?.id;
   const [active, setActive] = useState<{ prompt: EssayPrompt; attempt: EssayAttempt; phase: 'write' | 'assess' } | null>(null);
+  const [exemplar, setExemplar] = useState<{ ex: Exemplar; prompt: EssayPrompt } | null>(null);
 
   const prompts = ALL_ESSAYS.filter((e) => e.subject === subject);
   const attempts = data.essays.filter((e) => e.subject === subject).sort((a, b) => b.t - a.t);
   const promptById = useMemo(() => new Map(ALL_ESSAYS.map((p) => [p.id, p])), []);
+
+  if (exemplar) return <ExemplarView ex={exemplar.ex} prompt={exemplar.prompt} onBack={() => setExemplar(null)} />;
 
   if (active) {
     return active.phase === 'write' ? (
@@ -95,6 +99,7 @@ export default function Writing({ route }: { route: Route }) {
                 {topicLabel(p.subject, p.topic)} · <span className="badge">{r.name}</span> · {p.minutes} min
                 {p.minWords && p.maxWords ? ` · ${p.minWords}–${p.maxWords} words` : ''}
                 {best >= 0 && <span className="badge good">best {Math.round(best * 100)}%</span>}
+                {EXEMPLAR_BY_PROMPT.has(p.id) && <span className="badge">exemplar</span>}
                 {draft && <span className="badge">draft saved</span>}
               </div>
               <details>
@@ -103,9 +108,24 @@ export default function Writing({ route }: { route: Route }) {
                 </summary>
                 <MathText text={p.prompt} className="small" />
               </details>
-              <button className="btn primary small" style={{ marginTop: '0.5rem' }} onClick={() => start(p)}>
-                {draft ? t('Resume draft') : t('Start')}
-              </button>
+              <div className="row" style={{ marginTop: '0.5rem' }}>
+                <button className="btn primary small" onClick={() => start(p)}>
+                  {draft ? t('Resume draft') : t('Start')}
+                </button>
+                {EXEMPLAR_BY_PROMPT.has(p.id) && (
+                  <button
+                    className="btn small"
+                    onClick={() => {
+                      const tried = mine.some((e) => e.done);
+                      if (tried || window.confirm('You get much more out of an exemplar after writing your own answer first. Show it anyway?')) {
+                        setExemplar({ ex: EXEMPLAR_BY_PROMPT.get(p.id)!, prompt: p });
+                      }
+                    }}
+                  >
+                    {t('View exemplar')}
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}
@@ -346,6 +366,65 @@ function Assess({ prompt, attempt, onDone }: { prompt: EssayPrompt; attempt: Ess
           {t('Save marks')}
         </button>
       </div>
+    </div>
+  );
+}
+
+function ExemplarView({ ex, prompt, onBack }: { ex: Exemplar; prompt: EssayPrompt; onBack: () => void }) {
+  const t = useT();
+  const r = getRubric(prompt.rubric)!;
+  const total = r.criteria.reduce((sum, c) => sum + (ex.scores[c.id] ?? 0), 0);
+  const words = countWords(ex.text.replace(/\*\*/g, ''));
+  return (
+    <div>
+      <div className="spread">
+        <h1 style={{ margin: 0 }}>{ex.title}</h1>
+        <button className="btn" onClick={onBack}>
+          {t('Back')}
+        </button>
+      </div>
+      <details className="card" style={{ marginTop: '1rem' }}>
+        <summary>Task · {r.name}</summary>
+        <MathText text={prompt.prompt} className="small" />
+      </details>
+      <article className="card exemplar" lang={getSubject(prompt.subject).lang}>
+        <div className="small muted" style={{ marginBottom: 8 }}>
+          {words} words{prompt.minWords && prompt.maxWords ? ` (required ${prompt.minWords}–${prompt.maxWords})` : ''}
+        </div>
+        {ex.text.split(/\n\s*\n/).map((para, i) => (
+          <MathText key={i} text={para} className="exemplar-para" />
+        ))}
+      </article>
+      <section className="card">
+        <div className="spread">
+          <h2 style={{ margin: 0 }}>Estimated marks</h2>
+          <span className="badge good">
+            {total} / {rubricMax(r)}
+          </span>
+        </div>
+        <table className="keys" style={{ marginTop: '0.5rem' }}>
+          <tbody>
+            {r.criteria.map((c) => (
+              <tr key={c.id}>
+                <td style={{ width: '32%', verticalAlign: 'top' }}>
+                  <strong>{c.name}</strong>
+                  <div className="small muted">
+                    {ex.scores[c.id]} / {c.max}
+                  </div>
+                </td>
+                <td className="small">{ex.notes[c.id]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="small" style={{ marginTop: '0.75rem' }}>
+          {ex.overall}
+        </p>
+        <p className="small muted">
+          Written for this app; the marks are an estimate against the criteria, not an official IB result. Use it to see structure and
+          technique, not to memorise.
+        </p>
+      </section>
     </div>
   );
 }

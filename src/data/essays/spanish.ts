@@ -41,6 +41,18 @@ S: Tipo de narrador o yo lírico; fiabilidad; focalización; estilo indirecto li
 @essay P2 rubric=esp-p2 minutes=105
 Q: ¿Cómo presentan dos de las obras estudiadas la relación entre el individuo y la memoria (personal o colectiva)?
 S: Memoria como tema y como técnica (analepsis, estructura fragmentada); contexto histórico; símbolos del recuerdo; olvido y silencio.
+
+@essay P2 rubric=esp-p2 minutes=105
+Q: ¿Hasta qué punto las acciones de los personajes secundarios determinan el final de dos de las obras estudiadas?
+S: Posible pareja: *Un enemigo del pueblo* (Hovstad, Aslaksen, Kul, Horster) y *La amiga estupenda* (Stefano, los Solara). Analiza decisiones formales: en el teatro, diálogo, finales de acto y peripecia; en la novela, narradora poco fiable y final abierto. Compara en cada párrafo (B2).
+
+@essay P2 rubric=esp-p2 minutes=105
+Q: ¿De qué manera se presenta la lucha del individuo por ser entendido en dos de las obras estudiadas?
+S: Posible pareja: *El árbol de la ciencia* (Andrés, narrador omnisciente focalizado, diálogo con Iturrioz) y *Un enemigo del pueblo* (el doctor, discurso del acto IV, ironía dramática). Tesis: semejanza temática + diferencia de tratamiento + razón (género, contexto).
+
+@essay P2 rubric=esp-p2 minutes=105
+Q: «Algunas formas literarias permiten al receptor conocer mejor a los personajes que otras.» ¿Hasta qué punto está de acuerdo, con referencia a dos de las obras estudiadas?
+S: Contraste de género: el drama (*Un enemigo del pueblo*: acceso directo por diálogo y acotaciones) frente a la narración en primera persona (*La amiga estupenda*: acceso mediado y poco fiable) o la novela gráfica (*Persépolis*: imagen y texto). Postura matizada, no solo ilustrar la afirmación.
 `;
 
 export const spanishEssays = parseEssays('spanish', source);

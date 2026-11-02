@@ -7,10 +7,12 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 | | |
 |---|---|
 | Flashcards | **1,183**: Physics 279 · Chemistry 219 · Math AA 161 · Spanish A 152 · English B 155 · History 217 (including IB command terms) |
-| Practice questions | **378**, all original: Physics 85 · Chemistry 71 · Math 69 · Spanish A 48 · English B 49 · History 56 |
-| Structured (Paper 2-style) questions | **51** of the above, 196 parts with mark schemes: Physics 18 · Chemistry 14 · Math 15 · English B reading texts 4 |
-| Timed writing tasks | **31**: Spanish A Paper 1 (3 original texts) and Paper 2 (6) · English B Paper 1 (10) · History Paper 2 (12) |
-| Syllabus | Physics & Chemistry: first assessment 2025. Math AA: first assessment 2021, topics 1–5. Spanish A Lang & Lit: first assessment 2021. English B: first assessment 2020 (five themes). History: prescribed subject 3 *The move to global war*, world history topics 11 *Causes and effects of 20th-century wars* (examples: WWI, WWII, Spanish Civil War) and 12 *The Cold War*. AHL content is tagged. |
+| Practice questions | **518**, all original: Physics 127 · Chemistry 103 · Math 103 · Spanish A 64 · English B 57 · History 64 |
+| Structured (Paper 2-style) questions | **58** of the above, 221 parts with mark schemes: Physics 21 · Chemistry 16 · Math 17 · English B reading texts 4 |
+| Timed writing tasks | **38**: Spanish A Paper 1 (3 original texts) and Paper 2 (9) · English B Paper 1 (10) · History Paper 2 (16) |
+| Model answers (exemplars) | **6** annotated: Spanish A Paper 1 and Paper 2 · History Paper 2 (×2) · English B Paper 1 (speech, blog) |
+| Listening | **4** original English B recordings (29 questions) played by text-to-speech, plus a strategy guide |
+| Syllabus | Physics & Chemistry: first assessment 2025. Math AA: first assessment 2021, topics 1–5. Spanish A Lang & Lit: first assessment 2021. English B: first assessment 2020 (five themes). History: prescribed subject 3 *The move to global war*, world history topics 11 *Causes and effects of 20th-century wars* (examples: WWI, WWII, Spanish Civil War, Russo-Japanese War, Chinese Civil War) and 12 *The Cold War*. AHL content is tagged. |
 
 ## Features
 
@@ -27,8 +29,8 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 - **Report a mistake** (⚑) under any card or question saves a note. Settings lists your notes and exports them as Markdown.
 
 ### Subjects in detail
-- **Spanish A** (written in Spain's Spanish, following RAE norms): rhetorical figures with public-domain examples, genres and metre, non-literary text types and image analysis, literary movements, the course framework (areas of exploration, concepts, global-issue fields), and Paper 1 / Paper 2 / IO strategy. **Mis obras** is an empty topic for cards about *your* set works (quotes, characters, symbols); add them in the Library.
-- **English B HL**: conventions of 19 text types, register and tone, linking words and C1 grammar, idioms, vocabulary for the five themes, and Paper 2 / IO strategy. **My literary works** is left for your own IO cards.
+- **Spanish A** (written in Spain's Spanish, following RAE norms): rhetorical figures with public-domain examples, genres and metre, non-literary text types and image analysis, literary movements, the course framework (areas of exploration, concepts, global-issue fields), and Paper 1 / Paper 2 / IO strategy. Set-work packs for *La amiga estupenda*, *Un enemigo del pueblo* and *El árbol de la ciencia* follow the student's own reading guides (Baroja and Ibsen quotations checked against the class editions; no literal Ferrante quotations, as the guide advises), plus packs for *El conde Lucanor*, *Persépolis* and *El cuarto de atrás*. Paper 2 is self-marked with the criteria in force from May 2026 (A, B1, B2, C, D; 25 marks).
+- **English B HL**: conventions of 19 text types, register and tone, linking words and C1 grammar, idioms, vocabulary for the five themes, and Paper 2 / IO strategy. Packs for the two IO works, *To Kill a Mockingbird* and *Victory City* (very few quotations; check them against your edition).
 - **History SL**: dated events, people and concepts for PS3 (Japan 1931–41; Germany and Italy 1933–40), OPVL source skills, WWI, WWII, the Spanish Civil War, the Cold War (origins, leaders, crises, détente and end) and historiography. Dates were double-checked; still confirm anything you quote in an exam against your textbook.
 
 ### 2. Timed practice
@@ -50,6 +52,12 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 ### Timed writing (Writing tab)
 - Real paper timings (e.g. English B Paper 1: 90 min, 450–600 words; Spanish Paper 1 SL: 75 min; History Paper 2: 45 min per essay), a live word count against the word range, optional planning hints, and drafts that **autosave**.
 - When you finish, mark yourself against each criterion. The bands are short **paraphrases** of the IB criteria; check the official wording with your teacher. Your score history is charted per subject, and essay scores feed topic accuracy at single weight.
+- **Exemplars**: some tasks have an annotated model answer (written for the app) with an estimated score and a note per criterion. Try the task first; the app asks before showing it if you haven't completed an attempt. Scores are estimates, not official marking.
+
+### English B listening (Practice → Listening trainer)
+- Four original recordings (radio interview, podcast, school news report, talk) across the five themes, read aloud by your browser's speech synthesis with a different voice per speaker where the device has several. Quality depends on the voices installed on your system; Chrome, Edge and Safari work best.
+- As in the exam, you get **two plays**; *practice mode* removes the limit, and you can slow the speed down. Questions (gap-fill, short answer, multiple choice, true/false with justification) are auto-marked, and the transcript appears only after you submit.
+- A strategy guide covers what to do before listening, on the first and second play, and afterwards.
 
 ### 3. Weak-topic tracker / dashboard
 - **Today's plan** fits your daily study budget (default 60 min). Due reviews come first, then practice slots aimed at each subject's weakest topic, weighted by how close the exam is. Spanish, English and History get a timed-writing session if you haven't written one in the last 7 days.
@@ -213,7 +221,9 @@ src/
   data/        syllabus, flashcard decks, question banks, content DSL parser
   lib/         srs (SM-2), answer checking, storage/backup (v2 migration), stats & recommendations, daily planner, review queue, KaTeX markup
   data/rubrics.ts, data/essays/   assessment criteria (paraphrased) and timed-writing tasks
-  views/       Dashboard, Review, Practice, Writing, Cards (library), Exams, Settings
+  data/exemplars/   annotated model answers, each linked to one writing task
+  data/listening.ts  English B listening scripts, questions and strategy guide
+  views/       Dashboard, Review, Practice, Mock, Listening, Writing, Cards (library), Exams, Settings
   components/  MathText, charts, UI primitives, keyboard help
 ```
 
@@ -224,4 +234,4 @@ A full content audit is documented in [`docs/AUDIT.md`](docs/AUDIT.md): method, 
 
 All definitions and formulas were written for this app and checked against standard physics, chemistry and mathematics (IB data-booklet notation and constants where relevant). Every numeric practice answer was independently recomputed. If you find a mistake, fix it in `src/data/`; the tests will catch formatting errors.
 
-Questions, writing tasks and Paper 1 texts are original and are **not** taken from IB past papers. Assessment criteria are paraphrased, not quoted. Literary examples are from public-domain authors or written for the app. This project is not affiliated with or endorsed by the International Baccalaureate Organization.
+Questions, writing tasks, Paper 1 texts, exemplars and listening scripts are original and are **not** taken from IB past papers. Assessment criteria are paraphrased, not quoted. Literary examples are from public-domain authors or written for the app. This project is not affiliated with or endorsed by the International Baccalaureate Organization.

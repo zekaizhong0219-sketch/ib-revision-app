@@ -85,7 +85,13 @@ const spanishTopics: Topic[] = [
   { id: 'P1', name: 'Prueba 1: análisis guiado', theme: 'Evaluación' },
   { id: 'P2', name: 'Prueba 2: ensayo comparativo', theme: 'Evaluación' },
   { id: 'IO', name: 'Oral individual', theme: 'Evaluación' },
-  { id: 'OBR', name: 'Mis obras', theme: 'Tus lecturas' },
+  { id: 'AE', name: 'La amiga estupenda (Ferrante)', theme: 'Obras del curso' },
+  { id: 'EP', name: 'Un enemigo del pueblo (Ibsen)', theme: 'Obras del curso' },
+  { id: 'AC', name: 'El árbol de la ciencia (Baroja)', theme: 'Obras del curso' },
+  { id: 'CL', name: 'El conde Lucanor (don Juan Manuel)', theme: 'Obras del curso' },
+  { id: 'PE', name: 'Persépolis (Satrapi)', theme: 'Obras del curso' },
+  { id: 'CA', name: 'El cuarto de atrás (Martín Gaite)', theme: 'Obras del curso' },
+  { id: 'OBR', name: 'Mis obras (otras)', theme: 'Obras del curso' },
 ];
 
 const englishTopics: Topic[] = [
@@ -99,7 +105,9 @@ const englishTopics: Topic[] = [
   { id: 'SP', name: 'Sharing the planet', theme: 'Themes' },
   { id: 'RD', name: 'Reading and listening skills', theme: 'Paper 2' },
   { id: 'IO', name: 'Individual oral (literature)', theme: 'Internal assessment' },
-  { id: 'MYW', name: 'My literary works', theme: 'Internal assessment' },
+  { id: 'TKM', name: 'To Kill a Mockingbird (Lee)', theme: 'Literary works' },
+  { id: 'VC', name: 'Victory City (Rushdie)', theme: 'Literary works' },
+  { id: 'MYW', name: 'My notes on the works', theme: 'Literary works' },
 ];
 
 const historyTopics: Topic[] = [
@@ -110,6 +118,8 @@ const historyTopics: Topic[] = [
   { id: 'W11.WW1', name: 'First World War (1914–1918)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
   { id: 'W11.WW2', name: 'Second World War (1939–1945)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
   { id: 'W11.SCW', name: 'Spanish Civil War (1936–1939)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
+  { id: 'W11.RJW', name: 'Russo-Japanese War (1904–1905)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
+  { id: 'W11.CCW', name: 'Chinese Civil War (1927–1937, 1946–1949)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
   { id: 'W12.RMA', name: 'Rivalry, mistrust and accord', theme: 'Paper 2 · Topic 12: The Cold War' },
   { id: 'W12.LN', name: 'Leaders and nations', theme: 'Paper 2 · Topic 12: The Cold War' },
   { id: 'W12.CR', name: 'Cold War crises', theme: 'Paper 2 · Topic 12: The Cold War' },

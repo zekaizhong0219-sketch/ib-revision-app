@@ -311,3 +311,6 @@ table.keys td { padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
 input[type='time'] { padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); }
 
 input[type='range'] { width: 100%; accent-color: var(--accent); }
+
+.exemplar { line-height: 1.7; }
+.exemplar-para { margin-bottom: 0.9rem; }
