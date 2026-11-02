@@ -3,6 +3,7 @@ import { useStore } from '../store';
 import { getSubject, topicLabel } from '../data/syllabus';
 import { activityByDay, currentStreak, dueForecast, longestStreak, recommend, topicStats } from '../lib/stats';
 import { queueCounts } from '../lib/queue';
+import { ALL_QUESTIONS } from '../data/questions';
 import { planDay, reviewLoad, type PlanItem } from '../lib/planner';
 import { BarChart, HBars } from '../components/Charts';
 import { ProgressBar, SubjectDot, Tile } from '../components/ui';
@@ -22,7 +23,7 @@ export default function Dashboard() {
   const recs = useMemo(() => recommend(data, cards, now, 5), [data, cards, now]);
   const activity = useMemo(() => activityByDay(data, now, 30), [data, now]);
   const forecast = useMemo(() => dueForecast(data, cards, now, 14), [data, cards, now]);
-  const plan = useMemo(() => planDay(data, cards, enabled, now), [data, cards, enabled, now]);
+  const plan = useMemo(() => planDay(data, cards, enabled, now, PRACTICE_TOPICS), [data, cards, enabled, now]);
   const load = useMemo(() => reviewLoad(data, cards, enabled, now, 7), [data, cards, enabled, now]);
   const streak = currentStreak(data, now);
   const best = longestStreak(data);
@@ -210,6 +211,13 @@ export default function Dashboard() {
     </div>
   );
 }
+
+/** Topics with at least three practice questions (the planner only sends you to these). */
+const PRACTICE_TOPICS = (() => {
+  const counts = new Map<string, number>();
+  for (const q of ALL_QUESTIONS) counts.set(`${q.subject}|${q.topic}`, (counts.get(`${q.subject}|${q.topic}`) ?? 0) + 1);
+  return new Set([...counts].filter(([, n]) => n >= 3).map(([k]) => k));
+})();
 
 const KIND_LABEL: Record<PlanItem['kind'], string> = { review: 'Flashcards', practice: 'Practice', writing: 'Timed writing' };
 

@@ -76,6 +76,17 @@ describe('planDay', () => {
   });
 });
 
+describe('planDay practice topics', () => {
+  it('only targets topics that have practice questions when a set is given', () => {
+    const d = defaultData();
+    d.settings.newPerDay = 0;
+    const cards = [...deck(), card('ct', 'history', 'CT')];
+    const plan = planDay(d, cards, ['history'], NOW, new Set(['history|W12.CR']));
+    const slot = plan.items.find((i) => i.kind !== 'review')!;
+    expect(slot.topic).toBe('W12.CR');
+  });
+});
+
 describe('reviewLoad', () => {
   it('buckets future reviews per subject and day', () => {
     const d = defaultData();

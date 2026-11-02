@@ -40,7 +40,14 @@ const round5 = (m: number) => Math.max(5, Math.round(m / 5) * 5);
  *     each slot aimed at the subject's top recommended topic. Writing subjects get a timed
  *     writing session if none was done in the last week.
  */
-export function planDay(data: AppData, cards: Card[], subjects: SubjectId[], now: number): DayPlan {
+export function planDay(
+  data: AppData,
+  cards: Card[],
+  subjects: SubjectId[],
+  now: number,
+  /** "subject|topic" keys that have enough practice questions; when given, practice slots target only these. */
+  practiceTopics?: Set<string>,
+): DayPlan {
   const budget = data.settings.dailyMinutes;
   const items: PlanItem[] = [];
 
@@ -77,7 +84,7 @@ export function planDay(data: AppData, cards: Card[], subjects: SubjectId[], now
   if (remaining >= 5 && subjects.length) {
     const recs = recommend(data, cards, now, 1000);
     const weights = subjects.map((s) => {
-      const top = recs.find((r) => r.subject === s);
+      const top = recs.find((r) => r.subject === s && (!practiceTopics || practiceTopics.has(`${s}|${r.topic}`)));
       const days = daysToExam(data.settings.exams, s, now);
       const urgency = days === null ? 1 : 1 + Math.min(2, 30 / Math.max(days, 3));
       const weakness = top ? 1 - (top.stats.accuracy ?? 0.5) : 0.5;
