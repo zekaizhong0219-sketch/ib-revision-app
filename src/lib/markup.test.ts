@@ -15,6 +15,9 @@ describe('toHtml', () => {
   it('renders mhchem', () => {
     expect(toHtml('$\\ce{H2O}$')).toContain('katex');
   });
+  it('treats \\$ as a literal dollar sign', () => {
+    expect(toHtml('about US\\$13 billion and $x$')).toMatch(/^about US\$13 billion and <span class="katex">/);
+  });
   it('does not throw on invalid TeX', () => {
     expect(() => toHtml('$\\frac{$')).not.toThrow();
   });

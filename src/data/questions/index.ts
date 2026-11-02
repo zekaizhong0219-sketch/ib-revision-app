@@ -3,5 +3,6 @@ import { physicsQuestions } from './physics';
 import { chemistryQuestions } from './chemistry';
 import { mathQuestions } from './math';
 import { englishQuestions } from './english';
+import { historyQuestions } from './history';
 
-export const ALL_QUESTIONS: Question[] = [...physicsQuestions, ...chemistryQuestions, ...mathQuestions, ...englishQuestions];
+export const ALL_QUESTIONS: Question[] = [...physicsQuestions, ...chemistryQuestions, ...mathQuestions, ...englishQuestions, ...historyQuestions];

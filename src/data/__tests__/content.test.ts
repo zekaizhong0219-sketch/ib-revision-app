@@ -4,7 +4,8 @@ import 'katex/contrib/mhchem';
 import { ALL_CARDS } from '../cards';
 import { SUBJECTS } from '../syllabus';
 
-function mathSegments(text: string): string[] {
+function mathSegments(raw: string): string[] {
+  const text = raw.replace(/\\\$/g, '');
   const out: string[] = [];
   const re = /\$\$([\s\S]+?)\$\$|\$([^$]+?)\$/g;
   let m: RegExpExecArray | null;
@@ -29,7 +30,7 @@ describe('flashcard content', () => {
   it('has balanced $ delimiters and valid KaTeX', () => {
     for (const c of ALL_CARDS) {
       for (const text of [c.front, c.back]) {
-        const stripped = text.replace(/\$\$[\s\S]+?\$\$/g, '');
+        const stripped = text.replace(/\\\$/g, '').replace(/\$\$[\s\S]+?\$\$/g, '');
         expect((stripped.match(/\$/g) ?? []).length % 2, `${c.id}: ${text}`).toBe(0);
         for (const seg of mathSegments(text)) {
           expect(() => katex.renderToString(seg, { throwOnError: true }), `${c.id}: ${seg}`).not.toThrow();
@@ -64,6 +65,8 @@ describe('practice questions', () => {
       if (q.type === 'order') texts.push(...q.items);
       if (q.type === 'match') texts.push(...q.pairs.flat());
       for (const t of texts) {
+        const stripped = t.replace(/\\\$/g, '').replace(/\$\$[\s\S]+?\$\$/g, '');
+        expect((stripped.match(/\$/g) ?? []).length % 2, `${q.id}: unbalanced $ in ${t}`).toBe(0);
         for (const seg of mathSegments(t)) {
           expect(() => katex.renderToString(seg, { throwOnError: true }), `${q.id}: ${seg}`).not.toThrow();
         }

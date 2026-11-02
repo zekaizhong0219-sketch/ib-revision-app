@@ -115,6 +115,7 @@ const historyTopics: Topic[] = [
   { id: 'W12.CR', name: 'Cold War crises', theme: 'Paper 2 · Topic 12: The Cold War' },
   { id: 'W12.END', name: 'Détente and the end of the Cold War', theme: 'Paper 2 · Topic 12: The Cold War' },
   { id: 'HS', name: 'Historiography and essay skills', theme: 'Skills' },
+  { id: 'CT', name: 'Command terms', theme: 'Skills' },
 ];
 
 export const SUBJECTS: Subject[] = [

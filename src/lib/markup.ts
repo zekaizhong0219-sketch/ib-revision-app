@@ -18,8 +18,11 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/** Converts our light markup (text, **bold**, $inline$, $$display$$, newlines) to HTML. */
-export function toHtml(text: string): string {
+const DOLLAR = '\u0000D\u0000';
+
+/** Converts our light markup (text, **bold**, $inline$, $$display$$, newlines; \$ = literal dollar) to HTML. */
+export function toHtml(input: string): string {
+  const text = input.replace(/\\\$/g, DOLLAR);
   const out: string[] = [];
   const re = /\$\$([\s\S]+?)\$\$|\$([^$]+?)\$/g;
   let last = 0;
@@ -34,6 +37,6 @@ export function toHtml(text: string): string {
     last = re.lastIndex;
   }
   out.push(plain(text.slice(last)));
-  return out.join('');
+  return out.join('').split(DOLLAR).join('$');
 }
 
