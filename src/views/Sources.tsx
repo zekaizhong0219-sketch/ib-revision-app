@@ -4,8 +4,10 @@ import { FeedbackExport } from '../components/FeedbackExport';
 import { buildSourceFeedbackPrompt } from '../lib/feedback';
 import { getRubric } from '../data/rubrics';
 import { topicLabel } from '../data/syllabus';
+import { BUILTIN_SOURCE_SETS } from '../data/paper1Sets';
 import { PAPER1_GUIDE, PAPER1_MINUTES, PAPER1_READING_MINUTES, PAPER1_TOPICS, SOURCE_TIPS, paper1Questions } from '../data/paper1';
 import { countWords } from '../lib/answer';
+import { MathText } from '../components/MathText';
 import type { SourceAttempt, SourceSet } from '../types';
 
 const LETTERS = 'ABCD';
@@ -42,6 +44,42 @@ export default function Sources() {
   if (mode.kind === 'mark') return <Mark set={mode.set} attempt={mode.attempt} onDone={() => setMode({ kind: 'list' })} />;
 
   const sets = [...data.sourceSets].reverse();
+  const builtins: SourceSet[] = BUILTIN_SOURCE_SETS.map((b) => ({ ...b, attempts: data.p1Attempts[b.id] ?? [] }));
+  const row = (s: SourceSet, own: boolean) => {
+    const last = s.attempts[s.attempts.length - 1];
+    const max = s.questions.reduce((a, q) => a + q.marks, 0);
+    return (
+      <div className="list-item spread" key={s.id}>
+        <div>
+          <strong>{s.title}</strong>
+          <div className="small muted">
+            {topicLabel('history', s.topic)} · {s.attempts.length} attempt{s.attempts.length === 1 ? '' : 's'}
+            {last ? ` · last ${last.scores.reduce((a, b) => a + b, 0)}/${max}` : ''}
+          </div>
+        </div>
+        <div className="row">
+          <button className="btn primary small" onClick={() => setMode({ kind: 'sit', set: s })}>
+            Sit
+          </button>
+          {own && (
+            <>
+              <button className="btn small" onClick={() => setMode({ kind: 'edit', set: s })}>
+                Edit
+              </button>
+              <button
+                className="btn small danger"
+                onClick={() => {
+                  if (window.confirm(`Delete "${s.title}" and its attempts?`)) deleteSourceSet(s.id);
+                }}
+              >
+                Delete
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
   return (
     <div>
       <h1>History Paper 1 workshop</h1>
@@ -55,39 +93,15 @@ export default function Sources() {
           New source set
         </button>
       </div>
+      <h2>Real sources</h2>
+      <p className="small muted">
+        Sets built on verbatim primary sources (US diplomatic papers, treaty texts and Hansard), with mark-scheme notes written for the app.
+      </p>
+      <div className="list">{builtins.map((b) => row(b, false))}</div>
+      <h2 style={{ marginTop: '1.5rem' }}>Your sets</h2>
       <div className="list">
         {sets.length === 0 && <div className="empty">No source sets yet. Create one from a set of four sources on the same focus.</div>}
-        {sets.map((s) => {
-          const last = s.attempts[s.attempts.length - 1];
-          const max = s.questions.reduce((a, q) => a + q.marks, 0);
-          return (
-            <div className="list-item spread" key={s.id}>
-              <div>
-                <strong>{s.title}</strong>
-                <div className="small muted">
-                  {topicLabel('history', s.topic)} · {s.attempts.length} attempt{s.attempts.length === 1 ? '' : 's'}
-                  {last ? ` · last ${last.scores.reduce((a, b) => a + b, 0)}/${max}` : ''}
-                </div>
-              </div>
-              <div className="row">
-                <button className="btn primary small" onClick={() => setMode({ kind: 'sit', set: s })}>
-                  Sit
-                </button>
-                <button className="btn small" onClick={() => setMode({ kind: 'edit', set: s })}>
-                  Edit
-                </button>
-                <button
-                  className="btn small danger"
-                  onClick={() => {
-                    if (window.confirm(`Delete "${s.title}" and its attempts?`)) deleteSourceSet(s.id);
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          );
-        })}
+        {sets.map((s) => row(s, true))}
       </div>
       <section className="card" style={{ marginTop: '1.5rem' }}>
         <h2>How each question is marked</h2>
@@ -208,8 +222,20 @@ function SourcePanel({ set }: { set: SourceSet }) {
         s.text ? (
           <section className="card" key={i} style={{ margin: 0 }}>
             <h3 style={{ marginTop: 0 }}>Source {LETTERS[i]}</h3>
-            {s.origin && <p className="small muted" style={{ fontStyle: 'italic' }}>{s.origin}</p>}
+            {s.origin &&
+              (s.url ? (
+                <MathText as="div" className="small muted" text={s.origin} />
+              ) : (
+                <p className="small muted" style={{ fontStyle: 'italic' }}>
+                  {s.origin}
+                </p>
+              ))}
             <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{s.text}</p>
+            {s.url && (
+              <a className="small" href={s.url} target="_blank" rel="noopener noreferrer">
+                Full document ↗
+              </a>
+            )}
           </section>
         ) : null,
       )}
@@ -340,6 +366,16 @@ function Mark({ set, attempt, onDone }: { set: SourceSet; attempt: SourceAttempt
               </span>
             </div>
             <p style={{ whiteSpace: 'pre-wrap' }}>{attempt.answers[i]?.trim() || <em className="muted">No answer.</em>}</p>
+            {q.scheme && (
+              <details open>
+                <summary className="small">Points a good answer may make</summary>
+                <ul className="small" style={{ paddingLeft: '1.2rem' }}>
+                  {q.scheme.map((p) => (
+                    <li key={p}>{p}</li>
+                  ))}
+                </ul>
+              </details>
+            )}
             {g && (
               <ul className="small muted" style={{ paddingLeft: '1.2rem' }}>
                 {g.marking.map((p) => (

@@ -48,6 +48,7 @@ export function defaultData(): AppData {
     reports: [],
     school: [],
     sourceSets: [],
+    p1Attempts: {},
     settings: defaultSettings(),
   };
 }
@@ -180,21 +181,37 @@ function sanitizeSourceSet(v: unknown): SourceSet | null {
     .map((x) => ({ label: (x.label as string).slice(0, 8), marks: Math.max(1, Math.min(30, Math.round(x.marks as number))), prompt: (x.prompt as string).slice(0, 600) }))
     .slice(0, 8);
   if (!sources.length || !questions.length) return null;
-  const attempts = (Array.isArray(v.attempts) ? v.attempts : [])
+  const attempts = sanitizeAttempts(v.attempts, questions.map((q) => q.marks));
+  return { id: v.id, title: v.title.slice(0, 160), topic: v.topic.slice(0, 20), sources, questions, t: v.t, attempts };
+}
+
+function sanitizeAttempts(v: unknown, maxMarks: number[]): SourceAttempt[] {
+  return (Array.isArray(v) ? v : [])
     .filter((x): x is Record<string, unknown> => isObj(x) && isNum(x.t))
     .map(
       (x): SourceAttempt => ({
         t: x.t as number,
         sec: isNum(x.sec) ? Math.max(0, x.sec) : 0,
-        answers: (Array.isArray(x.answers) ? x.answers : []).map((a) => (isStr(a) ? a.slice(0, 20000) : '')).slice(0, questions.length),
-        scores: questions.map((q, i) => {
+        answers: (Array.isArray(x.answers) ? x.answers : []).map((a) => (isStr(a) ? a.slice(0, 20000) : '')).slice(0, maxMarks.length),
+        scores: maxMarks.map((m, i) => {
           const sc = Array.isArray(x.scores) ? x.scores[i] : undefined;
-          return isNum(sc) ? Math.max(0, Math.min(q.marks, Math.round(sc))) : 0;
+          return isNum(sc) ? Math.max(0, Math.min(m, Math.round(sc))) : 0;
         }),
       }),
     )
     .slice(-50);
-  return { id: v.id, title: v.title.slice(0, 160), topic: v.topic.slice(0, 20), sources, questions, t: v.t, attempts };
+}
+
+/** Attempts at built-in Paper 1 sets; questions are the standard five (3, 2, 4, 6, 9 marks). */
+function sanitizeP1Attempts(v: unknown): Record<string, SourceAttempt[]> {
+  const out: Record<string, SourceAttempt[]> = {};
+  if (!isObj(v)) return out;
+  for (const [id, list] of Object.entries(v)) {
+    if (!/^p1b-[a-z0-9-]{1,40}$/.test(id)) continue;
+    const a = sanitizeAttempts(list, [3, 2, 4, 6, 9]);
+    if (a.length) out[id] = a;
+  }
+  return out;
 }
 
 function sanitizeSettings(v: unknown): Settings {
@@ -288,6 +305,7 @@ export function sanitizeData(input: unknown): AppData {
     reports: (Array.isArray(raw.reports) ? raw.reports : []).map(sanitizeReport).filter((x): x is ContentReport => !!x).slice(-500),
     school: (Array.isArray(raw.school) ? raw.school : []).map(sanitizeSchool).filter((x): x is SchoolResult => !!x).slice(-MAX_ESSAYS),
     sourceSets: (Array.isArray(raw.sourceSets) ? raw.sourceSets : []).map(sanitizeSourceSet).filter((x): x is SourceSet => !!x).slice(-100),
+    p1Attempts: sanitizeP1Attempts(raw.p1Attempts),
     settings: sanitizeSettings(raw.settings),
   };
 }
@@ -395,6 +413,12 @@ export function mergeData(current: AppData, incoming: AppData): AppData {
     reports: reports.slice(-500),
     school: school.slice(-MAX_ESSAYS),
     sourceSets: [...setMap.values()].sort((a, b) => a.t - b.t).slice(-100),
+    p1Attempts: Object.fromEntries(
+      [...new Set([...Object.keys(current.p1Attempts), ...Object.keys(incoming.p1Attempts)])].map((id) => [
+        id,
+        dedupe([...(current.p1Attempts[id] ?? []), ...(incoming.p1Attempts[id] ?? [])], (a) => String(a.t)).sort((a, b) => a.t - b.t),
+      ]),
+    ),
     settings: incoming.settings,
   };
 }

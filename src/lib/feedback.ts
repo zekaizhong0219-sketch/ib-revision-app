@@ -87,7 +87,7 @@ export function buildSourceFeedbackPrompt(set: SourceSet, attempt: SourceAttempt
     .join('\n\n');
   const answers = set.questions
     .map((q, i) => {
-      const g = guide[q.label]?.marking ?? [];
+      const g = [...(q.scheme ?? []), ...(guide[q.label]?.marking ?? [])];
       const bands = q.label === '4' ? q4Bands : [];
       return [
         `### Question ${q.label} [${q.marks}]: ${q.prompt}`,

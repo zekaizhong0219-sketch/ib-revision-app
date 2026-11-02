@@ -123,7 +123,11 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
   const deleteSourceSet = useCallback((id: string) => setData((d) => ({ ...d, sourceSets: d.sourceSets.filter((x) => x.id !== id) })), []);
   const addSourceAttempt = useCallback(
     (setId: string, attempt: SourceAttempt) =>
-      setData((d) => ({ ...d, sourceSets: d.sourceSets.map((x) => (x.id === setId ? { ...x, attempts: [...x.attempts, attempt] } : x)) })),
+      setData((d) =>
+        setId.startsWith('p1b-')
+          ? { ...d, p1Attempts: { ...d.p1Attempts, [setId]: [...(d.p1Attempts[setId] ?? []), attempt] } }
+          : { ...d, sourceSets: d.sourceSets.map((x) => (x.id === setId ? { ...x, attempts: [...x.attempts, attempt] } : x)) },
+      ),
     [],
   );
 

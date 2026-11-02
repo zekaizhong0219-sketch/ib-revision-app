@@ -147,6 +147,8 @@ export interface AppData {
   school: SchoolResult[];
   /** History Paper 1 source sets entered by the user (kept on this device / in backups only). */
   sourceSets: SourceSet[];
+  /** Attempts at the built-in Paper 1 sets, by set id. */
+  p1Attempts: Record<string, SourceAttempt[]>;
   settings: Settings;
 }
 
@@ -169,6 +171,8 @@ export interface SourceDoc {
   origin: string;
   /** Text of the source, or a description of a visual source. */
   text: string;
+  /** Where the text was taken from (built-in sets). */
+  url?: string;
 }
 
 /** A Paper 1-style question built on a source set. */
@@ -177,6 +181,8 @@ export interface SourceQuestion {
   label: string;
   marks: number;
   prompt: string;
+  /** Points a good answer may make (built-in sets). */
+  scheme?: string[];
 }
 
 /** A user-entered Paper 1 source set (four sources + five questions) and its attempts. */

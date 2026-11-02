@@ -237,3 +237,19 @@ describe('school results and source sets', () => {
     expect(m.sourceSets[0].attempts.map((x) => x.t)).toEqual([1, 2]);
   });
 });
+
+describe('built-in Paper 1 attempts', () => {
+  it('keeps attempts for built-in set ids only, clamped to the standard marks, and merges them', () => {
+    const d = sanitizeData({
+      version: DATA_VERSION,
+      p1Attempts: {
+        'p1b-munich': [{ t: 5, sec: 10, answers: ['x'], scores: [9, 2, 4, 6, 9] }],
+        'evil-id': [{ t: 1, sec: 1, answers: [], scores: [] }],
+      },
+    });
+    expect(Object.keys(d.p1Attempts)).toEqual(['p1b-munich']);
+    expect(d.p1Attempts['p1b-munich'][0].scores).toEqual([3, 2, 4, 6, 9]);
+    const other: AppData = { ...defaultData(), p1Attempts: { 'p1b-munich': [{ t: 6, sec: 1, answers: [], scores: [0, 0, 0, 0, 0] }] } };
+    expect(mergeData(d, other).p1Attempts['p1b-munich'].map((a) => a.t)).toEqual([5, 6]);
+  });
+});

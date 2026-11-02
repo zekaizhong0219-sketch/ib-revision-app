@@ -195,3 +195,38 @@ describe('exam-style formats (Paper 1B, Paper 3)', () => {
     }
   });
 });
+
+describe('built-in History Paper 1 sets (real sources)', () => {
+  it('has complete sets on both case studies with the standard question structure', async () => {
+    const { BUILTIN_SOURCE_SETS } = await import('../paper1Sets');
+    expect(BUILTIN_SOURCE_SETS.length).toBeGreaterThanOrEqual(4);
+    expect(new Set(BUILTIN_SOURCE_SETS.map((s) => s.topic))).toEqual(new Set(['PS3.JP', 'PS3.EU']));
+    expect(new Set(BUILTIN_SOURCE_SETS.map((s) => s.id)).size).toBe(BUILTIN_SOURCE_SETS.length);
+    for (const set of BUILTIN_SOURCE_SETS) {
+      expect(set.id).toMatch(/^p1b-[a-z0-9-]+$/);
+      expect(set.questions.map((q) => [q.label, q.marks])).toEqual([['1a', 3], ['1b', 2], ['2', 4], ['3', 6], ['4', 9]]);
+      for (const q of set.questions) expect(q.scheme?.length, `${set.id} ${q.label}`).toBeGreaterThanOrEqual(2);
+      expect(set.sources).toHaveLength(4);
+      for (const src of set.sources) {
+        expect(src.origin.length).toBeGreaterThan(40);
+        expect(src.url).toMatch(/^https:\/\/(history\.state\.gov|avalon\.law\.yale\.edu|api\.parliament\.uk)\//);
+        const words = src.text.split(/\s+/).length;
+        expect(words, src.url).toBeGreaterThanOrEqual(60);
+        expect(words, src.url).toBeLessThanOrEqual(300);
+        // No stray Hansard column numbers (e.g. "four Powers 50 at Munich").
+        if (src.url?.includes('parliament.uk')) expect(src.text).not.toMatch(/[A-Za-z,] \d{2,4} [a-z]/);
+      }
+      // Hansard extracts carry the Open Parliament Licence attribution.
+      for (const src of set.sources.filter((x) => x.url?.includes('parliament.uk'))) expect(src.origin).toContain('Open Parliament Licence');
+    }
+  });
+  it('refers to sources that exist (A–D) in every question', async () => {
+    const { BUILTIN_SOURCE_SETS } = await import('../paper1Sets');
+    for (const set of BUILTIN_SOURCE_SETS) {
+      for (const q of set.questions) {
+        const letters = [...q.prompt.matchAll(/Sources? ([A-D])(?: and ([A-D]))?/g)].flatMap((m) => [m[1], m[2]]).filter(Boolean);
+        if (q.label !== '4') expect(letters.length, `${set.id} ${q.label}`).toBeGreaterThan(0);
+      }
+    }
+  });
+});
