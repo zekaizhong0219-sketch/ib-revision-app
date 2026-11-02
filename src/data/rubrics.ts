@@ -39,7 +39,7 @@ const five = (top: string, mid: string, low: string): Band[] => [
 export const RUBRICS: Rubric[] = [
   {
     id: 'esp-p1',
-    name: 'Español A LyL NM — Prueba 1 (análisis guiado)',
+    name: 'Español A LyL NM: Prueba 1 (análisis guiado)',
     minutes: 75,
     note: 'NM: un texto no literario, 1 h 15 min, 20 puntos.',
     criteria: [
@@ -67,7 +67,7 @@ export const RUBRICS: Rubric[] = [
   },
   {
     id: 'esp-p2',
-    name: 'Español A LyL — Prueba 2 (ensayo comparativo)',
+    name: 'Español A LyL: Prueba 2 (ensayo comparativo)',
     minutes: 105,
     note: 'NM y NS: comparación de dos obras literarias estudiadas, 1 h 45 min, 30 puntos.',
     criteria: [
