@@ -64,7 +64,7 @@ describe('practice questions', () => {
       if (q.type === 'text') texts.push(...q.answers);
       if (q.type === 'order') texts.push(...q.items);
       if (q.type === 'match') texts.push(...q.pairs.flat());
-      if (q.type === 'structured') texts.push(...q.parts.flatMap((p) => [p.prompt, p.scheme]));
+      if (q.type === 'structured') texts.push(...q.parts.flatMap((p) => [p.prompt, p.scheme, ...(p.accept ?? [])]));
       for (const t of texts) {
         const stripped = t.replace(/\\\$/g, '').replace(/\$\$[\s\S]+?\$\$/g, '');
         expect((stripped.match(/\$/g) ?? []).length % 2, `${q.id}: unbalanced $ in ${t}`).toBe(0);

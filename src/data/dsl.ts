@@ -45,6 +45,7 @@ import { SUBJECT_PREFIX as PREFIX } from './subjectIds';
  *   Q: stem / context (may continue on following lines)
  *   a) [2] Calculate the acceleration.
  *   = 2.5 rel=0.02 unit=m s^-2        ← optional: auto-mark this part numerically
+ *   ~ answer one | answer two          ← optional: auto-mark this part as a short text answer
  *   M: mark-scheme point ¶ another point
  *   b) [3] Explain why…
  *   M: …
@@ -306,6 +307,11 @@ export function parseStructured(subject: SubjectId, source: string): StructuredQ
       if (part) {
         parts.push({ label: part[1], marks: Number(part[2]), prompt: part[3], scheme: '' });
         key = 'P';
+      } else if (line.startsWith('~')) {
+        if (!parts.length) throw new Error(`${where}: text answer before any part`);
+        const accept = line.slice(1).split('|').map((x) => x.trim()).filter(Boolean);
+        if (!accept.length) throw new Error(`${where}: empty ~ answer list`);
+        parts[parts.length - 1].accept = accept;
       } else if (line.startsWith('=')) {
         if (!parts.length) throw new Error(`${where}: numeric answer before any part`);
         parts[parts.length - 1].numeric = parseNumericSpec(line.slice(1), where);

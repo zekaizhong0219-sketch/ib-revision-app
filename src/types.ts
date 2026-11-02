@@ -215,6 +215,8 @@ export interface StructuredPart {
   prompt: string;
   /** If present the part is auto-marked: all marks for a correct value, otherwise 0 (self-override allowed). */
   numeric?: NumericSpec;
+  /** If present the part is auto-marked against these accepted short answers (lenient matching). */
+  accept?: string[];
   /** Mark scheme: one point per line. */
   scheme: string;
 }

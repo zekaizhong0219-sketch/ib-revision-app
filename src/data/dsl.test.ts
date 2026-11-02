@@ -100,6 +100,7 @@ answer 2.5 (1)
 b) [3] Explain why…
 M: point one ¶ point two
 c(i)) [1] State x.
+~ x | ex
 M: x
 S: overall
 `;
@@ -111,6 +112,7 @@ S: overall
     expect(q.parts[0].numeric).toEqual({ value: 2.5, rel: 0.05, unit: 'm s^-2' });
     expect(q.parts[0].scheme).toBe('$a = \\Delta v/\\Delta t$ (1)\nanswer 2.5 (1)');
     expect(q.parts[1].numeric).toBeUndefined();
+    expect(q.parts[2].accept).toEqual(['x', 'ex']);
     expect(q.solution).toBe('overall');
     expect(q.id.startsWith('phy-s-A.1-')).toBe(true);
   });

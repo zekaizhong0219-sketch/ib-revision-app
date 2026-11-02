@@ -223,6 +223,24 @@ function PartView({ part, mark, locked, onMark }: { part: StructuredPart; mark: 
         </span>
       </div>
       <MathText text={part.prompt} />
+      {part.accept && checked === null && (
+        <form
+          className="row"
+          style={{ flexWrap: 'nowrap', marginTop: '0.5rem' }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!value.trim()) return;
+            const ok = checkText(value, part.accept!);
+            setChecked(ok);
+            onMark(ok ? part.marks : 0);
+          }}
+        >
+          <input type="text" autoComplete="off" autoCapitalize="off" aria-label={`Answer to part ${part.label}`} value={value} onChange={(e) => setValue(e.target.value)} placeholder="Your answer" autoFocus />
+          <button className="btn primary" type="submit" disabled={!value.trim()}>
+            Check
+          </button>
+        </form>
+      )}
       {part.numeric && checked === null && (
         <form
           className="row"
@@ -242,13 +260,18 @@ function PartView({ part, mark, locked, onMark }: { part: StructuredPart; mark: 
           </button>
         </form>
       )}
-      {!part.numeric && !revealed && (
+      {!part.numeric && !part.accept && !revealed && (
         <button className="btn small" style={{ marginTop: '0.5rem' }} onClick={() => setShown(true)}>
           Write your answer on paper, then show the mark scheme
         </button>
       )}
       {revealed && (
         <div className="feedback info">
+          {part.accept && (
+            <p style={{ margin: '0 0 0.4rem' }}>
+              {checked ? '✓ Accepted' : '✗ Not accepted'} — expected: <strong>{part.accept.join(' / ')}</strong>
+            </p>
+          )}
           {part.numeric && (
             <p style={{ margin: '0 0 0.4rem' }}>
               {checked ? '✓ Correct final answer' : '✗ Final answer differs'} — accepted: <strong>{formatNumber(part.numeric.value)}</strong> {part.numeric.unit}
@@ -258,7 +281,7 @@ function PartView({ part, mark, locked, onMark }: { part: StructuredPart; mark: 
           <MathText text={part.scheme} className="small" />
           {!locked && (
             <div className="row" style={{ marginTop: '0.5rem' }} role="group" aria-label={`Marks for part ${part.label}`}>
-              <span className="small muted">{part.numeric ? 'Adjust for method marks:' : 'Your marks:'}</span>
+              <span className="small muted">{part.numeric || part.accept ? 'Override if your answer is equivalent:' : 'Your marks:'}</span>
               {Array.from({ length: part.marks + 1 }, (_, m) => (
                 <button key={m} className="chip" aria-pressed={mark === m} onClick={() => onMark(m)}>
                   {m}
