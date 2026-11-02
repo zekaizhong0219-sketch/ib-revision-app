@@ -1,28 +1,34 @@
 import { useDeferredValue, useMemo, useState } from 'react';
+import { useT } from '../i18n';
+import { ReportButton } from '../components/ReportButton';
 import { useStore } from '../store';
 import { SUBJECTS, getSubject, topicLabel } from '../data/syllabus';
 import { MathText } from '../components/MathText';
 import { SubjectDot } from '../components/ui';
 import { formatInterval } from '../lib/srs';
+import { isLeech, isMistakeCard } from '../lib/mistakes';
 import type { Card, CardKind, SubjectId } from '../types';
+import type { Route } from '../router';
 
 const KINDS: CardKind[] = ['definition', 'formula', 'unit', 'command', 'concept', 'fact'];
 const PAGE = 40;
 
-type Status = 'all' | 'new' | 'learning' | 'mature' | 'suspended' | 'mine';
+type Status = 'all' | 'new' | 'learning' | 'mature' | 'suspended' | 'mine' | 'mistake' | 'leech';
 
 function emptyDraft(subject: SubjectId = 'physics'): Card {
   return { id: '', subject, topic: getSubject(subject).topics[0].id, front: '', back: '', kind: 'concept', custom: true };
 }
 
-export default function Cards() {
-  const { cards, data, upsertCustomCard, deleteCustomCard, setSuspended, resetCard } = useStore();
+export default function Cards({ route }: { route?: Route }) {
+  const t = useT();
+  const { cards: allCards, data, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, visibleSubjects } = useStore();
+  const cards = useMemo(() => allCards.filter((c) => !data.settings.hiddenSubjects.includes(c.subject)), [allCards, data.settings.hiddenSubjects]);
   const [query, setQuery] = useState('');
   const q = useDeferredValue(query.trim().toLowerCase());
   const [subject, setSubject] = useState<SubjectId | 'all'>('all');
   const [topic, setTopic] = useState('all');
   const [kind, setKind] = useState<CardKind | 'all'>('all');
-  const [status, setStatus] = useState<Status>('all');
+  const [status, setStatus] = useState<Status>(() => (route?.params.get('status') as Status | null) ?? 'all');
   const [limit, setLimit] = useState(PAGE);
   const [draft, setDraft] = useState<Card | null>(null);
 
@@ -36,7 +42,9 @@ export default function Cards() {
       if (status === 'learning' && !(st && st.last > 0 && st.interval < 21)) return false;
       if (status === 'mature' && !(st && st.interval >= 21)) return false;
       if (status === 'suspended' && !st?.suspended) return false;
-      if (status === 'mine' && !c.custom) return false;
+      if (status === 'mine' && (!c.custom || isMistakeCard(c))) return false;
+      if (status === 'mistake' && !isMistakeCard(c)) return false;
+      if (status === 'leech' && !isLeech(st)) return false;
       if (q && !(c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q))) return false;
       return true;
     });
@@ -51,9 +59,9 @@ export default function Cards() {
   return (
     <div>
       <div className="spread">
-        <h1>Card library</h1>
-        <button className="btn primary" onClick={() => setDraft(emptyDraft(subject === 'all' ? 'physics' : subject))}>
-          + New card
+        <h1>{t('Card library')}</h1>
+        <button className="btn primary" onClick={() => setDraft(emptyDraft(subject === 'all' ? (visibleSubjects[0]?.id ?? 'physics') : subject))}>
+          {t('+ New card')}
         </button>
       </div>
 
@@ -62,32 +70,32 @@ export default function Cards() {
       <div className="card" style={{ marginTop: '1rem' }}>
         <div className="form-grid">
           <label className="field">
-            <span>Search</span>
+            <span>{t('Search')}</span>
             <input type="search" placeholder="e.g. entropy, Snell, binomial" value={query} onChange={(e) => { setQuery(e.target.value); setLimit(PAGE); }} />
           </label>
           <label className="field">
-            <span>Subject</span>
+            <span>{t('Subject')}</span>
             <select value={subject} onChange={(e) => { setSubject(e.target.value as SubjectId | 'all'); setTopic('all'); setLimit(PAGE); }}>
               <option value="all">All subjects</option>
-              {SUBJECTS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              {visibleSubjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </label>
           <label className="field">
-            <span>Topic</span>
+            <span>{t('Topic')}</span>
             <select value={topic} disabled={subject === 'all'} onChange={(e) => { setTopic(e.target.value); setLimit(PAGE); }}>
-              <option value="all">All topics</option>
+              <option value="all">{t('All topics')}</option>
               {subject !== 'all' && getSubject(subject).topics.map((t) => <option key={t.id} value={t.id}>{topicLabel(subject, t.id)}</option>)}
             </select>
           </label>
           <label className="field">
-            <span>Type</span>
+            <span>{t('Type')}</span>
             <select value={kind} onChange={(e) => setKind(e.target.value as CardKind | 'all')}>
               <option value="all">All types</option>
               {KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
             </select>
           </label>
           <label className="field">
-            <span>Status</span>
+            <span>{t('Status')}</span>
             <select value={status} onChange={(e) => setStatus(e.target.value as Status)}>
               <option value="all">Any</option>
               <option value="new">New</option>
@@ -95,6 +103,8 @@ export default function Cards() {
               <option value="mature">Mature (≥ 21 d)</option>
               <option value="suspended">Suspended</option>
               <option value="mine">My cards</option>
+              <option value="mistake">{t('Mistake notebook')}</option>
+              <option value="leech">Leeches (5+ lapses)</option>
             </select>
           </label>
         </div>
@@ -124,10 +134,11 @@ export default function Cards() {
                 <div className="row" style={{ marginTop: '0.5rem' }}>
                   <button className="btn small" onClick={() => setSuspended(c.id, !st?.suspended)}>{st?.suspended ? 'Unsuspend' : 'Suspend'}</button>
                   {st && st.last > 0 && <button className="btn small" onClick={() => resetCard(c.id)}>Reset progress</button>}
+                  {!c.custom && <ReportButton item={c.id} subject={c.subject} excerpt={c.front} />}
                   {c.custom && (
                     <>
-                      <button className="btn small" onClick={() => { setDraft(c); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Edit</button>
-                      <button className="btn small danger" onClick={() => { if (window.confirm('Delete this card?')) deleteCustomCard(c.id); }}>Delete</button>
+                      <button className="btn small" onClick={() => { setDraft(c); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>{t('Edit')}</button>
+                      <button className="btn small danger" onClick={() => { if (window.confirm('Delete this card?')) deleteCustomCard(c.id); }}>{t('Delete')}</button>
                     </>
                   )}
                 </div>
@@ -138,7 +149,7 @@ export default function Cards() {
       </div>
       {filtered.length > limit && (
         <div className="center" style={{ marginTop: '1rem' }}>
-          <button className="btn" onClick={() => setLimit((l) => l + PAGE)}>Show more</button>
+          <button className="btn" onClick={() => setLimit((l) => l + PAGE)}>{t('Show more')}</button>
         </div>
       )}
       {filtered.length === 0 && <div className="empty">No cards match these filters.</div>}
@@ -147,6 +158,7 @@ export default function Cards() {
 }
 
 function Editor({ draft, setDraft, onSave }: { draft: Card; setDraft: (c: Card | null) => void; onSave: () => void }) {
+  const t = useT();
   const subj = getSubject(draft.subject);
   return (
     <section className="card" style={{ marginTop: '1rem' }}>
@@ -154,7 +166,7 @@ function Editor({ draft, setDraft, onSave }: { draft: Card; setDraft: (c: Card |
       <form className="stack" onSubmit={(e) => { e.preventDefault(); onSave(); }}>
         <div className="form-grid">
           <label className="field">
-            <span>Subject</span>
+            <span>{t('Subject')}</span>
             <select value={draft.subject} onChange={(e) => {
               const s = e.target.value as SubjectId;
               setDraft({ ...draft, subject: s, topic: getSubject(s).topics[0].id });
@@ -163,13 +175,13 @@ function Editor({ draft, setDraft, onSave }: { draft: Card; setDraft: (c: Card |
             </select>
           </label>
           <label className="field">
-            <span>Topic</span>
+            <span>{t('Topic')}</span>
             <select value={draft.topic} onChange={(e) => setDraft({ ...draft, topic: e.target.value })}>
               {subj.topics.map((t) => <option key={t.id} value={t.id}>{topicLabel(draft.subject, t.id)}</option>)}
             </select>
           </label>
           <label className="field">
-            <span>Type</span>
+            <span>{t('Type')}</span>
             <select value={draft.kind} onChange={(e) => setDraft({ ...draft, kind: e.target.value as CardKind })}>
               {KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
             </select>
@@ -181,7 +193,7 @@ function Editor({ draft, setDraft, onSave }: { draft: Card; setDraft: (c: Card |
             <textarea value={draft.front} onChange={(e) => setDraft({ ...draft, front: e.target.value })} required placeholder="Question or term. Maths: $E = mc^2$" />
           </label>
           <label className="field">
-            <span>Back</span>
+            <span>{t('Back')}</span>
             <textarea value={draft.back} onChange={(e) => setDraft({ ...draft, back: e.target.value })} required placeholder="Answer. Chemistry: $\ce{2H2 + O2 -> 2H2O}$" />
           </label>
         </div>
@@ -194,7 +206,7 @@ function Editor({ draft, setDraft, onSave }: { draft: Card; setDraft: (c: Card |
         </p>
         <div className="row">
           <button className="btn primary" type="submit">Save card</button>
-          <button className="btn ghost" type="button" onClick={() => setDraft(null)}>Cancel</button>
+          <button className="btn ghost" type="button" onClick={() => setDraft(null)}>{t('Cancel')}</button>
         </div>
       </form>
     </section>

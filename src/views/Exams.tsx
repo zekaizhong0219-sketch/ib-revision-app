@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useT } from '../i18n';
+import { buildIcs } from '../lib/ics';
 import { useStore } from '../store';
-import { SUBJECTS, getSubject } from '../data/syllabus';
+import { getSubject } from '../data/syllabus';
 import { SubjectDot } from '../components/ui';
 import type { Exam, SubjectId } from '../types';
 import { href } from '../router';
@@ -22,19 +24,20 @@ export function splitDuration(ms: number) {
 }
 
 function Countdown({ target, now }: { target: number; now: number }) {
+  const t = useT();
   const d = splitDuration(target - now);
   return (
     <div className="countdown" aria-label={`${d.days} days ${d.hours} hours ${d.minutes} minutes`}>
       {(
         [
-          ['days', d.days],
-          ['hrs', d.hours],
-          ['min', d.minutes],
-          ['sec', d.seconds],
+          [t('days'), d.days],
+          [t('hrs'), d.hours],
+          [t('min'), d.minutes],
+          [t('sec'), d.seconds],
         ] as const
       ).map(([l, v]) => (
         <div className="unit" key={l}>
-          <div className="num">{l === 'days' ? v : String(v).padStart(2, '0')}</div>
+          <div className="num">{l === t('days') ? v : String(v).padStart(2, '0')}</div>
           <div className="lbl">{l}</div>
         </div>
       ))}
@@ -45,9 +48,12 @@ function Countdown({ target, now }: { target: number; now: number }) {
 const sortExams = (exams: Exam[]) => [...exams].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
 export function NextExamBanner() {
+  const t = useT();
   const { data } = useStore();
   const now = useNow();
-  const next = sortExams(data.settings.exams).find((e) => new Date(e.date).getTime() > now);
+  const upcoming = sortExams(data.settings.exams).filter((e) => new Date(e.date).getTime() > now);
+  const next = upcoming.find((e) => e.kind !== 'deadline') ?? upcoming[0];
+  const nextDeadline = upcoming.find((e) => e.kind === 'deadline' && e !== next);
   if (!next) {
     return (
       <div className="card" style={{ marginTop: '1rem' }}>
@@ -59,21 +65,27 @@ export function NextExamBanner() {
   return (
     <a href={href('/exams')} className="card spread" style={{ marginTop: '1rem', textDecoration: 'none', color: 'inherit' }}>
       <div>
-        <div className="small muted">Next exam</div>
+        <div className="small muted">{next.kind === 'deadline' ? t('Next deadline') : t('Next exam')}</div>
         <strong>
           {next.subject && <SubjectDot subject={next.subject} />} {next.name}
         </strong>
         <div className="small muted">{new Date(next.date).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'short' })}</div>
+        {nextDeadline && (
+          <div className="small" style={{ marginTop: 4 }}>
+            <span className="badge">deadline</span> {nextDeadline.name} · {Math.ceil((new Date(nextDeadline.date).getTime() - now) / 86400000)} d
+          </div>
+        )}
       </div>
       <Countdown target={new Date(next.date).getTime()} now={now} />
     </a>
   );
 }
 
-const blank = (): Exam => ({ id: `ex-${Date.now().toString(36)}`, name: '', date: '' });
+const blank = (): Exam => ({ id: `ex-${Date.now().toString(36)}`, name: '', date: '', kind: 'exam' });
 
 export default function Exams() {
-  const { data, updateSettings } = useStore();
+  const t = useT();
+  const { data, updateSettings, visibleSubjects } = useStore();
   const now = useNow();
   const [draft, setDraft] = useState<Exam>(blank);
   const exams = sortExams(data.settings.exams);
@@ -88,34 +100,35 @@ export default function Exams() {
 
   return (
     <div>
-      <h1>Exam countdown</h1>
+      <h1>{t('Exams & deadlines')}</h1>
       <p className="muted">
-        Add each paper from your official May/November timetable. Exams within 30 days boost that subject in the “what to revise next” recommendations.
+        Add each paper from your official timetable, plus coursework and oral deadlines (IO, History IA, EE, TOK). Exams within 30 days boost that
+        subject in the recommendations and the daily plan; deadlines are shown as reminders only.
       </p>
 
       <div className="list">
         {exams.length === 0 && <div className="empty">No exams yet — add one below.</div>}
         {exams.map((e) => {
-          const t = new Date(e.date).getTime();
-          const past = t <= now;
+          const when = new Date(e.date).getTime();
+          const past = when <= now;
           return (
             <div className="list-item spread" key={e.id}>
               <div>
                 <strong>
-                  {e.subject && <SubjectDot subject={e.subject} />} {e.name}
+                  {e.subject && <SubjectDot subject={e.subject} />} {e.name} {e.kind === 'deadline' && <span className="badge">deadline</span>}
                 </strong>
                 <div className="small muted">
-                  {Number.isFinite(t) ? new Date(t).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'Invalid date'}
+                  {Number.isFinite(when) ? new Date(when).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'Invalid date'}
                   {e.subject && ` · ${getSubject(e.subject).name}`}
                 </div>
               </div>
               <div className="row">
-                {past ? <span className="badge">done</span> : <Countdown target={t} now={now} />}
+                {past ? <span className="badge">done</span> : <Countdown target={when} now={now} />}
                 <button className="btn small" onClick={() => setDraft(e)}>
-                  Edit
+                  {t('Edit')}
                 </button>
                 <button className="btn small danger" onClick={() => remove(e.id)} aria-label={`Delete ${e.name}`}>
-                  Delete
+                  {t('Delete')}
                 </button>
               </div>
             </div>
@@ -123,8 +136,10 @@ export default function Exams() {
         })}
       </div>
 
+      <CalendarExport />
+
       <section className="card" style={{ marginTop: '1.5rem' }}>
-        <h2>{data.settings.exams.some((e) => e.id === draft.id) ? 'Edit exam' : 'Add exam'}</h2>
+        <h2>{data.settings.exams.some((e) => e.id === draft.id) ? 'Edit' : 'Add exam or deadline'}</h2>
         <form
           className="form-grid"
           onSubmit={(ev) => {
@@ -134,7 +149,7 @@ export default function Exams() {
         >
           <label className="field">
             <span>Name</span>
-            <input type="text" value={draft.name} placeholder="e.g. Physics Paper 1" onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
+            <input type="text" value={draft.name} placeholder="e.g. Physics Paper 1, Spanish IO" onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
           </label>
           <label className="field">
             <span>Date & time</span>
@@ -144,23 +159,68 @@ export default function Exams() {
             <span>Subject (optional)</span>
             <select value={draft.subject ?? ''} onChange={(e) => setDraft({ ...draft, subject: (e.target.value || undefined) as SubjectId | undefined })}>
               <option value="">—</option>
-              {SUBJECTS.map((s) => (
+              {visibleSubjects.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
                 </option>
               ))}
             </select>
           </label>
+          <label className="field">
+            <span>{t('Type')}</span>
+            <select value={draft.kind ?? 'exam'} onChange={(e) => setDraft({ ...draft, kind: e.target.value as Exam['kind'] })}>
+              <option value="exam">Exam paper</option>
+              <option value="deadline">Deadline (IO, IA, EE, TOK…)</option>
+            </select>
+          </label>
           <div className="row" style={{ alignSelf: 'end' }}>
             <button className="btn primary" type="submit">
-              Save
+              {t('Save')}
             </button>
             <button className="btn ghost" type="button" onClick={() => setDraft(blank())}>
-              Cancel
+              {t('Cancel')}
             </button>
           </div>
         </form>
       </section>
     </div>
+  );
+}
+
+function CalendarExport() {
+  const t = useT();
+  const { data } = useStore();
+  const [reminder, setReminder] = useState(true);
+  const [time, setTime] = useState('18:00');
+  const download = () => {
+    const ics = buildIcs(data.settings.exams, { dailyReminder: reminder ? time : null, reminderMinutes: data.settings.dailyMinutes });
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ib-exams.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  return (
+    <section className="card stack" style={{ marginTop: '1.5rem' }}>
+      <h2>{t('Add to your calendar')}</h2>
+      <p className="small muted">
+        Downloads an .ics file with every exam and deadline (each with a reminder the day before). Open it on your phone or import it into Google
+        Calendar (Settings → Import) or Apple Calendar. Re-export after changing dates; importing again replaces events with the same id in most apps.
+      </p>
+      <label className="row" style={{ cursor: 'pointer' }}>
+        <input type="checkbox" checked={reminder} onChange={(e) => setReminder(e.target.checked)} />
+        Also add a daily study session at
+        <input type="time" value={time} onChange={(e) => setTime(e.target.value)} disabled={!reminder} style={{ width: 'auto' }} aria-label="Daily study time" />
+        ({data.settings.dailyMinutes} min, until your last exam)
+      </label>
+      <div>
+        <button className="btn primary" onClick={download} disabled={data.settings.exams.length === 0}>
+          {t('Download .ics')}
+        </button>
+      </div>
+    </section>
   );
 }

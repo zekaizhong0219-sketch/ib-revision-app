@@ -65,7 +65,7 @@ export const chemistryStructureSource = String.raw`
 [d] Coordination (dative) bond :: A covalent bond in which both shared electrons come from the same atom (e.g. in $\ce{NH4+}$, $\ce{H3O+}$, CO).
 [k] Bond order, length and strength :: Triple > double > single in bond strength; triple < double < single in bond length (more shared electrons pull nuclei closer).
 [d] Electronegativity :: The relative ability of an atom to attract a shared pair of electrons in a covalent bond.
-[k] VSEPR: 2, 3 and 4 electron domains :: 2 domains: linear, 180°. ¶ 3: trigonal planar, 120° (one lone pair → bent, ≈ 117°). ¶ 4: tetrahedral, 109.5° (one lone pair → trigonal pyramidal ≈ 107°; two lone pairs → bent ≈ 104.5°).
+[k] VSEPR: 2, 3 and 4 electron domains :: 2 domains: linear, 180°. ¶ 3: trigonal planar, 120° (one lone pair → bent, slightly less than 120°, e.g. $\ce{SO2}$ ≈ 119°). ¶ 4: tetrahedral, 109.5° (one lone pair → trigonal pyramidal ≈ 107°; two lone pairs → bent ≈ 104.5°).
 [k] Why do lone pairs reduce bond angles? :: Lone pairs are closer to the nucleus and repel more strongly than bonding pairs (repulsion: LP–LP > LP–BP > BP–BP).
 [k] VSEPR: 5 and 6 electron domains (AHL) :: 5: trigonal bipyramidal (90°, 120°); with lone pairs: see-saw, T-shaped, linear. ¶ 6: octahedral (90°); with lone pairs: square pyramidal, square planar.
 [k] Bond polarity vs molecular polarity :: A bond is polar if the atoms' electronegativities differ. A molecule is polar only if the bond dipoles do not cancel — e.g. $\ce{CO2}$ has polar bonds but is non-polar (linear, symmetric).

@@ -1,6 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react';
+import { useT } from '../i18n';
 import type { SubjectId } from '../types';
-import { SUBJECTS, getSubject } from '../data/syllabus';
+import { SUBJECTS as SUBJECT_LIST, getSubject } from '../data/syllabus';
+import { useStore } from '../store';
 
 const ICON_PATHS: Record<string, string> = {
   home: 'M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
@@ -13,6 +15,7 @@ const ICON_PATHS: Record<string, string> = {
   moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
   auto: 'M12 3a9 9 0 1 0 0 18V3z M12 3a9 9 0 0 1 0 18',
   keyboard: 'M3 6h18v12H3zM7 10h.01M11 10h.01M15 10h.01M7 14h10',
+  pen: 'M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4',
 };
 
 export function Icon({ name, className = 'icon' }: { name: string; className?: string }) {
@@ -27,10 +30,14 @@ export function SubjectDot({ subject }: { subject: SubjectId }) {
   return <span className="dot" style={{ background: getSubject(subject).color }} />;
 }
 
-export function SubjectChips({ value, onChange, multi = true }: { value: SubjectId[]; onChange: (v: SubjectId[]) => void; multi?: boolean }) {
+export function SubjectChips({ value, onChange, multi = true, all = false }: { value: SubjectId[]; onChange: (v: SubjectId[]) => void; multi?: boolean; all?: boolean }) {
+  const t = useT();
+  const { visibleSubjects } = useStore();
+  // `all` shows hidden subjects too (used in Settings, where you choose what to hide).
+  const list = all ? SUBJECT_LIST : visibleSubjects;
   return (
-    <div className="row" role="group" aria-label="Subjects">
-      {SUBJECTS.map((s) => {
+    <div className="row" role="group" aria-label={t('Subjects')}>
+      {list.map((s) => {
         const on = value.includes(s.id);
         return (
           <button
@@ -54,6 +61,7 @@ export function SubjectChips({ value, onChange, multi = true }: { value: Subject
 
 /** Topic multi-select grouped by theme. Value uses "subject|topic" keys; empty array = all. */
 export function TopicPicker({ subjects, value, onChange }: { subjects: SubjectId[]; value: string[]; onChange: (v: string[]) => void }) {
+  const t = useT();
   const [open, setOpen] = useState(value.length > 0);
   const groups = useMemo(() => {
     const out: { label: string; subject: SubjectId; topics: { key: string; id: string; name: string; ahl?: boolean }[] }[] = [];
@@ -74,12 +82,12 @@ export function TopicPicker({ subjects, value, onChange }: { subjects: SubjectId
     <div>
       <div className="row">
         <button type="button" className="btn small" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-          {open ? 'Hide topics' : 'Choose topics'}
+          {open ? t('Hide topics') : t('Choose topics')}
         </button>
-        <span className="muted small">{valid.length ? `${valid.length} topic${valid.length > 1 ? 's' : ''} selected` : 'All topics'}</span>
+        <span className="muted small">{valid.length ? `${valid.length} topic${valid.length > 1 ? 's' : ''} selected` : t('All topics')}</span>
         {valid.length > 0 && (
           <button type="button" className="btn small ghost" onClick={() => onChange([])}>
-            Clear
+            {t('Clear')}
           </button>
         )}
       </div>

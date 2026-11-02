@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
+import { useT } from './i18n';
 import { useStore } from './store';
 import { href, navigate, useRoute, type RoutePath } from './router';
 import { Icon } from './components/ui';
@@ -8,6 +9,8 @@ import type { ThemePref } from './types';
 
 const Review = lazy(() => import('./views/Review'));
 const Practice = lazy(() => import('./views/Practice'));
+const Writing = lazy(() => import('./views/Writing'));
+const Mock = lazy(() => import('./views/Mock'));
 const Cards = lazy(() => import('./views/Cards'));
 const Exams = lazy(() => import('./views/Exams'));
 const Settings = lazy(() => import('./views/Settings'));
@@ -16,6 +19,7 @@ const NAV: { path: RoutePath; label: string; icon: string; key: string }[] = [
   { path: '/', label: 'Home', icon: 'home', key: 'd' },
   { path: '/review', label: 'Review', icon: 'cards', key: 'r' },
   { path: '/practice', label: 'Practice', icon: 'timer', key: 'p' },
+  { path: '/writing', label: 'Writing', icon: 'pen', key: 'w' },
   { path: '/cards', label: 'Library', icon: 'library', key: 'c' },
   { path: '/exams', label: 'Exams', icon: 'calendar', key: 'e' },
   { path: '/settings', label: 'Settings', icon: 'settings', key: 's' },
@@ -34,10 +38,14 @@ function useTheme(pref: ThemePref) {
 }
 
 export default function App() {
+  const t = useT();
   const route = useRoute();
   const { data, updateSettings } = useStore();
   const [help, setHelp] = useState(false);
   useTheme(data.settings.theme);
+  useEffect(() => {
+    document.documentElement.lang = data.settings.uiLang === 'zh' ? 'zh-Hans' : data.settings.uiLang;
+  }, [data.settings.uiLang]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -56,6 +64,7 @@ export default function App() {
         updateSettings({ theme: NEXT_THEME[data.settings.theme] });
         return;
       }
+      if (e.key === 'm') return navigate('/mock');
       const item = NAV.find((n) => n.key === e.key);
       if (item) navigate(item.path);
     };
@@ -67,9 +76,9 @@ export default function App() {
   const nav = (cls: string) => (
     <nav className={cls} aria-label="Main">
       {NAV.map((n) => (
-        <a key={n.path} href={href(n.path)} className={route.path === n.path ? 'active' : ''} aria-current={route.path === n.path ? 'page' : undefined}>
+        <a key={n.path} href={href(n.path)} className={route.path === n.path || (n.path === '/practice' && route.path === '/mock') ? 'active' : ''} aria-current={route.path === n.path ? 'page' : undefined}>
           <Icon name={n.icon} />
-          <span>{n.label}</span>
+          <span>{t(n.label)}</span>
         </a>
       ))}
     </nav>
@@ -83,7 +92,7 @@ export default function App() {
         </a>
         {nav('nav')}
         <div className="topbar-actions" style={{ marginLeft: 'auto' }}>
-          <button className="btn ghost icon-btn kbd-hint" onClick={() => setHelp(true)} aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">
+          <button className="btn ghost icon-btn kbd-hint" onClick={() => setHelp(true)} aria-label={t('Keyboard shortcuts')} title="Keyboard shortcuts (?)">
             <Icon name="keyboard" />
           </button>
           <button
@@ -101,7 +110,9 @@ export default function App() {
           {route.path === '/' && <Dashboard />}
           {route.path === '/review' && <Review route={route} />}
           {route.path === '/practice' && <Practice route={route} />}
-          {route.path === '/cards' && <Cards />}
+          {route.path === '/writing' && <Writing route={route} />}
+          {route.path === '/mock' && <Mock />}
+          {route.path === '/cards' && <Cards route={route} />}
           {route.path === '/exams' && <Exams />}
           {route.path === '/settings' && <Settings />}
         </Suspense>

@@ -1,11 +1,13 @@
 import type { Card, SubjectId } from '../../types';
 import { hashString } from '../dsl';
+import { SUBJECT_PREFIX as PREFIX } from '../subjectIds';
 
 /**
  * IB command terms with explanations written in our own words (paraphrased,
  * not quoted from IB documents), plus a tip on what examiners reward.
  */
 export const COMMAND_TERMS: Record<string, string> = {
+  Analyse: 'Break down a topic to bring out its essential elements or structure, and explain how they relate.',
   Annotate: 'Add short explanatory notes to a diagram or graph.',
   Calculate: 'Work out a numerical answer and show the key steps of the working.',
   Comment: 'Make a judgement about a given statement or about the result of a calculation.',
@@ -24,6 +26,7 @@ export const COMMAND_TERMS: Record<string, string> = {
   Draw: 'Produce an accurate, labelled diagram or graph in pencil, using a ruler for straight lines and plotting points correctly.',
   Estimate: 'Find an approximate value.',
   Evaluate: 'Judge something by weighing up its strengths against its limitations.',
+  Examine: 'Consider an argument or concept in a way that uncovers its assumptions and interrelationships.',
   Explain: 'Give a detailed account that includes the reasons or causes.',
   Find: 'Obtain an answer, showing the relevant stages of working.',
   Hence: 'Use the result you have just obtained to get the required answer — other methods earn no credit.',
@@ -44,11 +47,11 @@ export const COMMAND_TERMS: Record<string, string> = {
   Solve: 'Find the answer(s) by algebraic, numerical and/or graphical methods.',
   State: 'Give a name, value or short answer with no explanation or calculation.',
   Suggest: 'Put forward a possible solution, hypothesis or answer.',
+  'To what extent': 'Consider the merits of an argument or idea, reach a judgement about how far it holds, and support it with evidence.',
   Verify: 'Provide evidence that confirms a result is correct.',
   'Write down': 'Give the answer directly — little or no calculation is needed and working need not be shown.',
 };
 
-const PREFIX: Record<SubjectId, string> = { physics: 'phy', chemistry: 'chem', math: 'math' };
 
 export function commandTermCards(subject: SubjectId, terms: string[]): Card[] {
   return terms.map((term) => {

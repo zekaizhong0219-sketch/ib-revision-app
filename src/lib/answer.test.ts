@@ -93,3 +93,65 @@ describe('formatNumber', () => {
     expect(formatNumber(123456)).toBe('1.23 × 10^5');
   });
 });
+
+import { checkText, countWords, normaliseText, resultFromScore, scoreMatch, scoreOrder } from './answer';
+
+describe('text answers', () => {
+  it('normalises accents, case, punctuation and leading articles', () => {
+    expect(normaliseText('  La Metáfora. ')).toBe('metafora');
+    expect(normaliseText('The Munich Agreement')).toBe('munich agreement');
+    expect(normaliseText('«Anáfora»')).toBe('anafora');
+    expect(normaliseText('Molotov–Ribbentrop Pact')).toBe('molotov ribbentrop pact');
+  });
+  it('accepts any listed variant leniently', () => {
+    expect(checkText('metafora', ['metáfora'])).toBe(true);
+    expect(checkText('Munich pact', ['Munich Agreement', 'Munich Pact'])).toBe(true);
+    expect(checkText('Munich', ['Munich Agreement'])).toBe(false);
+    expect(checkText('   ', ['x'])).toBe(false);
+  });
+  it('strict mode requires exact accents and case', () => {
+    expect(checkText('metafora', ['metáfora'], true)).toBe(false);
+    expect(checkText(' metáfora ', ['metáfora'], true)).toBe(true);
+  });
+});
+
+describe('ordering and matching', () => {
+  const correct = ['a', 'b', 'c', 'd'];
+  it('scores perfect, partial and reversed orders', () => {
+    expect(scoreOrder(['a', 'b', 'c', 'd'], correct)).toBe(1);
+    expect(scoreOrder(['a', 'b', 'd', 'c'], correct)).toBeCloseTo(2 / 3); // one swapped pair: (5 − 1) / 6
+    expect(scoreOrder(['d', 'c', 'b', 'a'], correct)).toBe(0);
+    expect(scoreOrder(['b', 'c', 'd', 'a'], correct)).toBe(0); // 3 right, 3 wrong
+    expect(scoreOrder(['a', 'c', 'b', 'd'], correct)).toBeCloseTo(2 / 3);
+    expect(scoreOrder(['a'], correct)).toBe(0);
+    expect(scoreOrder(['a', 'a', 'b', 'c'], correct)).toBe(0); // invalid response
+  });
+  it('scores matches', () => {
+    const pairs: [string, string][] = [['x', '1'], ['y', '2'], ['z', '3']];
+    expect(scoreMatch({ x: '1', y: '2', z: '3' }, pairs)).toBe(1);
+    expect(scoreMatch({ x: '1', y: '3', z: '2' }, pairs)).toBeCloseTo(1 / 3);
+    expect(scoreMatch({}, pairs)).toBe(0);
+  });
+  it('maps scores to results', () => {
+    expect(resultFromScore(1)).toBe('correct');
+    expect(resultFromScore(0.5)).toBe('partial');
+    expect(resultFromScore(0.49)).toBe('incorrect');
+  });
+});
+
+describe('countWords', () => {
+  it('counts whitespace-separated words', () => {
+    expect(countWords('')).toBe(0);
+    expect(countWords('  one two\nthree\t four ')).toBe(4);
+  });
+});
+
+import { resultFromMarks } from './answer';
+describe('resultFromMarks', () => {
+  it('uses 75 % / 40 % thresholds', () => {
+    expect(resultFromMarks(6, 8)).toBe('correct');
+    expect(resultFromMarks(4, 8)).toBe('partial');
+    expect(resultFromMarks(3, 8)).toBe('incorrect');
+    expect(resultFromMarks(0, 0)).toBe('incorrect');
+  });
+});

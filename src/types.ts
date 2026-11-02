@@ -1,6 +1,21 @@
-export type SubjectId = 'physics' | 'chemistry' | 'math';
+export type SubjectId = 'physics' | 'chemistry' | 'math' | 'spanish' | 'english' | 'history';
 
-export type CardKind = 'definition' | 'formula' | 'unit' | 'command' | 'concept' | 'fact';
+/** Language the subject's content is written in. */
+export type ContentLang = 'en' | 'es';
+
+export type CardKind =
+  | 'definition'
+  | 'formula'
+  | 'unit'
+  | 'command'
+  | 'concept'
+  | 'fact'
+  | 'date'
+  | 'person'
+  | 'device'
+  | 'vocab'
+  | 'texttype'
+  | 'quote';
 
 export interface Topic {
   /** Stable topic code, e.g. "A.1", "S1.2", "M5". */
@@ -17,6 +32,10 @@ export interface Subject {
   name: string;
   short: string;
   color: string;
+  level: 'SL' | 'HL';
+  lang: ContentLang;
+  /** IB subject group, 1–6. */
+  group: number;
   topics: Topic[];
 }
 
@@ -46,6 +65,9 @@ export interface CardState {
   /** Last review time (ms since epoch). */
   last: number;
   suspended?: boolean;
+  /** FSRS stability (days) and difficulty (1–10); absent for cards only scheduled by SM-2. */
+  s?: number;
+  d?: number;
 }
 
 export type Grade = 'again' | 'hard' | 'good' | 'easy';
@@ -74,12 +96,17 @@ export interface PracticeLog {
   t: number;
   /** Time spent in seconds */
   sec?: number;
+  /** Marks gained / available (structured questions and mock papers). */
+  m?: number;
+  mx?: number;
 }
 
 export interface Exam {
   id: string;
   name: string;
   subject?: SubjectId;
+  /** 'exam' (default) or a coursework/oral 'deadline' (IO, IA, EE, TOK…). */
+  kind?: 'exam' | 'deadline';
   /** ISO date-time string in local time, e.g. 2027-05-05T13:00 */
   date: string;
 }
@@ -89,10 +116,22 @@ export type ThemePref = 'system' | 'light' | 'dark';
 export interface Settings {
   theme: ThemePref;
   newPerDay: number;
+  /** Daily study-time budget used by the planner (minutes). */
+  dailyMinutes: number;
   maxReviewsPerSession: number;
   exams: Exam[];
   /** Subjects that appear in review queues / recommendations. */
   enabledSubjects: SubjectId[];
+  /** Subjects hidden from the whole interface (you don't take them). */
+  hiddenSubjects: SubjectId[];
+  /** Automatically turn questions you get wrong into review cards. */
+  mistakeCards: boolean;
+  /** Interface language (content stays in each subject's language). */
+  uiLang: 'en' | 'es' | 'zh';
+  /** Spaced-repetition algorithm. */
+  scheduler: 'fsrs' | 'sm2';
+  /** FSRS target probability of recall at review time (0.80–0.97). */
+  retention: number;
 }
 
 export interface AppData {
@@ -101,7 +140,53 @@ export interface AppData {
   reviews: ReviewLog[];
   practice: PracticeLog[];
   customCards: Card[];
+  essays: EssayAttempt[];
+  mocks: MockRecord[];
+  reports: ContentReport[];
   settings: Settings;
+}
+
+/** A user's note that a card or question may contain a mistake. */
+export interface ContentReport {
+  id: string;
+  /** Card or question id */
+  item: string;
+  subject: SubjectId;
+  /** Short excerpt of the item for context */
+  excerpt: string;
+  note: string;
+  t: number;
+}
+
+/** Result of a completed mock paper. */
+export interface MockRecord {
+  id: string;
+  subject: SubjectId;
+  /** Start time (ms) */
+  t: number;
+  minutes: number;
+  got: number;
+  max: number;
+  items: number;
+}
+
+/** A timed writing attempt with self-assessed criterion scores. */
+export interface EssayAttempt {
+  id: string;
+  /** Essay prompt id */
+  prompt: string;
+  subject: SubjectId;
+  topic: string;
+  rubric: string;
+  /** Start time (ms) */
+  t: number;
+  /** Seconds actually used */
+  sec: number;
+  words: number;
+  text: string;
+  /** Self-assessed marks per criterion id; empty while still a draft. */
+  scores: Record<string, number>;
+  done: boolean;
 }
 
 export interface NumericSpec {
@@ -139,4 +224,59 @@ export interface OpenQuestion extends QuestionBase {
   answer: string;
 }
 
-export type Question = MCQuestion | NumericQuestion | OpenQuestion;
+/** Short typed answer compared against accepted variants. */
+export interface TextQuestion extends QuestionBase {
+  type: 'text';
+  answers: string[];
+  /** When true, accents and capitalisation must match exactly. */
+  strict?: boolean;
+}
+
+/** Put items into the correct order (items are stored in the correct order). */
+export interface OrderQuestion extends QuestionBase {
+  type: 'order';
+  items: string[];
+}
+
+/** Match each left item to its right item (pairs stored correctly matched). */
+export interface MatchQuestion extends QuestionBase {
+  type: 'match';
+  pairs: [string, string][];
+}
+
+/** One part of a multi-part (Paper 2-style) question. */
+export interface StructuredPart {
+  /** "a", "b", "c(i)"… */
+  label: string;
+  marks: number;
+  prompt: string;
+  /** If present the part is auto-marked: all marks for a correct value, otherwise 0 (self-override allowed). */
+  numeric?: NumericSpec;
+  /** If present the part is auto-marked against these accepted short answers (lenient matching). */
+  accept?: string[];
+  /** Mark scheme: one point per line. */
+  scheme: string;
+}
+
+/** Multi-part exam-style question with marks per part. */
+export interface StructuredQuestion extends QuestionBase {
+  type: 'structured';
+  parts: StructuredPart[];
+}
+
+export type Question = MCQuestion | NumericQuestion | OpenQuestion | TextQuestion | OrderQuestion | MatchQuestion | StructuredQuestion;
+
+/** A timed extended-writing task, self-assessed with a rubric. */
+export interface EssayPrompt {
+  id: string;
+  subject: SubjectId;
+  topic: string;
+  /** Rubric id from data/rubrics.ts */
+  rubric: string;
+  prompt: string;
+  minutes: number;
+  minWords?: number;
+  maxWords?: number;
+  /** Planning hints / points a strong answer would cover. */
+  guidance: string;
+}

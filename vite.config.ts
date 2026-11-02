@@ -34,6 +34,19 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Separate chunks so an app-code update doesn't invalidate the (large, rarely changing)
+        // study content or third-party libraries in the browser / service-worker cache.
+        manualChunks(id) {
+          if (id.includes('/src/data/')) return 'content';
+          if (id.includes('node_modules/react') || id.includes('node_modules/scheduler')) return 'react';
+          return undefined;
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],

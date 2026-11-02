@@ -163,3 +163,34 @@ describe('mergeData', () => {
     expect(m.cards['phy-1'].interval).toBe(30);
   });
 });
+
+describe('v2 migration and essays', () => {
+  it('adds the new subjects to an old v1 enabled list', () => {
+    const d = sanitizeData({ version: 1, settings: { enabledSubjects: ['physics', 'math'] } });
+    expect(d.settings.enabledSubjects).toEqual(['physics', 'math', 'spanish', 'english', 'history']);
+    expect(d.settings.hiddenSubjects).toEqual([]);
+    expect(d.essays).toEqual([]);
+  });
+  it('does not re-enable subjects for current-version data', () => {
+    const d = sanitizeData({ version: DATA_VERSION, settings: { enabledSubjects: ['history'] } });
+    expect(d.settings.enabledSubjects).toEqual(['history']);
+  });
+  it('never hides every subject and keeps deadline kind', () => {
+    const d = sanitizeData({
+      settings: {
+        hiddenSubjects: ['physics', 'chemistry', 'math', 'spanish', 'english', 'history'],
+        exams: [{ id: 'io', name: 'Spanish IO', date: '2027-01-15T10:00', kind: 'deadline', subject: 'spanish' }],
+      },
+    });
+    expect(d.settings.hiddenSubjects).toEqual([]);
+    expect(d.settings.exams[0].kind).toBe('deadline');
+  });
+  it('sanitises essays and merges them by id', () => {
+    const e = { id: 'e1', prompt: 'p', subject: 'history', topic: 'W12.CR', rubric: 'hist-p2', t: 5, sec: 60, words: 3, text: 'a b c', scores: { A: 10, bad: 'x' }, done: true };
+    const d = sanitizeData({ essays: [e, { id: 'broken' }] });
+    expect(d.essays).toHaveLength(1);
+    expect(d.essays[0].scores).toEqual({ A: 10 });
+    const m = mergeData(d, sanitizeData({ essays: [{ ...e, id: 'e2', t: 1 }] }));
+    expect(m.essays.map((x) => x.id)).toEqual(['e2', 'e1']);
+  });
+});

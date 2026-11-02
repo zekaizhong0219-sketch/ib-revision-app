@@ -5,6 +5,11 @@ import type { Subject, SubjectId, Topic } from '../types';
  *  - Physics: first assessment 2025 (themes A–E)
  *  - Chemistry: first assessment 2025 (Structure 1–3, Reactivity 1–3)
  *  - Mathematics: Analysis & Approaches, first assessment 2021 (topics 1–5)
+ *  - Spanish A: Language and Literature SL, first assessment 2021
+ *  - English B HL, first assessment 2020 (five prescribed themes)
+ *  - History SL, first assessment 2017 — Prescribed subject 3 (The move to global war),
+ *    World history topic 11 (Causes and effects of 20th-century wars),
+ *    World history topic 12 (The Cold War: superpower tensions and rivalries)
  * "CT" holds the IB command terms relevant to each subject.
  */
 
@@ -71,13 +76,58 @@ const mathTopics: Topic[] = [
   { id: 'CT', name: 'Command terms', theme: 'Exam skills' },
 ];
 
-export const SUBJECTS: Subject[] = [
-  { id: 'physics', name: 'Physics HL', short: 'Phys', color: 'var(--c-physics)', topics: physicsTopics },
-  { id: 'chemistry', name: 'Chemistry HL', short: 'Chem', color: 'var(--c-chemistry)', topics: chemistryTopics },
-  { id: 'math', name: 'Math AA HL', short: 'Math', color: 'var(--c-math)', topics: mathTopics },
+const spanishTopics: Topic[] = [
+  { id: 'FIG', name: 'Figuras retóricas', theme: 'Herramientas de análisis' },
+  { id: 'GEN', name: 'Géneros literarios y métrica', theme: 'Herramientas de análisis' },
+  { id: 'NL', name: 'Textos no literarios', theme: 'Herramientas de análisis' },
+  { id: 'MOV', name: 'Movimientos y contexto literario', theme: 'Contexto' },
+  { id: 'CON', name: 'Conceptos y áreas de exploración', theme: 'Marco del curso' },
+  { id: 'P1', name: 'Prueba 1: análisis guiado', theme: 'Evaluación' },
+  { id: 'P2', name: 'Prueba 2: ensayo comparativo', theme: 'Evaluación' },
+  { id: 'IO', name: 'Oral individual', theme: 'Evaluación' },
+  { id: 'OBR', name: 'Mis obras', theme: 'Tus lecturas' },
 ];
 
-export const SUBJECT_IDS: SubjectId[] = SUBJECTS.map((s) => s.id);
+const englishTopics: Topic[] = [
+  { id: 'TT', name: 'Text types and conventions', theme: 'Writing (Paper 1)' },
+  { id: 'REG', name: 'Register, tone and audience', theme: 'Writing (Paper 1)' },
+  { id: 'LG', name: 'Linking words and grammar', theme: 'Language' },
+  { id: 'ID', name: 'Identities', theme: 'Themes' },
+  { id: 'EX', name: 'Experiences', theme: 'Themes' },
+  { id: 'HI', name: 'Human ingenuity', theme: 'Themes' },
+  { id: 'SO', name: 'Social organization', theme: 'Themes' },
+  { id: 'SP', name: 'Sharing the planet', theme: 'Themes' },
+  { id: 'RD', name: 'Reading and listening skills', theme: 'Paper 2' },
+  { id: 'IO', name: 'Individual oral (literature)', theme: 'Internal assessment' },
+  { id: 'MYW', name: 'My literary works', theme: 'Internal assessment' },
+];
+
+const historyTopics: Topic[] = [
+  { id: 'PS3.JP', name: 'Japanese expansion in East Asia (1931–1941)', theme: 'Paper 1 · Prescribed subject 3: The move to global war' },
+  { id: 'PS3.EU', name: 'German and Italian expansion (1933–1940)', theme: 'Paper 1 · Prescribed subject 3: The move to global war' },
+  { id: 'SRC', name: 'Source analysis (OPVL)', theme: 'Paper 1 · Prescribed subject 3: The move to global war' },
+  { id: 'W11.TH', name: 'Types, causes and effects of war (concepts)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
+  { id: 'W11.WW1', name: 'First World War (1914–1918)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
+  { id: 'W11.WW2', name: 'Second World War (1939–1945)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
+  { id: 'W11.SCW', name: 'Spanish Civil War (1936–1939)', theme: 'Paper 2 · Topic 11: Causes and effects of 20th-century wars' },
+  { id: 'W12.RMA', name: 'Rivalry, mistrust and accord', theme: 'Paper 2 · Topic 12: The Cold War' },
+  { id: 'W12.LN', name: 'Leaders and nations', theme: 'Paper 2 · Topic 12: The Cold War' },
+  { id: 'W12.CR', name: 'Cold War crises', theme: 'Paper 2 · Topic 12: The Cold War' },
+  { id: 'W12.END', name: 'Détente and the end of the Cold War', theme: 'Paper 2 · Topic 12: The Cold War' },
+  { id: 'HS', name: 'Historiography and essay skills', theme: 'Skills' },
+  { id: 'CT', name: 'Command terms', theme: 'Skills' },
+];
+
+export const SUBJECTS: Subject[] = [
+  { id: 'physics', name: 'Physics HL', short: 'Phys', color: 'var(--c-physics)', level: 'HL', lang: 'en', group: 4, topics: physicsTopics },
+  { id: 'chemistry', name: 'Chemistry HL', short: 'Chem', color: 'var(--c-chemistry)', level: 'HL', lang: 'en', group: 4, topics: chemistryTopics },
+  { id: 'math', name: 'Math AA HL', short: 'Math', color: 'var(--c-math)', level: 'HL', lang: 'en', group: 5, topics: mathTopics },
+  { id: 'spanish', name: 'Spanish A Lang & Lit SL', short: 'Esp', color: 'var(--c-spanish)', level: 'SL', lang: 'es', group: 1, topics: spanishTopics },
+  { id: 'english', name: 'English B HL', short: 'Eng', color: 'var(--c-english)', level: 'HL', lang: 'en', group: 2, topics: englishTopics },
+  { id: 'history', name: 'History SL', short: 'Hist', color: 'var(--c-history)', level: 'SL', lang: 'en', group: 3, topics: historyTopics },
+];
+
+export { SUBJECT_IDS } from './subjectIds';
 
 export function getSubject(id: SubjectId): Subject {
   const s = SUBJECTS.find((x) => x.id === id);
@@ -92,5 +142,13 @@ export function getTopic(subject: SubjectId, topicId: string): Topic | undefined
 export function topicLabel(subject: SubjectId, topicId: string): string {
   const t = getTopic(subject, topicId);
   if (!t) return topicId;
-  return topicId === 'CT' ? t.name : `${t.id} ${t.name}`;
+  // Topics whose id is not a syllabus number (e.g. "FIG", "TT", "SRC") show only their name.
+  return /^[A-Z]?\d|^[A-Z]\.\d|^[SR]\d|^PS\d|^W\d/.test(topicId) ? `${topicLabelId(topicId)} ${t.name}` : t.name;
+}
+
+function topicLabelId(id: string): string {
+  // "PS3.JP" → "PS3", "W11.WW1" → "T11", "W12.CR" → "T12"; syllabus codes unchanged.
+  if (id.startsWith('PS')) return id.split('.')[0];
+  if (/^W\d+\./.test(id)) return 'T' + id.slice(1).split('.')[0];
+  return id;
 }

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useT } from '../i18n';
+import { ReportButton } from '../components/ReportButton';
 import { useStore } from '../store';
 import { ALL_QUESTIONS } from '../data/questions';
 import { topicLabel } from '../data/syllabus';
@@ -8,9 +10,20 @@ import { MathText } from '../components/MathText';
 import { HBars } from '../components/Charts';
 import { SubjectChips, SubjectDot, TopicPicker } from '../components/ui';
 import { navigate, type Route } from '../router';
+import { MatchAnswer, OrderAnswer, StructuredAnswer, TextAnswer } from './PracticeAnswers';
 import type { Card, PracticeResult, Question, SubjectId } from '../types';
 
 const DURATIONS = [5, 10, 15, 20, 30, 45];
+
+const TYPE_LABEL: Record<Question['type'], string> = {
+  mc: 'multiple choice',
+  numeric: 'numeric',
+  open: 'open',
+  text: 'short answer',
+  order: 'put in order',
+  match: 'matching',
+  structured: 'structured (Paper 2 style)',
+};
 
 /** Turns a flashcard into a self-marked recall question. */
 function cardToQuestion(c: Card): Question {
@@ -38,12 +51,14 @@ interface Answered {
   result: PracticeResult;
   response: string;
   sec: number;
+  marks?: { got: number; max: number };
 }
 
 export default function Practice({ route }: { route: Route }) {
-  const { data, cards } = useStore();
+  const t = useT();
+  const { data, cards, activeSubjectIds } = useStore();
   const p = route.params;
-  const subjects = (p.get('subject')?.split(',').filter(Boolean) as SubjectId[] | undefined) ?? [data.settings.enabledSubjects[0] ?? 'physics'];
+  const subjects = (p.get('subject')?.split(',').filter(Boolean) as SubjectId[] | undefined) ?? [activeSubjectIds[0] ?? 'physics'];
   const topics = p.get('topics')?.split(',').filter(Boolean) ?? [];
   const minutes = Number(p.get('min')) || 10;
   const includeCards = p.get('cards') !== '0';
@@ -67,22 +82,30 @@ export default function Practice({ route }: { route: Route }) {
   const poolSize = questions.length + (includeCards ? scopedCards.length : 0);
   return (
     <div>
-      <h1>Timed practice</h1>
+      <h1>{t('Timed practice')}</h1>
       <p className="muted">
-        Short exam-style questions: multiple choice and numeric answers are marked automatically (decimal comma and forms like <code>3.2e-5</code> or{' '}
-        <code>3.2×10^-5</code> are accepted); open questions and flashcard prompts are self-marked against a model answer.
+        Short exam-style questions. Multiple choice, numeric (decimal comma and forms like <code>3.2e-5</code> or <code>3.2×10^-5</code> are accepted),
+        short-answer, ordering and matching questions are marked automatically; open questions and flashcard prompts are self-marked against a model
+        answer. For timed essays use <a href="#/writing">{t('Writing')}</a>.
       </p>
+      <a className="card spread" href="#/mock" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
+        <div>
+          <strong>{t('Mock exam mode')}</strong>
+          <div className="small muted">A full timed paper with no feedback until the end, self-marking against mark schemes and a grade estimate.</div>
+        </div>
+        <span className="btn small">{t('Open')}</span>
+      </a>
       <div className="card stack">
         <div>
-          <h3>Subjects</h3>
+          <h3>{t('Subjects')}</h3>
           <SubjectChips value={subjects} onChange={(v) => set({ subject: v })} />
         </div>
         <div>
-          <h3>Topics</h3>
+          <h3>{t('Topics')}</h3>
           <TopicPicker subjects={subjects} value={topics} onChange={(v) => set({ topics: v })} />
         </div>
         <div>
-          <h3>Duration</h3>
+          <h3>{t('Duration')}</h3>
           <div className="row">
             {DURATIONS.map((d) => (
               <button key={d} className="chip" aria-pressed={minutes === d} onClick={() => set({ min: String(d) })}>
@@ -116,6 +139,7 @@ export default function Practice({ route }: { route: Route }) {
 }
 
 function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: number; minutes: number; onExit: () => void }) {
+  const t = useT();
   const { logPractice } = useStore();
   const [i, setI] = useState(0);
   const [answered, setAnswered] = useState<Answered[]>([]);
@@ -135,12 +159,12 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
   }, [remaining, finished]);
 
   const record = useCallback(
-    (result: PracticeResult, response: string) => {
+    (result: PracticeResult, response: string, marks?: { got: number; max: number }) => {
       const sec = Math.round((Date.now() - startedAt.current) / 1000);
-      const a = { q, result, response, sec };
+      const a: Answered = { q, result, response, sec, marks };
       setCurrent(a);
       setAnswered((xs) => [...xs, a]);
-      logPractice([{ q: q.id, s: q.subject, tp: q.topic, r: result, t: Date.now(), sec }]);
+      logPractice([{ q: q.id, s: q.subject, tp: q.topic, r: result, t: Date.now(), sec, ...(marks ? { m: marks.got, mx: marks.max } : {}) }]);
     },
     [q, logPractice],
   );
@@ -168,35 +192,44 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
 
   if (finished) return <Results answered={answered} minutes={minutes} onExit={onExit} />;
 
-  const t = Math.ceil(remaining / 1000);
-  const mm = Math.floor(t / 60);
-  const ss = String(t % 60).padStart(2, '0');
+  const secs = Math.ceil(remaining / 1000);
+  const mm = Math.floor(secs / 60);
+  const ss = String(secs % 60).padStart(2, '0');
   const correct = answered.filter((a) => a.result === 'correct').length;
 
   return (
     <div>
       <div className="spread" style={{ marginBottom: '0.75rem' }}>
-        <span className={`timer ${t < 60 ? 'low' : ''}`} aria-live="off">
+        <span className={`timer ${secs < 60 ? 'low' : ''}`} aria-live="off">
           ⏱ {mm}:{ss}
         </span>
         <span className="small muted">
           Q{i + 1} · {correct}/{answered.length} correct
         </span>
         <button className="btn small" onClick={() => setFinished(true)}>
-          Finish
+          {t('Finish')}
         </button>
       </div>
       <div className="card">
         <div className="row small muted" style={{ marginBottom: '0.6rem' }}>
           <SubjectDot subject={q.subject} /> {topicLabel(q.subject, q.topic)}
-          <span className="badge">{q.type === 'mc' ? 'multiple choice' : q.type === 'numeric' ? 'numeric' : q.id.includes('-q-') ? 'open' : 'flashcard recall'}</span>
+          <span className="badge">{TYPE_LABEL[q.type] ?? q.type}{q.type === 'open' && !q.id.includes('-q-') ? ' (flashcard)' : ''}</span>
         </div>
         <MathText text={q.prompt} />
         <div style={{ marginTop: '1rem' }}>
           {q.type === 'mc' && <MCAnswer key={i} q={q} done={current} onAnswer={record} />}
           {q.type === 'numeric' && <NumericAnswer key={i} q={q} done={current} onAnswer={record} />}
           {q.type === 'open' && <OpenAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'text' && <TextAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'order' && <OrderAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'match' && <MatchAnswer key={i} q={q} done={current} onAnswer={record} />}
+          {q.type === 'structured' && <StructuredAnswer key={i} q={q} done={current} onAnswer={record} />}
         </div>
+        {current && (
+          <div style={{ marginTop: '0.5rem', textAlign: 'right' }}>
+            <ReportButton key={q.id + i} item={q.id} subject={q.subject} excerpt={q.prompt} />
+          </div>
+        )}
         {current && q.solution && (
           <div className="feedback info">
             <strong className="small">Solution</strong>
@@ -205,7 +238,7 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
         )}
         {current && (
           <button className="btn primary" style={{ marginTop: '1rem' }} onClick={next} autoFocus>
-            Next <kbd className="kbd-hint">Enter</kbd>
+            {t('Next')} <kbd className="kbd-hint">Enter</kbd>
           </button>
         )}
       </div>
@@ -259,6 +292,7 @@ function MCAnswer({ q, done, onAnswer }: AnswerProps<'mc'>) {
 }
 
 function NumericAnswer({ q, done, onAnswer }: AnswerProps<'numeric'>) {
+  const t = useT();
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
   const submit = () => {
@@ -297,7 +331,7 @@ function NumericAnswer({ q, done, onAnswer }: AnswerProps<'numeric'>) {
         {q.numeric.unit && <span className="muted" style={{ whiteSpace: 'nowrap' }}>{q.numeric.unit}</span>}
         {!done && (
           <button className="btn primary" type="submit">
-            Check
+            {t('Check')}
           </button>
         )}
       </div>
@@ -370,6 +404,7 @@ function OpenAnswer({ q, done, onAnswer }: AnswerProps<'open'>) {
 }
 
 function Results({ answered, minutes, onExit }: { answered: Answered[]; minutes: number; onExit: () => void }) {
+  const t = useT();
   const score = answered.reduce((s, a) => s + (a.result === 'correct' ? 1 : a.result === 'partial' ? 0.5 : 0), 0);
   const byTopic = new Map<string, { name: string; s: number; n: number }>();
   for (const a of answered) {
@@ -382,10 +417,10 @@ function Results({ answered, minutes, onExit }: { answered: Answered[]; minutes:
   const missed = answered.filter((a) => a.result !== 'correct');
   return (
     <div>
-      <h1>Session results</h1>
+      <h1>{t('Session results')}</h1>
       <div className="tiles">
         <div className="tile">
-          <div className="label">Score</div>
+          <div className="label">{t('Score')}</div>
           <div className="value">{answered.length ? Math.round((score / answered.length) * 100) : 0}%</div>
           <div className="sub">
             {score} / {answered.length}
@@ -403,12 +438,12 @@ function Results({ answered, minutes, onExit }: { answered: Answered[]; minutes:
         </div>
       </div>
       <section className="card" style={{ marginTop: '1rem' }}>
-        <h2>By topic</h2>
+        <h2>{t('By topic')}</h2>
         <HBars items={[...byTopic.entries()].map(([k, v]) => ({ key: k, name: `${v.name} (${v.n})`, value: v.s / v.n }))} emptyText="No questions answered." />
       </section>
       {missed.length > 0 && (
         <section className="card">
-          <h2>Review these</h2>
+          <h2>{t('Review these')}</h2>
           <div className="list">
             {missed.map((a, k) => (
               <div className="list-item" key={k}>
@@ -425,6 +460,12 @@ function Results({ answered, minutes, onExit }: { answered: Answered[]; minutes:
                     </p>
                   )}
                   {a.q.type === 'open' && <MathText text={a.q.answer} />}
+                  {a.q.type === 'text' && <p>{a.q.answers.join(' / ')} — you wrote “{a.response}”</p>}
+                  {a.q.type === 'order' && <MathText text={a.q.items.map((x, k) => `${k + 1}. ${x}`).join('\n')} />}
+                  {a.q.type === 'match' && <MathText text={a.q.pairs.map(([l, r]) => `${l} → ${r}`).join('\n')} />}
+                  {a.q.type === 'structured' && (
+                    <MathText text={a.q.parts.map((pt) => `**(${pt.label}) [${pt.marks}]** ${pt.scheme}`).join('\n')} />
+                  )}
                   {a.q.solution && <MathText className="small muted" text={a.q.solution} />}
                 </details>
               </div>
@@ -434,10 +475,10 @@ function Results({ answered, minutes, onExit }: { answered: Answered[]; minutes:
       )}
       <div className="row" style={{ marginTop: '1rem' }}>
         <button className="btn primary" onClick={onExit} autoFocus>
-          New session
+          {t('New session')}
         </button>
         <a className="btn" href="#/">
-          Dashboard
+          {t('Dashboard')}
         </a>
       </div>
     </div>

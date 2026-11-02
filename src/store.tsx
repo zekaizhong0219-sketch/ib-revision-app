@@ -1,7 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AppData, Card, Grade, PracticeLog, Settings } from './types';
+import type { AppData, Card, ContentReport, EssayAttempt, Grade, MockRecord, PracticeLog, Question, Settings, Subject } from './types';
+import { ALL_QUESTIONS } from './data/questions';
+import { addMistakeCards } from './lib/mistakes';
+import { SUBJECTS } from './data/syllabus';
 import { loadData, saveData } from './lib/storage';
-import { schedule } from './lib/srs';
+import { scheduleWith } from './lib/srs';
 import { ALL_CARDS } from './data/cards';
 
 interface Store {
@@ -9,7 +12,16 @@ interface Store {
   /** Built-in + custom cards. */
   cards: Card[];
   cardById: Map<string, Card>;
+  /** Subjects not hidden in Settings, in syllabus order. */
+  visibleSubjects: Subject[];
+  /** Visible subjects that are also enabled for reviews/recommendations. */
+  activeSubjectIds: Subject['id'][];
   saveOk: boolean;
+  saveEssay: (attempt: EssayAttempt) => void;
+  saveMock: (record: MockRecord) => void;
+  addReport: (r: Omit<ContentReport, 'id' | 't'>) => void;
+  clearReports: () => void;
+  deleteEssay: (id: string) => void;
   gradeCard: (card: Card, grade: Grade, opts?: { cram?: boolean }) => void;
   logPractice: (entries: PracticeLog[]) => void;
   upsertCustomCard: (card: Card) => void;
@@ -21,6 +33,9 @@ interface Store {
 }
 
 const Ctx = createContext<Store | null>(null);
+
+/** Built-in questions by id (mistake cards are only created for these, not for flashcard prompts). */
+const QUESTION_BY_ID = new Map(ALL_QUESTIONS.map((q) => [q.id, q]));
 
 export function StoreProvider({ children, initial }: { children: ReactNode; initial?: AppData }) {
   const [data, setData] = useState<AppData>(() => initial ?? loadData());
@@ -48,20 +63,43 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
 
   const cards = useMemo(() => [...ALL_CARDS, ...data.customCards], [data.customCards]);
   const cardById = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards]);
+  const hidden = data.settings.hiddenSubjects;
+  const enabled = data.settings.enabledSubjects;
+  const visibleSubjects = useMemo(() => SUBJECTS.filter((s) => !hidden.includes(s.id)), [hidden]);
+  const activeSubjectIds = useMemo(() => visibleSubjects.map((s) => s.id).filter((id) => enabled.includes(id)), [visibleSubjects, enabled]);
+
+  const saveEssay = useCallback((attempt: EssayAttempt) => {
+    setData((d) => {
+      const exists = d.essays.some((e) => e.id === attempt.id);
+      return { ...d, essays: exists ? d.essays.map((e) => (e.id === attempt.id ? attempt : e)) : [...d.essays, attempt] };
+    });
+  }, []);
+  const deleteEssay = useCallback((id: string) => setData((d) => ({ ...d, essays: d.essays.filter((e) => e.id !== id) })), []);
 
   const gradeCard = useCallback((card: Card, grade: Grade, opts?: { cram?: boolean }) => {
     const now = Date.now();
     setData((d) => ({
       ...d,
-      cards: opts?.cram ? d.cards : { ...d.cards, [card.id]: schedule(d.cards[card.id], grade, now) },
+      cards: opts?.cram ? d.cards : { ...d.cards, [card.id]: scheduleWith(d.settings, d.cards[card.id], grade, now) },
       reviews: [...d.reviews, { c: card.id, s: card.subject, tp: card.topic, g: grade, t: now }],
     }));
   }, []);
 
   const logPractice = useCallback((entries: PracticeLog[]) => {
     if (!entries.length) return;
-    setData((d) => ({ ...d, practice: [...d.practice, ...entries] }));
+    setData((d) => {
+      const failed = d.settings.mistakeCards
+        ? entries.filter((e) => e.r !== 'correct').map((e) => QUESTION_BY_ID.get(e.q)).filter((q): q is Question => !!q)
+        : [];
+      return { ...d, practice: [...d.practice, ...entries], customCards: addMistakeCards(d, failed) };
+    });
   }, []);
+  const saveMock = useCallback((record: MockRecord) => setData((d) => ({ ...d, mocks: [...d.mocks, record] })), []);
+  const addReport = useCallback(
+    (r: Omit<ContentReport, 'id' | 't'>) => setData((d) => ({ ...d, reports: [...d.reports, { ...r, id: `rp-${Date.now().toString(36)}`, t: Date.now() }] })),
+    [],
+  );
+  const clearReports = useCallback(() => setData((d) => ({ ...d, reports: [] })), []);
 
   const upsertCustomCard = useCallback((card: Card) => {
     setData((d) => {
@@ -104,8 +142,14 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
   const replaceData = useCallback((next: AppData) => setData(next), []);
 
   const value = useMemo<Store>(
-    () => ({ data, cards, cardById, saveOk, gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData }),
-    [data, cards, cardById, saveOk, gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData],
+    () => ({
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock, addReport, clearReports,
+      gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
+    }),
+    [
+      data, cards, cardById, visibleSubjects, activeSubjectIds, saveOk, saveEssay, deleteEssay, saveMock, addReport, clearReports,
+      gradeCard, logPractice, upsertCustomCard, deleteCustomCard, setSuspended, resetCard, updateSettings, replaceData,
+    ],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
