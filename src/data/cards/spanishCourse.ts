@@ -20,7 +20,7 @@ export const spanishCourseSource = String.raw`
 # P1
 [k] Prueba 1 NM: formato :: Análisis guiado de un texto no literario a elegir entre dos; 1 h 15 min; 20 puntos; cada texto viene con una pregunta orientativa.
 [k] La pregunta orientativa :: Orienta el análisis hacia un aspecto técnico o formal del texto; responderla es aconsejable, pero se puede proponer un enfoque propio igualmente válido.
-[k] Criterios de la Prueba 1 :: A Comprensión e interpretación (5); B Análisis y evaluación (5); C Enfoque y organización (5); D Lenguaje (5).
+[k] Criterios de la Prueba 1 :: A Comprensión e interpretación (5); B Análisis y evaluación (5); C Focalización y organización (5); D Lenguaje (5). Total: 20.
 [k] Estructura recomendada del análisis :: Introducción (tipo de texto, propósito, destinatario, contexto y tesis interpretativa); desarrollo en párrafos temáticos (idea, cita breve, análisis del recurso, efecto); conclusión que retoma la tesis y valora el texto.
 [k] Primeros minutos de la Prueba 1 :: Lee los dos textos, elige el que te permita analizar más recursos, subraya, identifica tipo de texto, emisor, receptor y propósito, y esboza un plan antes de escribir.
 [k] Errores frecuentes en la Prueba 1 :: Resumir el texto en lugar de analizarlo; enumerar recursos sin explicar su efecto; ignorar los elementos visuales; no citar; olvidar el destinatario y el propósito.
@@ -28,9 +28,9 @@ export const spanishCourseSource = String.raw`
 [v] Conectores para el comentario :: En primer lugar, asimismo, por otra parte, no obstante, sin embargo, de este modo, por consiguiente, en definitiva, en suma.
 
 # P2
-[k] Prueba 2: formato :: Ensayo comparativo sobre dos obras literarias estudiadas, a partir de una de cuatro preguntas generales; 1 h 45 min; 30 puntos (igual en NM y NS).
+[k] Prueba 2: formato :: Ensayo comparativo sobre dos obras literarias estudiadas, a partir de una de cuatro preguntas generales; 1 h 45 min (NM y NS); desde mayo de 2026, 25 puntos (hasta noviembre de 2025 eran 30).
 [k] Restricción de obras en la Prueba 2 :: No se pueden usar las obras empleadas en el oral individual; debe tratarse de dos obras literarias estudiadas en clase.
-[k] Criterios de la Prueba 2 :: A Conocimiento, comprensión e interpretación (10); B Análisis y evaluación (10); C Enfoque y organización (5); D Lenguaje (5).
+[k] Criterios de la Prueba 2 :: Desde mayo de 2026: A Conocimiento, comprensión e interpretación (5); B1 Análisis de rasgos textuales y decisiones de los autores (5); B2 Análisis comparativo (5); C Focalización y organización (5); D Lenguaje (5). Total: 25.
 [k] Estructura del ensayo comparativo :: Introducción (obras, autores, interpretación de la pregunta, tesis); desarrollo por puntos de comparación (no una obra y luego la otra); conclusión que responde a la pregunta.
 [k] Cómo comparar con eficacia :: Organiza por aspectos (tema, personajes, narrador, estructura, símbolos); en cada párrafo trata ambas obras; usa conectores comparativos («del mismo modo», «en cambio», «a diferencia de»).
 [k] Memorizar citas para la Prueba 2 :: No se permite llevar las obras; prepara citas breves y referencias precisas a escenas concretas para cada tema probable.
@@ -39,7 +39,7 @@ export const spanishCourseSource = String.raw`
 # IO
 [k] Oral individual: formato :: 15 min: 10 min de exposición y 5 min de preguntas del profesor; 40 puntos. Se analiza cómo un tema global se presenta en una obra literaria y en un corpus de textos no literarios.
 [k] Material del oral individual :: Un fragmento de la obra literaria y otro del corpus no literario (de hasta 40 líneas cada uno), elegidos por el alumno, relacionados con un tema global.
-[k] Criterios del oral individual :: A Conocimiento, comprensión e interpretación (10); B Análisis y evaluación (10); C Enfoque y organización (10); D Lenguaje (10).
+[k] Criterios del oral individual :: A Conocimiento, comprensión e interpretación (10); B Análisis y evaluación (10); C Focalización y organización (10); D Lenguaje (10).
 [d] Tema global :: Asunto de amplio alcance, relevante en distintos contextos y presente en la vida cotidiana, que se formula de forma concreta (p. ej., «la manipulación de la verdad por parte del poder»).
 [k] Estructura del oral individual :: Introducción del tema global y de los dos textos; análisis del fragmento literario y de su obra; análisis del fragmento no literario y de su corpus; comparación final y conclusión.
 [k] Equilibrio en el oral individual :: Dedicar un tiempo similar a ambos textos, relacionar siempre el análisis con el tema global y tratar tanto el fragmento como la obra completa o el corpus.

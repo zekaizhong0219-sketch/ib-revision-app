@@ -9,10 +9,12 @@ import { physicsStructured } from './physicsStructured';
 import { chemistryStructured } from './chemistryStructured';
 import { mathStructured } from './mathStructured';
 import { englishReading } from './englishReading';
+import { worksQuestions } from './worksAndWars';
 
 export const ALL_QUESTIONS: Question[] = [...physicsQuestions, ...chemistryQuestions, ...mathQuestions, ...englishQuestions, ...historyQuestions, ...spanishQuestions,
   ...physicsStructured,
   ...chemistryStructured,
   ...mathStructured,
   ...englishReading,
+  ...worksQuestions,
 ];

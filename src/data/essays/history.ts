@@ -49,6 +49,22 @@ S: Causes and aims of each movement (Nagy wanted to leave the Warsaw Pact; Dubč
 @essay W12.END rubric=hist-p2 minutes=45
 Q: To what extent was Gorbachev responsible for the end of the Cold War?
 S: Glasnost, perestroika, abandoning the Brezhnev Doctrine, INF Treaty, Afghanistan withdrawal; weigh against Soviet economic decline, Reagan's pressure, popular movements in Eastern Europe. Judgement.
+
+@essay W11.RJW rubric=hist-p2 minutes=45
+Q: Compare and contrast the causes of the Russo-Japanese War (1904–1905) and one other 20th-century war from a different region.
+S: Imperial rivalry over Manchuria/Korea, the Triple Intervention, Russian expansion and the Anglo-Japanese Alliance versus, e.g., the causes of the Spanish Civil War (ideological, social, regional). Compare by category: territorial, economic, ideological, short-term triggers.
+
+@essay W11.CCW rubric=hist-p2 minutes=45
+Q: To what extent was Mao Zedong's leadership the main reason for the communist victory in the Chinese Civil War?
+S: Mao's strategy and propaganda (Zunyi, Yan'an, guerrilla war, land reform) versus GMD weaknesses (corruption, hyperinflation, war exhaustion), the impact of the war against Japan and Soviet/US roles. Clear judgement.
+
+@essay W11.TH rubric=hist-p2 minutes=45
+Q: Examine the importance of guerrilla warfare in two 20th-century wars.
+S: E.g. the Chinese Civil War (Mao's base areas and peasant support) and the Spanish Civil War (limited guerrilla role; mostly conventional) or WWII resistance movements. Assess when guerrilla tactics were decisive and when conventional warfare mattered more.
+
+@essay W11.TH rubric=hist-p2 minutes=45
+Q: Evaluate the political repercussions of two wars, each chosen from a different region.
+S: E.g. the Russo-Japanese War (1905 Revolution, Japan's rise, Korea) and the Second World War in Europe (division of Germany, Cold War, UN). Weigh short- and long-term repercussions.
 `;
 
 export const historyEssays = parseEssays('history', source);

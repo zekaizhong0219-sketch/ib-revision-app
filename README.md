@@ -10,7 +10,7 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 | Practice questions | **378**, all original: Physics 85 · Chemistry 71 · Math 69 · Spanish A 48 · English B 49 · History 56 |
 | Structured (Paper 2-style) questions | **51** of the above, 196 parts with mark schemes: Physics 18 · Chemistry 14 · Math 15 · English B reading texts 4 |
 | Timed writing tasks | **31**: Spanish A Paper 1 (3 original texts) and Paper 2 (6) · English B Paper 1 (10) · History Paper 2 (12) |
-| Syllabus | Physics & Chemistry: first assessment 2025. Math AA: first assessment 2021, topics 1–5. Spanish A Lang & Lit: first assessment 2021. English B: first assessment 2020 (five themes). History: prescribed subject 3 *The move to global war*, world history topics 11 *Causes and effects of 20th-century wars* (examples: WWI, WWII, Spanish Civil War) and 12 *The Cold War*. AHL content is tagged. |
+| Syllabus | Physics & Chemistry: first assessment 2025. Math AA: first assessment 2021, topics 1–5. Spanish A Lang & Lit: first assessment 2021. English B: first assessment 2020 (five themes). History: prescribed subject 3 *The move to global war*, world history topics 11 *Causes and effects of 20th-century wars* (examples: WWI, WWII, Spanish Civil War, Russo-Japanese War, Chinese Civil War) and 12 *The Cold War*. AHL content is tagged. |
 
 ## Features
 
@@ -27,8 +27,8 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 - **Report a mistake** (⚑) under any card or question saves a note. Settings lists your notes and exports them as Markdown.
 
 ### Subjects in detail
-- **Spanish A** (written in Spain's Spanish, following RAE norms): rhetorical figures with public-domain examples, genres and metre, non-literary text types and image analysis, literary movements, the course framework (areas of exploration, concepts, global-issue fields), and Paper 1 / Paper 2 / IO strategy. **Mis obras** is an empty topic for cards about *your* set works (quotes, characters, symbols); add them in the Library.
-- **English B HL**: conventions of 19 text types, register and tone, linking words and C1 grammar, idioms, vocabulary for the five themes, and Paper 2 / IO strategy. **My literary works** is left for your own IO cards.
+- **Spanish A** (written in Spain's Spanish, following RAE norms): rhetorical figures with public-domain examples, genres and metre, non-literary text types and image analysis, literary movements, the course framework (areas of exploration, concepts, global-issue fields), and Paper 1 / Paper 2 / IO strategy. Set-work packs for *La amiga estupenda*, *Un enemigo del pueblo* and *El árbol de la ciencia* follow the student's own reading guides (Baroja and Ibsen quotations checked against the class editions; no literal Ferrante quotations, as the guide advises), plus packs for *El conde Lucanor*, *Persépolis* and *El cuarto de atrás*. Paper 2 is self-marked with the criteria in force from May 2026 (A, B1, B2, C, D; 25 marks).
+- **English B HL**: conventions of 19 text types, register and tone, linking words and C1 grammar, idioms, vocabulary for the five themes, and Paper 2 / IO strategy. Packs for the two IO works, *To Kill a Mockingbird* and *Victory City* (very few quotations; check them against your edition).
 - **History SL**: dated events, people and concepts for PS3 (Japan 1931–41; Germany and Italy 1933–40), OPVL source skills, WWI, WWII, the Spanish Civil War, the Cold War (origins, leaders, crises, détente and end) and historiography. Dates were double-checked; still confirm anything you quote in an exam against your textbook.
 
 ### 2. Timed practice

@@ -299,7 +299,7 @@ O: Analizar primero una obra entera y después la otra
 O*: Organizar por aspectos y tratar ambas obras en cada párrafo
 O: Resumir el argumento de cada obra
 O: Comparar solo los autores y su biografía
-S: El criterio C valora el equilibrio y la organización comparativa.
+S: El modelo integrado (las dos obras en cada párrafo) es el que mejor puntúa en B2 (análisis comparativo) y en C (equilibrio).
 
 @mc P2
 Q: En la Prueba 2 no se pueden utilizar

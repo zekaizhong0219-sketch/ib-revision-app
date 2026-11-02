@@ -110,7 +110,7 @@ describe('essay prompts and rubrics', () => {
   });
   it('rubric totals match the IB papers', () => {
     expect(rubricMax(getRubric('esp-p1')!)).toBe(20);
-    expect(rubricMax(getRubric('esp-p2')!)).toBe(30);
+    expect(rubricMax(getRubric('esp-p2')!)).toBe(25); // from May 2026: A, B1, B2, C, D × 5
     expect(rubricMax(getRubric('engb-p1')!)).toBe(30);
     expect(rubricMax(getRubric('hist-p2')!)).toBe(15);
     expect(rubricMax(getRubric('hist-p1-q4')!)).toBe(9);
