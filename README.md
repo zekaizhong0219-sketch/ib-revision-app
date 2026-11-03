@@ -64,6 +64,8 @@ A study app for six IB Diploma subjects: **Physics HL, Chemistry HL, Math AA HL,
 - **History Paper 1:** 12 built-in sets, including the first visual sources (the 1942 poster "Remember Dec. 7th!" and a 1941 photograph of the USS Arizona, Library of Congress, no known restrictions).
 - **Topic 11 evidence cards** (10 verbatim quotations: Fourteen Points, Article 231, Atlantic Charter, Potsdam, non-intervention in Spain, Roosevelt's 1905 peace appeal, the 1905 Anglo-Japanese agreement, Truman on China) and **21 historiography cards** summarising the main interpretations of each war and of the Cold War (written for the app).
 
+- **Spanish A, public-domain texts:** the closing moral verses of 49 *Conde Lucanor* exemplos as quote cards (original medieval spelling, Biblioteca Calleja edition via Project Gutenberg), and two Paper 1 tasks on authentic texts by Mariano José de Larra («Vuelva usted mañana» and «En este país», 1833) with guiding questions and analysis guides (`scripts/spanish_sources.py`).
+
 ### Cold War evidence cards (History, Topic 12)
 - 22 flashcards (kind *quote*, search "Source quote" in the Library) with **verbatim quotations**: the Yalta Declaration, Stalin to Truman on Poland (1945), Kennan's Long Telegram, the Truman Doctrine, the Marshall Plan speech, NATO Article 5, NSC-68, the Warsaw Pact (preamble and Article 4), Kennedy and Khrushchev in the Cuban Missile Crisis (letters of 26, 27 and 28 October), Kennedy in Berlin, the 1972 Basic Principles and Reagan's 1983 and 1987 speeches. Soviet statements are quoted from the official translations printed in *Foreign Relations of the United States*. Each gives the origin and how to use the quotation as evidence in a Paper 2 essay.
 

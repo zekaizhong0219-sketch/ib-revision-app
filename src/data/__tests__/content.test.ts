@@ -286,3 +286,16 @@ describe('Topic 11 evidence and historiography cards', () => {
     for (const t of ['W11.WW1', 'W11.WW2', 'W11.SCW', 'W11.CCW', 'W12.RMA']) expect(h.some((c) => c.topic === t), t).toBe(true);
   });
 });
+
+describe('Spanish public-domain sources', () => {
+  it('quotes the closing verses of the Lucanor exemplos and builds two Larra Paper 1 tasks', async () => {
+    const { LUCANOR, LARRA } = await import('../spanishSources.generated');
+    expect(LUCANOR).toHaveLength(51);
+    const cards = ALL_CARDS.filter((c) => c.topic === 'CL' && c.kind === 'quote');
+    expect(cards.length).toBeGreaterThanOrEqual(45);
+    for (const e of LUCANOR.filter((x) => x.verses.length)) expect(cards.some((c) => e.verses.every((v) => c.back.includes(v))), e.number).toBe(true);
+    const { spanishLarraEssays } = await import('../essays/spanishLarra');
+    expect(spanishLarraEssays).toHaveLength(2);
+    for (const k of ['vuelva', 'pais']) for (const p of LARRA[k].paragraphs) expect(spanishLarraEssays.some((e) => e.prompt.includes(p.slice(0, 40)))).toBe(true);
+  });
+});

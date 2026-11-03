@@ -8,6 +8,7 @@ import { spanishCards } from './spanish';
 import { coldWarSourceCards } from './coldWarSources';
 import { topic11SourceCards } from './topic11Sources';
 import { historiographyCards } from './historiography';
+import { lucanorCards } from './lucanorSources';
 
 /** All built-in flashcards. User-created cards live in AppData.customCards. */
-export const ALL_CARDS: Card[] = [...physicsCards, ...chemistryCards, ...mathCards, ...englishCards, ...historyCards, ...spanishCards, ...coldWarSourceCards, ...topic11SourceCards, ...historiographyCards];
+export const ALL_CARDS: Card[] = [...physicsCards, ...chemistryCards, ...mathCards, ...englishCards, ...historyCards, ...spanishCards, ...coldWarSourceCards, ...topic11SourceCards, ...historiographyCards, ...lucanorCards];

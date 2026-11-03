@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+"""
+Builds src/data/spanishSources.generated.ts from Project Gutenberg's public-domain transcriptions:
+
+- El conde Lucanor (Don Juan Manuel, 1335), Biblioteca Calleja edition (c. 1920), Gutenberg
+  eBook #65738: for every exemplo, its number, title and closing verses (the moral), in the
+  original medieval spelling. The editor's footnotes are not used.
+- Mariano José de Larra (1809-1837), *Fígaro (Artículos selectos)*, Gutenberg eBook #31541:
+  excerpts of "Vuelva usted mañana" and "En este país" (1833) for Paper 1 practice.
+
+Project Gutenberg's own licence and trademark text is not reproduced; only the public-domain
+texts are used. Dialogue dashes ("--" in the transcription) are printed as the raya "—".
+
+Usage: python3 scripts/spanish_sources.py   (needs curl)
+"""
+import json
+import pathlib
+import re
+import subprocess
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+OUT = ROOT / 'src' / 'data' / 'spanishSources.generated.ts'
+GAP = '[…]'
+
+
+def gutenberg(n: int) -> list:
+    r = subprocess.run(['curl', '-sSL', '--fail', '-m', '120', f'https://www.gutenberg.org/cache/epub/{n}/pg{n}.txt'], capture_output=True)
+    if r.returncode != 0:
+        sys.exit(f'Could not fetch Gutenberg #{n}')
+    return r.stdout.decode('utf-8').replace('\r', '').split('\n')
+
+
+def paragraphs(lines: list) -> list:
+    out, cur = [], []
+    for l in lines:
+        if l.strip():
+            cur.append(l.strip())
+        elif cur:
+            out.append(' '.join(cur))
+            cur = []
+    if cur:
+        out.append(' '.join(cur))
+    return out
+
+
+def tidy(t: str) -> str:
+    t = t.replace('--', '—')
+    t = re.sub(r'_([^_]+)_', r'*\1*', t)  # italics in the transcription
+    return re.sub(r'\[\d+\]', '', t).strip()
+
+
+def lucanor() -> list:
+    L = gutenberg(65738)
+    heads = [(i, l.strip()) for i, l in enumerate(L) if re.match(r'^(ENXEMPLO|EJEMPLO|EXEMPLO|ENJEMPLO) [IVXL]+\.?$', l.strip())]
+    if len(heads) != 51:
+        sys.exit(f'Expected 51 exemplos, found {len(heads)}')
+    out = []
+    for k, (i, h) in enumerate(heads):
+        end = heads[k + 1][0] if k + 1 < len(heads) else min(len(L), i + 700)
+        block = L[i + 1 : end]
+        title = ' '.join(paragraphs(block)[0].split())
+        # The verses are the indented lines after "...dicen así:" (before any footnote "  [n] ...").
+        verses = []
+        started = False
+        for line in block:
+            if re.search(r'(^|\s)as[ií]:\s*$', line.strip()):
+                started = True
+                verses = []
+                continue
+            if started:
+                if re.match(r'^\s{4,}\S', line) and not re.match(r'^\s*\[\d+\]', line):
+                    verses.append(tidy(line))
+                elif verses and (not line.strip() or re.match(r'^\s*\[\d+\]', line)):
+                    started = False
+        out.append({'number': h.split()[1].rstrip('.'), 'title': tidy(title), 'verses': verses})
+    return out
+
+
+def larra() -> dict:
+    L = gutenberg(31541)
+
+    def article(heading: str) -> list:
+        start = next(i for i, l in enumerate(L) if l.strip() == heading)
+        end = start + 1
+        while end < len(L) and not re.match(r'^[A-ZÁÉÍÓÚÑ ,.¿?¡!]{6,}$', L[end].strip()):
+            end += 1
+        return paragraphs(L[start + 1 : end])
+
+    def need(paras: list, i: int, starts: str) -> str:
+        if not paras[i].startswith(starts):
+            sys.exit(f'Paragraph {i} does not start with {starts!r}: {paras[i][:60]!r}')
+        return tidy(paras[i])
+
+    v = article('VUELVA USTED MAÑANA')
+    closing = v[82]
+    cut = closing.index('porque ya estarás cansado de leer hoy') + len('porque ya estarás cansado de leer hoy')
+    vuelva = [
+        need(v, 21, 'Amaneció el día siguiente'),
+        need(v, 22, '--Vuelva usted mañana'),
+        need(v, 23, '--Vuelva usted mañana'),
+        need(v, 24, '--Vuelva usted mañana'),
+        need(v, 25, '--Vuelva usted mañana'),
+        need(v, 26, '¿Qué día, a qué hora se ve a un español?'),
+        GAP,
+        tidy(closing[:cut]) + '. ' + GAP,
+    ]
+    p = article('EN ESTE PAÍS')
+    pais = [need(p, 2, '_En este país_'), GAP] + [tidy(x) for x in p[30:48]] + [GAP, need(p, 53, 'Borremos, pues')]
+    if not p[47].startswith('--¡Oh! Dios me libre'):
+        sys.exit('En este país: paragraph alignment changed')
+    return {
+        'vuelva': {'title': 'Vuelva usted mañana', 'date': '1833', 'paragraphs': vuelva, 'url': 'https://www.gutenberg.org/ebooks/31541'},
+        'pais': {'title': 'En este país', 'date': '1833', 'paragraphs': pais, 'url': 'https://www.gutenberg.org/ebooks/31541'},
+    }
+
+
+def main():
+    luc = lucanor()
+    with_verses = [e for e in luc if e['verses']]
+    print(f'Lucanor: {len(luc)} exemplos, {len(with_verses)} with verses')
+    lar = larra()
+    for k, v in lar.items():
+        print(f'Larra {k}: {sum(len(x.split()) for x in v["paragraphs"])} words')
+    OUT.write_text(
+        '// Generated by scripts/spanish_sources.py. Do not edit by hand.\n'
+        '// Public-domain texts from Project Gutenberg transcriptions (El conde Lucanor, eBook #65738; Larra, eBook #31541).\n'
+        'export interface LucanorExemplo { number: string; title: string; verses: string[] }\n'
+        'export interface LarraArticle { title: string; date: string; paragraphs: string[]; url: string }\n\n'
+        f'export const LUCANOR: LucanorExemplo[] = {json.dumps(luc, ensure_ascii=False, indent=1)};\n\n'
+        f'export const LARRA: Record<string, LarraArticle> = {json.dumps(lar, ensure_ascii=False, indent=1)};\n',
+        encoding='utf-8',
+    )
+    print(f'wrote {OUT.relative_to(ROOT)}')
+
+
+if __name__ == '__main__':
+    main()

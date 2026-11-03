@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { spanishLarraEssays } from '../essays/spanishLarra';
 import { ALL_CARDS } from '../cards';
 import { ALL_QUESTIONS } from '../questions';
 import { ALL_ESSAYS } from '../essays';
@@ -75,12 +76,14 @@ describe('content audit guards', () => {
   });
 
   it('Spanish content follows the house style: parentheses for asides, no em dash', () => {
-    const bad = ALL_TEXT.filter(({ subject, text }) => subject === 'spanish' && text.includes('—'));
+    // Verbatim public-domain texts (Larra's articles) keep their original dialogue dashes.
+    const verbatim = new Set(spanishLarraEssays.map((e) => e.id));
+    const bad = ALL_TEXT.filter(({ id, subject, text }) => subject === 'spanish' && !verbatim.has(id) && text.includes('—'));
     expect(bad.map((b) => b.id)).toEqual([]);
   });
 
   it('no placeholder or unfinished text', () => {
-    const bad = ALL_TEXT.filter(({ text }) => /\b(TODO|FIXME|XXX)\b|lorem ipsum/.test(text));
+    const bad = ALL_TEXT.filter(({ text }) => /\b(TODO|FIXME)\b|(?<!exemplo )\bXXX\b|lorem ipsum/.test(text));
     expect(bad.map((b) => b.id)).toEqual([]);
   });
 });
