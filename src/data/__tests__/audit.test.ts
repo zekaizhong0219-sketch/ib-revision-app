@@ -57,7 +57,8 @@ describe('content audit guards', () => {
   });
 
   it('g is always 9.81 and c always 3.00 × 10^8 when stated', () => {
-    const bad = ALL_TEXT.filter(
+    // OpenStax exercises (ids containing "-ox") use g = 9.80 m/s² consistently with their answer keys.
+    const bad = ALL_TEXT.filter(({ id }) => !id.includes('-ox')).filter(
       ({ text }) => /g\s*=\s*9\.(?!81)\d/.test(text) || /c\s*=\s*3\.(?!00)\d+\\?\s*\\times\s*10\^8/.test(text),
     );
     expect(bad.map((b) => b.id)).toEqual([]);

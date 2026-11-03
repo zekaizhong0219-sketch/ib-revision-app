@@ -363,6 +363,154 @@ def build() -> dict:
         GAP,
         cut(d, 'The gravity of the event of 11th March cannot be exaggerated.', 'If we were to delay'),
     )
+
+    # ── Pearl Harbor and US entry (December 1941) ────────────────
+    d = frus(FRUS2, 'd421')
+    add(
+        'hull-dec7-1941',
+        FRUS_URL.format(FRUS2, 'd421'),
+        cut(d, 'Japan has made a treacherous and utterly unprovoked attack'),
+        cut(d, 'At the very moment when representatives of the Japanese Government'),
+        GAP,
+        cut(d, 'It is now apparent to the whole world that Japan'),
+    )
+    d = frus(FRUS2, 'd80')
+    add('grew-jan-1941', FRUS_URL.format(FRUS2, 'd80'), cut(d, 'a surprise mass attack on Pearl Harbor was planned'))
+
+    # ── Japan's southern advance and the embargo (1941) ──────────
+    d = frus(FRUS2, 'd230')
+    add(
+        'welles-indochina-1941',
+        FRUS_URL.format(FRUS2, 'd230'),
+        cut(d, 'in 1940 the Japanese Government gave expression on several occasions'),
+        cut(d, 'referring to the events then rapidly happening in the Indochina situation'),
+        GAP,
+        cut(d, 'There is no doubt as to the attitude of the Government and people of the United States'),
+    )
+    d = frus(FRUS2, 'd232')
+    add(
+        'toyoda-1941',
+        FRUS_URL.format(FRUS2, 'd232'),
+        cut(d, 'the Japanese Government will strictly observe all the agreements now existing between Japan and France'),
+        cut(d, 'we are receiving numerous reports that America should adopt more stringent'),
+    )
+    d = frus(FRUS2, 'd184')
+    add(
+        'freeze-1941',
+        FRUS_URL.format(FRUS2, 'd184'),
+        cut(d, 'he has today issued an Executive Order freezing Japanese assets'),
+        cut(d, 'This Executive Order, just as the Order of June 14, 1941'),
+    )
+    d = frus(FRUS2, 'd403')
+    add(
+        'plan-b-1941',
+        FRUS_URL.format(FRUS2, 'd403'),
+        cut(d, 'undertake hot to make any armed advancement'),
+        cut(d, 'The Japanese Government undertakes to withdraw its troops now stationed in French Indo-China'),
+        cut(d, 'prepared to remove its troops now stationed in the southern part'),
+        cut(d, 'mutually undertake to restore their commercial relations'),
+        cut(d, 'The Government of the United States shall supply Japan a required quantity of oil.'),
+    )
+
+    # ── The Amau Statement (1934) ────────────────────────────────
+    d = frus(FRUS1, 'd164')
+    add(
+        'amau-1934',
+        FRUS_URL.format(FRUS1, 'd164'),
+        cut(d, 'Owing to the special position of Japan in her relations with China'),
+        GAP,
+        cut(d, 'there is no country but China which is in a position to share with Japan', 'It goes without saying', 'it is our duty to perform it.'),
+        GAP,
+        cut(d, 'supplying China with war planes, building aerodromes in China'),
+    )
+    d = frus(FRUS1, 'd167')
+    add(
+        'hirota-instruction-1934',
+        FRUS_URL.format(FRUS1, 'd167'),
+        cut(d, 'In relation to the Chinese question Japan had to differ with other Powers'),
+        cut(d, 'Japan will take the most conciliatory attitude toward all Powers'),
+    )
+    d = frus(FRUS1, 'd169')
+    add(
+        'us-aide-memoire-1934',
+        FRUS_URL.format(FRUS1, 'd169'),
+        cut(d, 'treaties can lawfully be modified or be terminated'),
+        GAP,
+        cut(d, 'no nation can, without the assent of the other nations concerned, rightfully endeavor'),
+    )
+    d = frus(FRUS1, 'd166')
+    add(
+        'hirota-grew-1934',
+        FRUS_URL.format(FRUS1, 'd166'),
+        cut(d, 'Mr. Hirota referred, on his own initiative, to the subject of the Amau statement', 'Mr. Hirota referred', 'or of creating difficulties for the bona fide trade of other countries with China.'),
+        GAP,
+        cut(d, 'The insistence by the Chauvinists upon a more aggressive foreign policy', None, 'makes his position difficult.'),
+    )
+
+    # ── From Prague to Albania: the end of appeasement (1939) ────
+    bb = lambda n: AVALON + f'wwii/blbk{n:02d}.asp'
+    d = avalon(bb(9))
+    add(
+        'birmingham-1939',
+        bb(9),
+        cut(d, 'Really I have no need to defend my visits to Germany last autumn', None, 'from invasion and destruction.'),
+        GAP,
+        cut(d, 'How can these events this week be reconciled with those assurances', None, 'he has taken the law into his own hands.'),
+    )
+    d = avalon(bb(10))
+    add('halifax-1939', bb(10), cut(d, 'Finally, it is said that Germany was in some danger from Czecho-Slovakia.'))
+    d = avalon(bb(12))
+    add(
+        'henderson-goring-1939',
+        bb(12),
+        cut(d, 'I told the field-marshal that, before speaking of British hostility'),
+        cut(d, 'At this point the field-marshal interrupted me', None, 'if Dr. Hacha refused to sign.'),
+    )
+    url = HANSARD + '1939/apr/13/european-situation'
+    d = hansard(url, 'Prime Minister')
+    add(
+        'chamberlain-albania-1939',
+        url,
+        cut(d, 'Public opinion throughout the world has once again been profoundly shocked', 'In the meantime, there is no doubt', 'exhibition of the use of force.'),
+        GAP,
+        cut(d, 'clearly threatened the independence of Greece or Rumania', 'Consequently, they have come to the conclusion', 'all the support in their power.'),
+    )
+
+    # ── The Polish crisis (August 1939) ──────────────────────────
+    d = avalon(bb(56))
+    add(
+        'chamberlain-letter-1939',
+        bb(56),
+        cut(d, 'These steps have, in the opinion of His Majesty\'s Government, been rendered necessary'),
+        cut(d, 'His Majesty\'s Government are resolved that on this occasion there shall be no such tragic misunderstanding', 'It has been alleged'),
+        GAP,
+        cut(d, 'war between our two peoples would be the greatest calamity that could occur'),
+    )
+    d = avalon(bb(60))
+    add(
+        'hitler-reply-1939',
+        bb(60),
+        cut(d, 'Germany has never sought conflict with England'),
+        GAP,
+        cut(d, 'To these questions belong the German City of Danzig', None, 'up to a few years ago.'),
+        GAP,
+        cut(d, 'The unconditional assurance given by England to Poland', None, 'living in Poland.'),
+    )
+    d = avalon(bb(57))
+    add(
+        'henderson-aug-1939',
+        bb(57),
+        cut(d, 'During the whole of this first conversation Herr Hitler was excitable and uncompromising.', None, 'if it had not been for England\'s unwarranted support.'),
+        cut(d, 'He then violently attacked the Poles', None, 'He would stand it no longer, &c.'),
+    )
+    d = avalon(bb(19))
+    add(
+        'anglo-polish-1939',
+        bb(19),
+        cut(d, 'in consequence of aggression by the latter against that Contracting Party'),
+        GAP,
+        cut(d, 'they will not conclude an armistice or treaty of peace except by mutual agreement'),
+    )
     return ex
 
 
@@ -441,6 +589,41 @@ def build_cold_war() -> dict:
     return ex
 
 
+def build_topic11() -> dict:
+    """Short verbatim quotations for Topic 11 (causes and effects of 20th-century wars)."""
+    ex = {}
+
+    def add(key: str, url: str, *parts: str):
+        ex[key] = {'url': url, 'text': f' {GAP} '.join(parts)}
+
+    url = AVALON + '20th_century/wilson14.asp'
+    d = avalon(url)
+    add('wilson-points', url, cut(d, 'I. Open covenants of peace, openly arrived at'), cut(d, 'XIV. A general association of nations must be formed'))
+    url = AVALON + 'imt/partviii.asp'
+    add('versailles-231', url, cut(page_lines(url), 'Germany accepts the responsibility of Germany and her allies for causing all the loss and damage'))
+    url = AVALON + 'wwii/atlantic.asp'
+    add('atlantic-charter', url, cut(avalon(url), 'they respect the right of all peoples to choose the form of government', 'Third,', 'forcibly deprived of them'))
+    url = AVALON + '20th_century/decade17.asp'
+    add('potsdam-13', url, cut(avalon(url), 'We call upon the government of Japan to proclaim now the unconditional surrender'))
+    url = HANSARD + '1936/oct/29/spain'
+    d = hansard(url, 'Eden')
+    add('eden-spain-1936', url, cut(d, 'our purpose in this was not to help one side or another but to prevent civil war', 'But our purpose', 'involving the whole of Europe in its orbit.'), cut(d, 'Would anyone in the House deny that the policy of non-intervention', 'Would anyone', 'keep peace in Europe?'))
+    d = hansard(url, 'Attlee')
+    add('attlee-spain-1936', url, cut(d, 'are we to acquiesce in this farce?', 'The question is,', 'It is a humiliating position for this country.'))
+    d = frus('frus1905', 'd876')
+    add('roosevelt-peace-1905', FRUS_URL.format('frus1905', 'd876'), cut(d, 'in the interest of all mankind', 'The President feels', 'to open direct negotiations for peace with one another.'))
+    d = frus('frus1905', 'd417')
+    add('anglo-japanese-1905', FRUS_URL.format('frus1905', 'd417'), cut(d, 'Japan possessing paramount political, military, and economic interests in Korea'))
+    P = 'https://www.presidency.ucsb.edu/documents/'
+    url = P + 'statement-the-president-united-states-policy-toward-china-0'
+    d = presidency(url)
+    add('truman-china-1945', url, cut(d, 'a strong, united and democratic China is of the utmost importance', 'It is the firm belief', 'and for world peace.'), cut(d, 'That a cessation of hostilities be arranged between the armies of the National Government and the Chinese Communists', None, 'Chinese Communists'))
+    url = P + 'statement-the-president-united-states-policy-toward-china'
+    d = presidency(url)
+    add('truman-china-1946', url, cut(d, 'We recognized the National Government of the Republic of China as the legal government.', 'We recognized', 'as the legal government.'), cut(d, 'I asked General Marshall to go to China as my representative.', None, 'as my representative.'))
+    return ex
+
+
 def main():
     ex = build()
     for k, v in ex.items():
@@ -448,15 +631,20 @@ def main():
             print(f'note: {k} contains square brackets (editorial insertions in the original)')
         print(f'{k}: {len(v["text"].split())} words')
     cw = build_cold_war()
+    t11 = build_topic11()
+    for k, v in t11.items():
+        print(f'{k}: {len(v["text"].split())} words')
     for k, v in cw.items():
         print(f'{k}: {len(v["text"].split())} words')
     body = json.dumps(ex, ensure_ascii=False, indent=2)
     cw_body = json.dumps(cw, ensure_ascii=False, indent=2)
+    t11_body = json.dumps(t11, ensure_ascii=False, indent=2)
     OUT.write_text(
         '// Generated by scripts/paper1_sources.py. Do not edit by hand; re-run the script instead.\n'
         '// Verbatim excerpts; "[…]" marks omitted text. See the script for sources and licences.\n'
         f'export const PAPER1_SOURCE_TEXT: Record<string, {{ url: string; text: string }}> = {body};\n\n'
-        f'export const COLD_WAR_QUOTES: Record<string, {{ url: string; text: string }}> = {cw_body};\n',
+        f'export const COLD_WAR_QUOTES: Record<string, {{ url: string; text: string }}> = {cw_body};\n\n'
+        f'export const TOPIC11_QUOTES: Record<string, {{ url: string; text: string }}> = {t11_body};\n',
         encoding='utf-8',
     )
     print(f'wrote {OUT.relative_to(ROOT)}')

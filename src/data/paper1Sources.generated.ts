@@ -112,6 +112,78 @@ export const PAPER1_SOURCE_TEXT: Record<string, { url: string; text: string }> =
   "churchill-austria-1938": {
     "url": "https://api.parliament.uk/historic-hansard/commons/1938/mar/14/foreign-affairs-austria",
     "text": "The gravity of the event of 11th March cannot be exaggerated. Europe is confronted with a programme of aggression, nicely calculated and timed, unfolding stage by stage, and there is only one choice open, not only to us, but to other countries who are unfortunately concerned—either to submit, like Austria, or else to take effective measures while time remains to ward off the danger and, if it cannot be warded off, to cope with it.\n\n[…]\n\nIf we were to delay, if we were to go on waiting upon events for a considerable period of time, how much should we throw away of resources which are now available for our security and for the maintenance of peace? How many friends would be alienated, how many potential allies should we see go, one by one, down the grisly gulf, how many times will bluff succeed, until behind bluff ever gathering forces have accumulated reality?"
+  },
+  "hull-dec7-1941": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v02/d421",
+    "text": "Japan has made a treacherous and utterly unprovoked attack upon the United States.\n\nAt the very moment when representatives of the Japanese Government were discussing with representatives of this Government, at the request of the former, principles and courses of peace, the armed forces of Japan were preparing and assembling at various strategic points to launch new attacks and new aggressions upon nations and peoples with which Japan was professedly at peace including the United States.\n\n[…]\n\nIt is now apparent to the whole world that Japan in its recent professions of a desire for peace has been infamously false and fraudulent."
+  },
+  "grew-jan-1941": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v02/d80",
+    "text": "125. A member of the Embassy was told by my … colleague that from many quarters, including a Japanese one, he had heard that a surprise mass attack on Pearl Harbor was planned by the Japanese military forces, in case of “trouble” between Japan and the United States; that the attack would involve the use of all the Japanese military facilities. My colleague said that he was prompted to pass this on because it had come to him from many sources, although the plan seemed fantastic."
+  },
+  "welles-indochina-1941": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v02/d230",
+    "text": "“It will be recalled that in 1940 the Japanese Government gave expression on several occasions to its desire that conditions of disturbance should not spread to the region of the Pacific, with special references to the Netherlands East Indies and French Indochina. This desire was expressly concurred in by many other Governments, including the Government of the United States. In statements by this Government, it was made clear that any alteration in the existing status of such areas by other than peaceful processes could not but be prejudicial to the security and peace of the entire Pacific area and that this conclusion was based on a doctrine which has universal application.\n\n“On September 23, 1940, referring to the events then rapidly happening in the Indochina situation, the Secretary of State stated that it seemed obvious that the existing situation was being upset and that the changes were being achieved under duress. Present developments relating to Indochina provide clear indication that further changes are now being effected under duress.\n\n[…]\n\n“There is no doubt as to the attitude of the Government and people of the United States toward acts of aggression carried out by use or threat of armed force. That attitude has been made abundantly clear."
+  },
+  "toyoda-1941": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v02/d232",
+    "text": "It is needless to say that I can affirm to Your Excellency that the Japanese Government will strictly observe all the agreements now existing between Japan and France and especially those relating to the integrity of territory and the respect for sovereignty and refrain from interfering in the domestic affairs of French Indochina, and also that Japan has no intention at all of making the southern part of French Indochina a base of armed advancement against adjoining areas.\n\nAs a matter of fact, we are receiving numerous reports that America should adopt more stringent anti-Japanese economic measures such as the freezing of Japanese capital in America and a complete embargo of petroleum oil as retaliatory steps against the measure just mentioned; and if the above should ever be realized, I deeply apprehend that it will be difficult to prevent the unexpected agitation of antagonism among the Japanese people against aid to the Chiang Kai-shek regime and the encirclement campaign against Japan, which antagonism the government has so carefully repressed until today."
+  },
+  "freeze-1941": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v02/d184",
+    "text": "In view of the unlimited national emergency declared by the President, he has today issued an Executive Order freezing Japanese assets in the United States in the same manner in which assets of various European countries were frozen on June 14, 1941. This measure, in effect, brings all financial and import and export trade transactions in which Japanese interests are involved under the control of the Government, and imposes criminal penalties for violation of the Order.\n\nThis Executive Order, just as the Order of June 14, 1941, is designed among other things to prevent the use of the financial facilities of the United States and trade between Japan and the United States, in ways harmful to national defense and American interests, to prevent the liquidation in the United States of assets obtained by duress or conquest, and to curb subversive activities in the United States."
+  },
+  "plan-b-1941": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v02/d403",
+    "text": "1. Both the Governments of Japan and the United States undertake hot to make any armed advancement into any of the regions in the South-eastern Asia and the Southern Pacific area excepting the part of French Indo-China where the Japanese troops are stationed at present.\n\n2. The Japanese Government undertakes to withdraw its troops now stationed in French Indo-China upon either the restoration of peace between Japan and China or the establishment of an equitable peace in the Pacific area.\n\nIn the meantime the Government of Japan declares that it is prepared to remove its troops now stationed in the southern part of French Indo-China to the northern part of the said territory upon the conclusion of the present arrangement which shall later be embodied in the final agreement.\n\n4. The Governments of Japan and the United States mutually undertake to restore their commercial relations to those prevailing prior to the freezing of the assets.\n\nThe Government of the United States shall supply Japan a required quantity of oil."
+  },
+  "amau-1934": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d164",
+    "text": "Owing to the special position of Japan in her relations with China, her views and attitude respecting matters that concern China, may not agree in every point with those of foreign nations: but it must be realized that Japan is called upon to exert the utmost effort in carrying out her mission and in fulfilling her special responsibilities in East Asia.\n\n[…]\n\nIt goes without saying that Japan at all times is endeavoring to maintain and promote her friendly relations with foreign nations, but at the same time we consider it only natural that, to keep peace and order in East Asia, we must even act alone on our own responsibility and it is our duty to perform it.\n\n[…]\n\nHowever, supplying China with war planes, building aerodromes in China and detailing military instructors or military advisers to China or contracting a loan to provide funds for political uses, would obviously tend to alienate the friendly relations between Japan and China and other countries and to disturb peace and order in East Asia. Japan will oppose such projects."
+  },
+  "hirota-instruction-1934": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d167",
+    "text": "1. In relation to the Chinese question Japan had to differ with other Powers in her views and standpoint and was obliged to withdraw from the League of Nations. Thereupon Japan has come to feel the necessity of exercising her best efforts to carry out her mission in Eastern Asia regardless of the attitude or opinion of other Powers.\n\nNeedless to say Japan will take the most conciliatory attitude toward all Powers and will earnestly seek friendship with them by coordinating interests. However, as to the maintenance of peace and order in Eastern Asia the recent developments of affairs have brought about a situation in which Japan will have to undertake it upon her own responsibility and even single-handedly. Japan is determined to fulfill this mission."
+  },
+  "us-aide-memoire-1934": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d169",
+    "text": "Entered into by agreement, for the purpose of regulating relations between and among nations, treaties can lawfully be modified or be terminated—but only by processes prescribed or recognized or agreed upon by the parties to them.\n\n[…]\n\nIn the opinion of the American people and the American Government, no nation can, without the assent of the other nations concerned, rightfully endeavor to make conclusive its will in situations where there are involved the rights, the obligations and the legitimate interests of other sovereign states."
+  },
+  "hirota-grew-1934": {
+    "url": "https://history.state.gov/historicaldocuments/frus1931-41v01/d166",
+    "text": "Mr. Hirota referred, on his own initiative, to the subject of the Amau statement regarding the attitude of Japan toward foreign assistance to China, and said that he wished to clarify that statement to me in confidence. He told me that under questioning by newspaper men, Amau had given out the statement without his knowledge or approval, and that the world had received a wholly false impression of Japanese policy, that Japan had no intention whatever of seeking special privileges in China, of encroaching upon the territorial and administrative integrity of China, or of creating difficulties for the bona fide trade of other countries with China.\n\n[…]\n\nThe insistence by the Chauvinists upon a more aggressive foreign policy, Mr. Hirota said, makes his position difficult."
+  },
+  "birmingham-1939": {
+    "url": "https://avalon.law.yale.edu/wwii/blbk09.asp",
+    "text": "Really I have no need to defend my visits to Germany last autumn, for what was the alternative? Nothing that we could have done, nothing that France could have done, or Russia could have done could possibly have saved Czecho-Slovakia from invasion and destruction.\n\n[…]\n\nHow can these events this week be reconciled with those assurances which I have read out to you? Surely, as a joint signatory of the Munich Agreement, I was entitled, if Herr Hitler thought it ought to be undone, to that consultation which is provided for in the Munich declaration. Instead of that he has taken the law into his own hands."
+  },
+  "halifax-1939": {
+    "url": "https://avalon.law.yale.edu/wwii/blbk10.asp",
+    "text": "Finally, it is said that Germany was in some danger from Czecho-Slovakia. But surely the German Government itself can hardly have expected that that contention could be seriously entertained in any quarter. Indeed, if I may sum up my own thought on these various explorations, I could wish that, instead of the communications and explanations which have been issued and which carry scant conviction, German superior force had been frankly acknowledged as the supreme arbiter that in fact it was."
+  },
+  "henderson-goring-1939": {
+    "url": "https://avalon.law.yale.edu/wwii/blbk12.asp",
+    "text": "3. I told the field-marshal that, before speaking of British hostility, he must understand why the undoubted change of feeling towards Germany in England had taken place. As he knew quite well the basis of all the discussions between Mr. Chamberlain and Herr Hitler last year had been to the effect that, once the Sudeten were allowed to enter the Reich, Germany would leave the Czechs alone and would do nothing to interfere with their independence. Herr Hitler had given a definite assurance to that effect in his letter to the Prime Minister of the 27th September. By yielding to the advice of his \"wild men\" and deliberately annexing Bohemia and Moravia, Herr Hitler had not only broken his word to Mr. Chamberlain but had infringed the whole principle of self-determination on which the Munich Agreement rested.\n\n4. At this point the field-marshal interrupted me with a description of President Hacha's visit to Berlin. I told Field-Marshall Göring that it was not possible to talk of free will when I understood that he himself had threatened to bombard Prague with his aeroplanes, if Dr. Hacha refused to sign."
+  },
+  "chamberlain-albania-1939": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1939/apr/13/european-situation",
+    "text": "In the meantime, there is no doubt as to the general effect produced by the Italian action. Public opinion throughout the world has once again been profoundly shocked by this fresh exhibition of the use of force.\n\n[…]\n\nConsequently, they have come to the conclusion that, in the event of any action being taken which clearly threatened the independence of Greece or Rumania, and which the Greek or Rumanian Government respectively considered it vital to resist with their national forces, His Majesty's Government would feel themselves bound at once to lend the Greek or Rumanian Government, as the case might be, all the support in their power."
+  },
+  "chamberlain-letter-1939": {
+    "url": "https://avalon.law.yale.edu/wwii/blbk56.asp",
+    "text": "These steps have, in the opinion of His Majesty's Government, been rendered necessary by the military movements which have been reported from Germany, and by the fact that apparently the announcement of a German-Soviet Agreement is taken in some quarters in Berlin to indicate that intervention by Great Britain on behalf of Poland is no longer a contingency that need be reckoned with. No greater mistake could be made. Whatever may prove to be the nature of the German-Soviet Agreement, it cannot alter Great Britain's obligation to Poland which His Majesty's Government have stated in public repeatedly and plainly, and which they are determined to fulfil.\n\nIt has been alleged that, if His Majesty's Government had made their position more clear in 1914, the great catastrophe would have been avoided. Whether or not there is any force in that allegation, His Majesty's Government are resolved that on this occasion there shall be no such tragic misunderstanding.\n\n[…]\n\nHaving thus made our position perfectly clear, I wish to repeat to you my conviction that war between our two peoples would be the greatest calamity that could occur. I am certain that it is desired neither by our people, nor by yours, and I cannot see that there is anything in the questions arising between Germany and Poland which could not and should not be resolved without the use of force, if only a situation of confidence could be restored to enable discussions to be carried on in an atmosphere different from that which prevails to-day."
+  },
+  "hitler-reply-1939": {
+    "url": "https://avalon.law.yale.edu/wwii/blbk60.asp",
+    "text": "1. Germany has never sought conflict with England and has never interfered in English interests. On the contrary, she has for years endeavoured-although unfortunately in vain-to win England's friendship. On this account she voluntarily assumed in a wide area of Europe the limitations on her own interests which from a national-political point of view it would have otherwise been very difficult to tolerate.\n\n[…]\n\nTo these questions belong the German City of Danzig, and the connected problem of the Corridor. Numerous statesmen, historians and men of letters even in England have been conscious of this at any rate up to a few years ago.\n\n[…]\n\n4. The unconditional assurance given by England to Poland that she would render assistance to that country in all circumstances regardless of the causes from which a conflict might spring, could only be interpreted in that country as an encouragement thenceforward to unloosen, under cover of such a charter, a wave of appalling terrorism against the one and a half million German inhabitants living in Poland."
+  },
+  "henderson-aug-1939": {
+    "url": "https://avalon.law.yale.edu/wwii/blbk57.asp",
+    "text": "During the whole of this first conversation Herr Hitler was excitable and uncompromising. He made no long speeches but his language was violent and exaggerated both as regards England and Poland. He began by asserting that the Polish question would have been settled on the most generous terms if it had not been for England's unwarranted support.\n\nHe then violently attacked the Poles, talked of 100,000 German refugees from Poland, excesses against Germans, closing of German institutions and Polish systematic persecution of German nationals generally. He said that he was receiving hundreds of telegrams daily from his persecuted compatriots. He would stand it no longer, &c."
+  },
+  "anglo-polish-1939": {
+    "url": "https://avalon.law.yale.edu/wwii/blbk19.asp",
+    "text": "Should one of the Contracting Parties become engaged in hostilities with a European Power in consequence of aggression by the latter against that Contracting Party, the other Contracting Party will at once give the Contracting Party engaged in hostilities all the support and assistance in its power.\n\n[…]\n\nShould the Contracting Parties be engaged in hostilities in consequence of the application of the present Agreement, they will not conclude an armistice or treaty of peace except by mutual agreement."
   }
 };
 
@@ -203,5 +275,48 @@ export const COLD_WAR_QUOTES: Record<string, { url: string; text: string }> = {
   "khrushchev-dismantle": {
     "url": "https://history.state.gov/historicaldocuments/frus1961-63v06/d68",
     "text": "In order to eliminate as rapidly as possible the conflict which endangers the cause of peace, to give an assurance to all people who crave peace, and to reassure the American people, who, I am certain, also want peace, as do the people of the Soviet Union, the Soviet Government, in addition to earlier instructions on the discontinuation of further work on weapons construction sites, has given a new order to dismantle the arms which you described as offensive, and to crate and return them to the Soviet Union."
+  }
+};
+
+export const TOPIC11_QUOTES: Record<string, { url: string; text: string }> = {
+  "wilson-points": {
+    "url": "https://avalon.law.yale.edu/20th_century/wilson14.asp",
+    "text": "I. Open covenants of peace, openly arrived at, after which there shall be no private international understandings of any kind but diplomacy shall proceed always frankly and in the public view. […] XIV. A general association of nations must be formed under specific covenants for the purpose of affording mutual guarantees of political independence and territorial integrity to great and small states alike."
+  },
+  "versailles-231": {
+    "url": "https://avalon.law.yale.edu/imt/partviii.asp",
+    "text": "The Allied and Associated Governments affirm and Germany accepts the responsibility of Germany and her allies for causing all the loss and damage to which the Allied and Associated Governments and their nationals have been subjected as a consequence of the war imposed upon them by the aggression of Germany and her allies."
+  },
+  "atlantic-charter": {
+    "url": "https://avalon.law.yale.edu/wwii/atlantic.asp",
+    "text": "Third, they respect the right of all peoples to choose the form of government under which they will live; and they wish to see sovereign rights and self government restored to those who have been forcibly deprived of them"
+  },
+  "potsdam-13": {
+    "url": "https://avalon.law.yale.edu/20th_century/decade17.asp",
+    "text": "(13) We call upon the government of Japan to proclaim now the unconditional surrender of all Japanese armed forces, and to provide proper and adequate assurances of their good faith in such action. The alternative for Japan is prompt and utter destruction."
+  },
+  "eden-spain-1936": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1936/oct/29/spain",
+    "text": "But our purpose in this was not to help one side or another but to prevent civil war, savage in itself, from passing the boundaries of Spain and involving the whole of Europe in its orbit. […] Would anyone in the House deny that the policy of non-intervention is the one most likely to keep peace in Europe?"
+  },
+  "attlee-spain-1936": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1936/oct/29/spain",
+    "text": "The question is, are we to acquiesce in this farce? Because it has become a farce? It is a humiliating position for this country."
+  },
+  "roosevelt-peace-1905": {
+    "url": "https://history.state.gov/historicaldocuments/frus1905/d876",
+    "text": "The President feels that the time has come when, in the interest of all mankind, he must endeavor to see if it is not possible to bring to an end the terrible and lamentable conflict now being waged. With both Russia and Japan the United States has inherited ties of friendship and good will. It hopes for the prosperity and welfare of each, and it feels that the progress of the world is set back by the war between these two great nations. The President accordingly urges the Russian and Japanese Governments, not only for their own sakes, but in the interest of the whole civilized world, to open direct negotiations for peace with one another."
+  },
+  "anglo-japanese-1905": {
+    "url": "https://history.state.gov/historicaldocuments/frus1905/d417",
+    "text": "Japan possessing paramount political, military, and economic interests in Korea, Great Britain recognizes the right of Japan to take such measures of guidance, control, and protection in Korea as she may deem proper and necessary to safeguard and advance those interests, provided always that such measures are not contrary to the principle of equal opportunities for the commerce and industry of all nations."
+  },
+  "truman-china-1945": {
+    "url": "https://www.presidency.ucsb.edu/documents/statement-the-president-united-states-policy-toward-china-0",
+    "text": "It is the firm belief of this Government that a strong, united and democratic China is of the utmost importance to the success of this United Nations organization and for world peace. […] (1) That a cessation of hostilities be arranged between the armies of the National Government and the Chinese Communists"
+  },
+  "truman-china-1946": {
+    "url": "https://www.presidency.ucsb.edu/documents/statement-the-president-united-states-policy-toward-china",
+    "text": "We recognized the National Government of the Republic of China as the legal government. […] I asked General Marshall to go to China as my representative."
   }
 };

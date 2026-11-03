@@ -29,7 +29,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,woff2}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         // Listening recordings (VOA Learning English) are streamed once, then kept for offline use.
         runtimeCaching: [

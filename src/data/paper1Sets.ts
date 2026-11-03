@@ -14,6 +14,9 @@ const src = (key: keyof typeof PAPER1_SOURCE_TEXT & string, origin: string) => {
   return { origin, text: s.text, url: s.url };
 };
 
+/** A visual source: the image is shipped in public/sources/ and `text` describes it. */
+const img = (src: string, text: string, origin: string, credit: string, url: string) => ({ origin, text, url, image: { src, credit } });
+
 const FRUS1 = '*Foreign Relations of the United States: Japan, 1931–1941*, vol. I (US Department of State, 1943)';
 const FRUS2 = '*Foreign Relations of the United States: Japan, 1931–1941*, vol. II (US Department of State, 1943)';
 
@@ -599,6 +602,402 @@ export const BUILTIN_SOURCE_SETS: (Omit<SourceSet, 'attempts'> & { builtin: true
           'Anschluss: the Berchtesgaden meeting (February 1938), Schuschnigg\'s plebiscite and the German ultimatum; German troops entered on 12 March; Mussolini now accepted it (Rome–Berlin Axis, unlike 1934); France was in a government crisis; Britain had no commitment to Austria.',
           'The April 1938 plebiscite (over 99 % "yes") and support for union within Austria.',
           'Weighing: Hitler\'s opportunism and willingness to gamble versus the weakness and division of Britain, France and Italy.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'p1b-pearl-attack',
+    builtin: true,
+    title: 'The attack on Pearl Harbor (December 1941)',
+    topic: 'PS3.JP',
+    t: 0,
+    sources: [
+      src(
+        'hull-dec7-1941',
+        `Cordell Hull, US Secretary of State, statement issued on 7 December 1941, the day of the Japanese attack on Pearl Harbor. Published in ${FRUS2}.`,
+      ),
+      img(
+        'sources/remember-dec-7th-1942.jpg',
+        'Poster: a torn United States flag flies at half-mast against dark smoke. Text at the top: "…we here highly resolve that these dead shall not have died in vain…". Text at the bottom: "REMEMBER DEC. 7th!"',
+        'Allen Saalburg, poster "Remember Dec. 7th!", published by the US Office of War Information (OWI Poster No. 14), 1942. The words at the top are taken from Abraham Lincoln\'s Gettysburg Address (1863).',
+        'Library of Congress, Prints and Photographs Division (no known restrictions on publication).',
+        'https://www.loc.gov/pictures/item/90712777/',
+      ),
+      src(
+        'grew-jan-1941',
+        `Joseph C. Grew, US Ambassador in Japan, telegram to the Secretary of State, Tokyo, 27 January 1941. The name of the diplomat who passed on the report is omitted in the published text. Published in ${FRUS2}.`,
+      ),
+      img(
+        'sources/uss-arizona-1941.jpg',
+        'Photograph: thick black smoke rises from the wrecked battleship USS Arizona at Pearl Harbor; its mast and superstructure stand above the water, while small boats move across the harbour in the foreground.',
+        'Photograph of the USS Arizona burning after the Japanese air attack on Pearl Harbor, Hawaii, 7 December 1941.',
+        'Library of Congress, Prints and Photographs Division (no known restrictions on publication).',
+        'https://www.loc.gov/pictures/item/92500933/',
+      ),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, why did Hull describe the Japanese attack as treacherous?',
+        scheme: [
+          'It was "utterly unprovoked".',
+          'It came while Japanese representatives were discussing principles of peace with the US government, at Japan\'s own request.',
+          'Japan\'s forces were meanwhile preparing new attacks on nations with which Japan claimed to be at peace.',
+          'Japan\'s professions of a desire for peace were "infamously false and fraudulent".',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source B?',
+        scheme: [
+          'Americans must never forget the attack: the torn flag at half-mast mourns the dead but is still flying, so the nation is wounded but defiant.',
+          'The dead must be honoured by fighting on to victory; Lincoln\'s words link the war to the sacrifices and ideals of the Civil War.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt:
+          'Referring to its origin, purpose and content, assess the value and limitations of Source C for a historian studying whether the attack on Pearl Harbor could have been foreseen.',
+        scheme: [
+          'Value (origin): written by the US ambassador in Tokyo almost eleven months before the attack, so it shows what Washington could have known.',
+          'Value (purpose/content): a confidential report meant to alert the State Department; it names Pearl Harbor and a "surprise mass attack", reported from many sources including a Japanese one.',
+          'Limitation (content): second-hand rumour passed on by another diplomat; even the informant found the plan "fantastic", and it gives no dates, forces or evidence.',
+          'Limitation (origin): it shows a warning was sent, not how US military and political leaders assessed it or why it was discounted.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast how Sources A and B present the attack on Pearl Harbor.',
+        scheme: [
+          'Similarity: both present the attack as a wrong that demands an American response.',
+          'Similarity: both appeal to American values (A: "fair-dealing, peace, law and order"; B: Lincoln\'s words).',
+          'Similarity: both were made public to shape American opinion.',
+          'Difference: A focuses on Japanese deceit during the negotiations; B does not mention Japan and focuses on sacrifice and resolve.',
+          'Difference: A is a formal statement issued on the day; B is a 1942 propaganda poster using emotion and images to mobilise the public.',
+          'Difference: A explains and accuses; B calls on Americans to remember and to keep fighting.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine the impact of the attack on Pearl Harbor on the United States.',
+        scheme: [
+          'Sources: D shows the physical destruction; A shows outrage at Japanese deception; B shows how the government mobilised opinion; C raises the question of intelligence failure.',
+          'Own knowledge: about 2,400 Americans killed; eight battleships damaged or sunk, including the Arizona (over 1,100 dead on that ship alone); but the aircraft carriers were at sea and the oil storage and repair yards survived.',
+          'Congress declared war on Japan on 8 December (one vote against); Germany and Italy declared war on the US on 11 December, ending US neutrality in Europe.',
+          'The end of isolationism (the America First Committee dissolved); mobilisation of industry and armed forces; internment of Japanese Americans (Executive Order 9066, February 1942).',
+          'Investigations (e.g. the Roberts Commission) into why warnings and decoded messages were not acted on.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'p1b-southern-advance',
+    builtin: true,
+    title: 'Japan\'s southern advance and the US embargo (1941)',
+    topic: 'PS3.JP',
+    t: 0,
+    sources: [
+      src(
+        'welles-indochina-1941',
+        `Sumner Welles, Acting US Secretary of State, statement to the press, 24 July 1941, as Japanese troops prepared to enter southern French Indochina. Published in ${FRUS2}.`,
+      ),
+      src(
+        'toyoda-1941',
+        `Admiral Toyoda Teijirō, Japanese Foreign Minister, communication to the US Ambassador Joseph C. Grew, Tokyo, 25 July 1941 (English text). Published in ${FRUS2}.`,
+      ),
+      src(
+        'freeze-1941',
+        `Press release issued by the White House at Poughkeepsie, New York, 25 July 1941, announcing President Roosevelt's executive order freezing Japanese assets. Published in ${FRUS2}.`,
+      ),
+      src(
+        'plan-b-1941',
+        `Draft proposal ("Plan B") handed by the Japanese Ambassador, Nomura Kichisaburō, to Secretary of State Cordell Hull, Washington, 20 November 1941. "hot" in point 1 is a typing error for "not" in the published text. Published in ${FRUS2}.`,
+      ),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, why did the United States object to the Japanese moves in Indochina?',
+        scheme: [
+          'In 1940 Japan itself had said disturbances should not spread to the Pacific region, including Indochina and the Netherlands East Indies, and the US agreed.',
+          'Any change in the status of such areas by other than peaceful processes would threaten peace in the whole Pacific.',
+          'The changes in Indochina were being made "under duress": Vichy France could not resist Japanese pressure.',
+          'The US opposes acts of aggression carried out by force or the threat of force.',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source B?',
+        scheme: [
+          'Japan will respect French sovereignty and does not intend to use southern Indochina as a base for further armed advance.',
+          'American economic retaliation (freezing assets, an oil embargo) would inflame Japanese hostility, so the US should accept the move.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt:
+          'Referring to its origin, purpose and content, assess the value and limitations of Source C for a historian studying US economic pressure on Japan in 1941.',
+        scheme: [
+          'Value (origin): an official White House announcement on the day the order was issued, so it is authoritative on what was decided.',
+          'Value (content): shows the measure brought all trade and financial dealings with Japan under government control, and that China was included at Chiang Kai-shek\'s request.',
+          'Limitation (purpose): a public justification framed as national defence; it does not mention Indochina or oil explicitly.',
+          'Limitation (content): it cannot show how the order was applied: in practice officials refused licences, creating an almost total oil embargo.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast what Sources B and D reveal about Japanese policy in 1941.',
+        scheme: [
+          'Similarity: both concern French Indochina and claim Japan has no plan for further armed advance.',
+          'Similarity: both link the crisis to economic relations with the US (B: warning about freezing and an oil embargo; D: restoring trade and supplying oil).',
+          'Difference: B defends the occupation of southern Indochina as "joint protection"; D offers to move those troops to the north.',
+          'Difference: B warns of Japanese anger if the US retaliates; D is a bargaining proposal after the freeze had happened.',
+          'Difference: D makes full withdrawal from Indochina conditional on peace with China; B does not mention China\'s war directly.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine the reasons why relations between Japan and the United States broke down in 1941.',
+        scheme: [
+          'Sources: A shows US opposition to expansion by force; B and D show Japan\'s determination to keep its gains and to obtain oil; C shows the freeze that cut trade.',
+          'Own knowledge: the stalemate in China since 1937 and Japan\'s need for oil, rubber and tin; the Tripartite Pact (September 1940); the occupation of northern Indochina (1940) and southern Indochina (July 1941).',
+          'The asset freeze and the effective oil embargo (Japan imported most of its oil from the US) gave Japan months of reserves: negotiate or seize the Netherlands East Indies.',
+          'Failed talks (Hull–Nomura); Konoe resigned and Tojo took office (October 1941); the Imperial Conference of 1 December decided on war; the Hull note (26 November) rejected Plan B.',
+          'Weighing: incompatible aims in China versus the effect of economic pressure on Japanese decision-making.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'p1b-amau',
+    builtin: true,
+    title: 'Japan, China and the Amau Statement (1934)',
+    topic: 'PS3.JP',
+    t: 0,
+    sources: [
+      src(
+        'amau-1934',
+        `Statement by Amau Eiji, spokesman of the Japanese Foreign Office, 17 April 1934 (the "Amau Statement"), in the English translation issued unofficially by the Foreign Office and enclosed by US Ambassador Joseph C. Grew in a dispatch from Tokyo, 20 April 1934. Published in ${FRUS1}.`,
+      ),
+      src(
+        'hirota-instruction-1934',
+        `Instruction from Foreign Minister Hirota Kōki to the Japanese Minister in China, in a translation sent by the Japanese Ambassador, Saito Hiroshi, to the US Under Secretary of State, Washington, 25 April 1934. Saito marked it confidential, as it "was not written for the purpose of publication". Published in ${FRUS1}.`,
+      ),
+      src(
+        'hirota-grew-1934',
+        `Joseph C. Grew, US Ambassador in Japan, telegram to the Secretary of State reporting a conversation with Foreign Minister Hirota, Tokyo, 25 April 1934. Published in ${FRUS1}.`,
+      ),
+      src(
+        'us-aide-memoire-1934',
+        `Aide-mémoire of the US government, telegraphed by Secretary of State Cordell Hull to Ambassador Grew for delivery to the Japanese Foreign Minister, Washington, 28 April 1934. Published in ${FRUS1}.`,
+      ),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, what role did Japan claim in East Asia?',
+        scheme: [
+          'Japan has a special position and a "mission" and "special responsibilities" in East Asia, even if other nations disagree.',
+          'Japan must, if necessary, act alone on its own responsibility to keep peace and order in East Asia.',
+          'Only China can share this responsibility with Japan.',
+          'Japan will oppose foreign help to China such as war planes, aerodromes, military advisers or political loans.',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source C?',
+        scheme: [
+          'Hirota disowns the Amau statement: it was issued without his approval and gave a false impression; Japan seeks no special privileges and respects China\'s integrity and other countries\' trade.',
+          'His moderate policy is under pressure from "Chauvinists" who want a more aggressive policy, so the US should trust him.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt: 'Referring to its origin, purpose and content, assess the value and limitations of Source B for a historian studying Japanese policy towards China in 1934.',
+        scheme: [
+          'Value (origin/purpose): a confidential instruction from the Foreign Minister to a diplomat, "not written for the purpose of publication", so likely to reflect real policy.',
+          'Value (content): confirms the claim to a "mission" in East Asia, to act "single-handedly" if necessary, and hostility to China using foreign powers.',
+          'Limitation (origin): a translation supplied by the Japanese ambassador to the US government, chosen and worded to calm American concern.',
+          'Limitation (content): an extract, and it shows the Foreign Ministry\'s position, not the army\'s, which often acted independently.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast what Sources A and C reveal about Japanese policy towards China.',
+        scheme: [
+          'Similarity: both stress Japan\'s interest in peace and order in China because of its position and nearness.',
+          'Similarity: both see foreign activities as disturbing peace in China.',
+          'Difference: A claims a special mission and the right to act alone; C says Japan seeks no special privileges.',
+          'Difference: A announces opposition to foreign aid to China; C promises no difficulties for other countries\' bona fide trade.',
+          'Difference: A is a public statement; C is a confidential conversation in which Hirota distances himself from it and reveals internal pressure.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine Japanese policy towards China between 1933 and 1937.',
+        scheme: [
+          'Sources: A and B show a claim to a leading role in East Asia; C shows divisions between moderates and "Chauvinists"; D shows US insistence on treaty rights.',
+          'Own knowledge: the Tanggu Truce (May 1933) after the Jehol campaign; the North China autonomy movement (1935: He–Umezu agreement, East Hebei regime).',
+          'Hirota\'s "three principles" (1935); the growing political power of the army after the 26 February Incident (1936); the Anti-Comintern Pact (November 1936).',
+          'Chinese responses: the Xi\'an Incident (December 1936) and the Second United Front; the Marco Polo Bridge Incident (July 1937) and full-scale war.',
+          'Weighing: deliberate policy versus army initiative and opportunism.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'p1b-end-appeasement',
+    builtin: true,
+    title: 'From Prague to Albania: the end of appeasement (1939)',
+    topic: 'PS3.EU',
+    t: 0,
+    sources: [
+      src('birmingham-1939', 'Neville Chamberlain, British Prime Minister, speech in Birmingham, 17 March 1939, two days after German troops occupied Prague. British Blue Book, *Documents concerning German-Polish relations and the outbreak of hostilities between Great Britain and Germany on September 3, 1939* (Cmd. 6106, 1939), No. 9; the Avalon Project.'),
+      src('halifax-1939', 'Lord Halifax, British Foreign Secretary, speech in the House of Lords, 20 March 1939, on the German occupation of Bohemia and Moravia. British Blue Book, *Documents concerning German-Polish relations and the outbreak of hostilities between Great Britain and Germany on September 3, 1939* (Cmd. 6106, 1939), No. 10; the Avalon Project.'),
+      src('henderson-goring-1939', 'Sir Nevile Henderson, British Ambassador in Berlin, dispatch to Lord Halifax, Berlin, 28 May 1939, reporting a conversation with Field-Marshal Hermann Göring. British Blue Book, *Documents concerning German-Polish relations and the outbreak of hostilities between Great Britain and Germany on September 3, 1939* (Cmd. 6106, 1939), No. 12; the Avalon Project.'),
+      src('chamberlain-albania-1939', 'Neville Chamberlain, statement to the House of Commons, 13 April 1939, after the Italian invasion of Albania (7 April). Hansard, HC Deb vol. 346. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.'),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, how did Chamberlain respond to the German occupation of Prague?',
+        scheme: [
+          'He defended his visits to Germany in 1938: nothing Britain, France or Russia could have done would have saved Czechoslovakia.',
+          'The occupation could not be reconciled with Hitler\'s assurances.',
+          'As a signatory of Munich, Britain was entitled to consultation before the agreement was undone.',
+          'Hitler had "taken the law into his own hands".',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source B?',
+        scheme: [
+          'Germany\'s justifications for occupying Czechoslovakia (e.g. that it was in danger) are not credible.',
+          'The occupation was simply the use of superior force, and Germany should admit it.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt: 'Referring to its origin, purpose and content, assess the value and limitations of Source C for a historian studying how the occupation of Prague changed Anglo-German relations.',
+        scheme: [
+          'Value (origin): the British ambassador in Berlin reporting a conversation with one of Hitler\'s closest colleagues, written the day after.',
+          'Value (content): shows the British view that Hitler had broken his word and the principle of self-determination, and evidence of coercion (the threat to bomb Prague).',
+          'Limitation (origin/purpose): Henderson\'s own account, written to his minister and possibly presenting his firmness favourably; he had been a strong supporter of appeasement.',
+          'Limitation (selection): published by the British government in the 1939 Blue Book, chosen after war began to justify British policy.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast what Sources A and D reveal about British policy in the spring of 1939.',
+        scheme: [
+          'Similarity: both condemn the use of force (A: Hitler "has taken the law into his own hands"; D: the "fresh exhibition of the use of force").',
+          'Similarity: both point to the shock to opinion caused by aggression.',
+          'Difference: A still defends past policy (Munich); D announces a new commitment, a guarantee to Greece and Romania.',
+          'Difference: A concerns Germany and Czechoslovakia; D concerns Italy and the Balkans and Mediterranean.',
+          'Difference: A complains of broken assurances; D commits Britain to give "all the support in their power" if Greek or Romanian independence is threatened.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine the reasons why Britain abandoned the policy of appeasement in 1939.',
+        scheme: [
+          'Sources: A and C show broken assurances; B shows disbelief in German justifications; D shows the new policy of guarantees.',
+          'Own knowledge: the occupation of Prague (15 March 1939) ended the claim that Hitler wanted only German-speaking areas; the seizure of Memel (March 1939).',
+          'Guarantees to Poland (31 March), Greece and Romania (13 April); conscription introduced (April 1939); faster rearmament (radar, fighters).',
+          'Public and Conservative opinion turned against appeasement; the Italian invasion of Albania (April 1939) and the Pact of Steel (May 1939).',
+          'Weighing: was this a real change of policy or deterrence still aimed at a negotiated settlement?',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'p1b-poland-1939',
+    builtin: true,
+    title: 'The Polish crisis (August 1939)',
+    topic: 'PS3.EU',
+    t: 0,
+    sources: [
+      src('chamberlain-letter-1939', 'Letter from Neville Chamberlain, British Prime Minister, to Adolf Hitler, 10 Downing Street, 22 August 1939. British Blue Book, *Documents concerning German-Polish relations and the outbreak of hostilities between Great Britain and Germany on September 3, 1939* (Cmd. 6106, 1939), No. 56; the Avalon Project.'),
+      src('hitler-reply-1939', 'Reply of Adolf Hitler to Neville Chamberlain, 23 August 1939 (British government translation). British Blue Book, *Documents concerning German-Polish relations and the outbreak of hostilities between Great Britain and Germany on September 3, 1939* (Cmd. 6106, 1939), No. 60; the Avalon Project.'),
+      src('henderson-aug-1939', 'Sir Nevile Henderson, British Ambassador in Berlin, telegram to Lord Halifax, Berlin, 23 August 1939, reporting his meeting with Hitler at Berchtesgaden that day. British Blue Book, *Documents concerning German-Polish relations and the outbreak of hostilities between Great Britain and Germany on September 3, 1939* (Cmd. 6106, 1939), No. 57; the Avalon Project.'),
+      src('anglo-polish-1939', 'Agreement of Mutual Assistance between the United Kingdom and Poland, London, 25 August 1939 (Article 1 and the article on armistice and peace). British Blue Book, *Documents concerning German-Polish relations and the outbreak of hostilities between Great Britain and Germany on September 3, 1939* (Cmd. 6106, 1939), No. 19; the Avalon Project.'),
+    ],
+    questions: [
+      {
+        label: '1a',
+        marks: 3,
+        prompt: 'According to Source A, what did Chamberlain want Hitler to understand?',
+        scheme: [
+          'British measures were caused by German military movements; the Nazi–Soviet agreement does not change Britain\'s obligation to Poland.',
+          'Britain will avoid the "tragic misunderstanding" of 1914: it will use all its forces at once if necessary.',
+          'A war would not end quickly.',
+          'War would be the greatest calamity; the German–Polish questions could be settled without force.',
+        ],
+      },
+      {
+        label: '1b',
+        marks: 2,
+        prompt: 'What is the message of Source B?',
+        scheme: [
+          'Germany has always sought friendship with Britain, but Danzig and the Corridor are vital German interests it cannot give up.',
+          'Britain is to blame: its guarantee encouraged Poland to persecute the German minority.',
+        ],
+      },
+      {
+        label: '2',
+        marks: 4,
+        prompt: 'Referring to its origin, purpose and content, assess the value and limitations of Source C for a historian studying Hitler\'s attitude during the Polish crisis.',
+        scheme: [
+          'Value (origin): an eyewitness report by the ambassador who met Hitler, sent the same day.',
+          'Value (content): describes Hitler as "excitable and uncompromising", blaming British support for Poland and alleging persecution of Germans.',
+          'Limitation (origin): Henderson\'s own summary of what Hitler said; he cannot know whether Hitler\'s anger was real or staged.',
+          'Limitation (purpose/selection): later published in the Blue Book to show Hitler as unreasonable and justify Britain\'s entry into the war.',
+        ],
+      },
+      {
+        label: '3',
+        marks: 6,
+        prompt: 'Compare and contrast what Sources A and B reveal about Anglo-German relations in August 1939.',
+        scheme: [
+          'Similarity: both claim not to want war between Britain and Germany.',
+          'Similarity: both refer to Britain\'s commitment to Poland.',
+          'Similarity: both mention the possibility of settling questions by negotiation.',
+          'Difference: A says the guarantee stands and warns of a long war; B blames the guarantee for Polish "terrorism" against Germans.',
+          'Difference: A seeks a peaceful settlement of German–Polish questions; B presents Danzig and the Corridor as non-negotiable German interests.',
+          'Difference: A is firm but conciliatory; B is accusatory and justifies German action in advance.',
+        ],
+      },
+      {
+        label: '4',
+        marks: 9,
+        prompt: 'Using the sources and your own knowledge, examine the reasons why Britain went to war with Germany in September 1939.',
+        scheme: [
+          'Sources: A and D show Britain\'s binding commitment to Poland; B and C show Hitler\'s refusal to compromise over Danzig and the Corridor.',
+          'Own knowledge: the guarantee to Poland (31 March 1939) after Prague; Danzig and the Corridor; the Nazi–Soviet Pact (23 August) removed the Soviet obstacle.',
+          'German invasion of Poland on 1 September 1939; the British ultimatum expired on 3 September; France declared war the same day.',
+          'Longer-term: the failure of appeasement, British rearmament reaching a level that made war seem possible, and public opinion that Hitler could not be trusted.',
+          'Weighing: commitment to Poland as the trigger versus the wider aim of stopping German domination of Europe.',
         ],
       },
     ],

@@ -173,6 +173,8 @@ export interface SourceDoc {
   text: string;
   /** Where the text was taken from (built-in sets). */
   url?: string;
+  /** A visual source (poster, cartoon, photograph): image path under public/; `text` then describes it. */
+  image?: { src: string; credit: string };
 }
 
 /** A Paper 1-style question built on a source set. */
