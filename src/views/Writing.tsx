@@ -137,7 +137,7 @@ export default function Writing({ route }: { route: Route }) {
       {subject === 'history' && (
         <a className="card spread" href="#/sources" style={{ textDecoration: 'none', color: 'inherit', marginTop: '1rem' }}>
           <div>
-            <strong>Paper 1 (source analysis)</strong>
+            <strong>{t('History Paper 1 workshop')}</strong>
             <div className="small muted">Practise with your own sources in the Paper 1 workshop.</div>
           </div>
           <span className="btn small">{t('Open')}</span>
@@ -191,7 +191,7 @@ export default function Writing({ route }: { route: Route }) {
                         );
                       }}
                     >
-                      Copy feedback request
+                      {t('Copy feedback request')}
                     </button>
                   )}
                   <button

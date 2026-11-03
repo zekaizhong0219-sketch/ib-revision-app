@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { useState } from 'react';
 import { useStore } from '../store';
 import { calibrate, estimateGrade } from '../lib/grades';
@@ -23,6 +24,7 @@ function verdict(bias: number): string {
  * per subject and uses the app's estimate as of each assessment date (see `calibrate`).
  */
 export function SchoolResults() {
+  const t = useT();
   const { data, visibleSubjects, addSchoolResult, deleteSchoolResult } = useStore();
   const [subject, setSubject] = useState<SubjectId>(visibleSubjects[0]?.id ?? 'physics');
   const [date, setDate] = useState(toDateInput(Date.now()));
@@ -58,9 +60,9 @@ export function SchoolResults() {
   return (
     <section className="card" style={{ marginTop: '1rem' }}>
       <div className="spread">
-        <h2 style={{ margin: 0 }}>School results</h2>
+        <h2 style={{ margin: 0 }}>{t('School results')}</h2>
         <button className="btn small" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-          {open ? 'Close' : 'Add a result'}
+          {open ? t('Close') : t('Add a result')}
         </button>
       </div>
       <p className="small muted">
@@ -104,7 +106,7 @@ export function SchoolResults() {
               </select>
             </label>
             <button className="btn primary small" disabled={!valid} onClick={add}>
-              Save
+              {t('Save')}
             </button>
           </div>
           {got !== '' && max !== '' && !valid && <p className="small" style={{ color: 'var(--warn)' }}>The mark must be between 0 and the maximum.</p>}
@@ -173,7 +175,7 @@ export function SchoolResults() {
                   {Math.round((100 * r.got) / r.max)}%){r.grade ? ` · grade ${r.grade}` : ''}
                 </span>
                 <button className="btn small" onClick={() => deleteSchoolResult(r.id)} aria-label={`Delete ${r.label}`}>
-                  Delete
+                  {t('Delete')}
                 </button>
               </div>
             ))}

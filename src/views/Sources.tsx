@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useStore } from '../store';
 import { FeedbackExport } from '../components/FeedbackExport';
@@ -26,6 +27,7 @@ const emptySet = (): SourceSet => ({
 type Mode = { kind: 'list' } | { kind: 'edit'; set: SourceSet } | { kind: 'sit'; set: SourceSet } | { kind: 'mark'; set: SourceSet; attempt: SourceAttempt };
 
 export default function Sources() {
+  const t = useT();
   const { data, saveSourceSet, deleteSourceSet } = useStore();
   const [mode, setMode] = useState<Mode>({ kind: 'list' });
 
@@ -59,12 +61,12 @@ export default function Sources() {
         </div>
         <div className="row">
           <button className="btn primary small" onClick={() => setMode({ kind: 'sit', set: s })}>
-            Sit
+            {t('Sit')}
           </button>
           {own && (
             <>
               <button className="btn small" onClick={() => setMode({ kind: 'edit', set: s })}>
-                Edit
+                {t('Edit')}
               </button>
               <button
                 className="btn small danger"
@@ -72,7 +74,7 @@ export default function Sources() {
                   if (window.confirm(`Delete "${s.title}" and its attempts?`)) deleteSourceSet(s.id);
                 }}
               >
-                Delete
+                {t('Delete')}
               </button>
             </>
           )}
@@ -82,7 +84,7 @@ export default function Sources() {
   };
   return (
     <div>
-      <h1>History Paper 1 workshop</h1>
+      <h1>{t('History Paper 1 workshop')}</h1>
       <p className="muted">
         Practise Paper 1 with sources you choose: type or paste four sources from your textbook, class packs or archives, and the app builds a
         Paper 1-style question set (24 marks, 1 hour). Sit it under time, mark it against the guidance, and export it for feedback. Your sources are
@@ -90,21 +92,21 @@ export default function Sources() {
       </p>
       <div className="row" style={{ marginBottom: '1rem' }}>
         <button className="btn primary" onClick={() => setMode({ kind: 'edit', set: emptySet() })}>
-          New source set
+          {t('New source set')}
         </button>
       </div>
-      <h2>Real sources</h2>
+      <h2>{t('Real sources')}</h2>
       <p className="small muted">
         Sets built on verbatim primary sources (US diplomatic papers, treaty texts and Hansard), with mark-scheme notes written for the app.
       </p>
       <div className="list">{builtins.map((b) => row(b, false))}</div>
-      <h2 style={{ marginTop: '1.5rem' }}>Your sets</h2>
+      <h2 style={{ marginTop: '1.5rem' }}>{t('Your sets')}</h2>
       <div className="list">
         {sets.length === 0 && <div className="empty">No source sets yet. Create one from a set of four sources on the same focus.</div>}
         {sets.map((s) => row(s, true))}
       </div>
       <section className="card" style={{ marginTop: '1.5rem' }}>
-        <h2>How each question is marked</h2>
+        <h2>{t('How each question is marked')}</h2>
         <p className="small muted">A paraphrase of common marking practice, not the official markscheme; check the current guide with your teacher.</p>
         {['1a', '1b', '2', '3', '4'].map((l) => (
           <div key={l} style={{ marginTop: '0.75rem' }}>
@@ -121,7 +123,7 @@ export default function Sources() {
         ))}
       </section>
       <section className="card" style={{ marginTop: '1rem' }}>
-        <h2>Where to find sources</h2>
+        <h2>{t('Where to find sources')}</h2>
         <ul className="small" style={{ margin: 0, paddingLeft: '1.2rem' }}>
           {SOURCE_TIPS.map((t) => (
             <li key={t}>{t}</li>
@@ -133,6 +135,7 @@ export default function Sources() {
 }
 
 function Editor({ initial, onSave, onCancel }: { initial: SourceSet; onSave: (s: SourceSet) => void; onCancel: () => void }) {
+  const t = useT();
   const [set, setSet] = useState<SourceSet>(initial);
   const [focus, setFocus] = useState('');
   const filled = set.sources.filter((s) => s.text.trim()).length;
@@ -146,7 +149,7 @@ function Editor({ initial, onSave, onCancel }: { initial: SourceSet; onSave: (s:
       <div className="spread">
         <h1 style={{ margin: 0 }}>{initial.title ? 'Edit source set' : 'New source set'}</h1>
         <button className="btn" onClick={onCancel}>
-          Cancel
+          {t('Cancel')}
         </button>
       </div>
       <div className="card stack" style={{ marginTop: '1rem' }}>
@@ -208,7 +211,7 @@ function Editor({ initial, onSave, onCancel }: { initial: SourceSet; onSave: (s:
           disabled={!valid}
           onClick={() => onSave({ ...set, title: set.title.trim(), sources: set.sources.map((s) => ({ origin: s.origin.trim(), text: s.text.trim() })) })}
         >
-          Save set
+          {t('Save set')}
         </button>
       </div>
     </div>
@@ -216,6 +219,7 @@ function Editor({ initial, onSave, onCancel }: { initial: SourceSet; onSave: (s:
 }
 
 function SourcePanel({ set }: { set: SourceSet }) {
+  const t = useT();
   return (
     <div className="stack">
       {set.sources.map((s, i) =>
@@ -233,7 +237,7 @@ function SourcePanel({ set }: { set: SourceSet }) {
             <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{s.text}</p>
             {s.url && (
               <a className="small" href={s.url} target="_blank" rel="noopener noreferrer">
-                Full document ↗
+                {t('Full document')} ↗
               </a>
             )}
           </section>
@@ -280,6 +284,7 @@ export function saveP1Draft(setId: string, draft: P1Draft | null): void {
 }
 
 function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAttempt) => void; onExit: () => void }) {
+  const t = useT();
   const [draft] = useState(() => loadP1Draft(set.id, set.questions.length));
   const [started, setStarted] = useState(() => draft?.t ?? Date.now());
   const [now, setNow] = useState(Date.now());
@@ -334,10 +339,10 @@ function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAt
               }
             }}
           >
-            Quit
+            {t('Quit')}
           </button>
           <button className="btn primary small" onClick={finish}>
-            Finish
+            {t('Finish')}
           </button>
         </div>
       </div>
@@ -353,7 +358,7 @@ function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAt
               setResumed(false);
             }}
           >
-            Start over
+            {t('Start over')}
           </button>
         </div>
       )}
@@ -382,7 +387,7 @@ function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAt
       <div className="card spread">
         <span className="small muted">When you finish, you mark each answer against the guidance.</span>
         <button className="btn primary" onClick={finish}>
-          Finish and mark
+          {t('Finish and mark')}
         </button>
       </div>
     </div>
@@ -390,6 +395,7 @@ function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAt
 }
 
 function Mark({ set, attempt, onDone }: { set: SourceSet; attempt: SourceAttempt; onDone: () => void }) {
+  const t = useT();
   const { addSourceAttempt, saveMock, logPractice } = useStore();
   const [scores, setScores] = useState<(number | undefined)[]>(() => set.questions.map(() => undefined));
   const max = useMemo(() => set.questions.reduce((s, q) => s + q.marks, 0), [set]);
@@ -410,7 +416,7 @@ function Mark({ set, attempt, onDone }: { set: SourceSet; attempt: SourceAttempt
 
   return (
     <div>
-      <h1>Mark your Paper 1</h1>
+      <h1>{t('Mark your Paper 1')}</h1>
       <p className="muted">For each question, compare your answer with the guidance and choose a mark. Be as strict as an examiner would be.</p>
       <details className="card">
         <summary>Sources</summary>
@@ -431,7 +437,7 @@ function Mark({ set, attempt, onDone }: { set: SourceSet; attempt: SourceAttempt
             <p style={{ whiteSpace: 'pre-wrap' }}>{attempt.answers[i]?.trim() || <em className="muted">No answer.</em>}</p>
             {q.scheme && (
               <details open>
-                <summary className="small">Points a good answer may make</summary>
+                <summary className="small">{t('Points a good answer may make')}</summary>
                 <ul className="small" style={{ paddingLeft: '1.2rem' }}>
                   {q.scheme.map((p) => (
                     <li key={p}>{p}</li>
@@ -462,7 +468,7 @@ function Mark({ set, attempt, onDone }: { set: SourceSet; attempt: SourceAttempt
           Total: {total} / {max} ({Math.round((100 * total) / max)}%)
         </strong>
         <button className="btn primary" disabled={!complete} onClick={save}>
-          Save marks
+          {t('Save marks')}
         </button>
       </div>
       <FeedbackExport

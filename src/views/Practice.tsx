@@ -128,14 +128,14 @@ export default function Practice({ route }: { route: Route }) {
       </a>
       <a className="card spread" href="#/listening" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
         <div>
-          <strong>English B listening trainer</strong>
+          <strong>{t('English B listening trainer')}</strong>
           <div className="small muted">Recordings read aloud (played twice, as in the exam), Paper 2-style questions and a strategy guide.</div>
         </div>
         <span className="btn small">{t('Open')}</span>
       </a>
       <a className="card spread" href="#/sources" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
         <div>
-          <strong>History Paper 1 workshop</strong>
+          <strong>{t('History Paper 1 workshop')}</strong>
           <div className="small muted">Your own sources, a Paper 1-style question set, a 1-hour timer and marking guidance.</div>
         </div>
         <span className="btn small">{t('Open')}</span>
@@ -160,7 +160,7 @@ export default function Practice({ route }: { route: Route }) {
           </div>
         </div>
         <div>
-          <h3>Format</h3>
+          <h3>{t('Format')}</h3>
           <div className="row">
             {formats.map(([f, label]) => (
               <button key={f || 'all'} className="chip" aria-pressed={fmt === f} onClick={() => set({ fmt: f || undefined })}>

@@ -71,7 +71,7 @@ export default function Mock() {
         </div>
         {styles.length > 1 && (
           <div>
-            <h3>Paper</h3>
+            <h3>{t('Paper')}</h3>
             <div className="row">
               {styles.map(([st, label]) => (
                 <button key={st || 'mixed'} className="chip" aria-pressed={activeStyle === st} onClick={() => setStyle(st)}>
