@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { existsSync } from 'node:fs';
 import katex from 'katex';
 import 'katex/contrib/mhchem';
 import { ALL_CARDS } from '../cards';
@@ -200,7 +201,8 @@ describe('exam-style formats (Paper 1B, Paper 3)', () => {
 describe('built-in History Paper 1 sets (real sources)', () => {
   it('has complete sets on both case studies with the standard question structure', async () => {
     const { BUILTIN_SOURCE_SETS } = await import('../paper1Sets');
-    expect(BUILTIN_SOURCE_SETS.length).toBeGreaterThanOrEqual(4);
+    expect(BUILTIN_SOURCE_SETS.length).toBeGreaterThanOrEqual(12);
+    expect(BUILTIN_SOURCE_SETS.some((x) => x.sources.some((y) => y.image))).toBe(true);
     expect(new Set(BUILTIN_SOURCE_SETS.map((s) => s.topic))).toEqual(new Set(['PS3.JP', 'PS3.EU']));
     expect(new Set(BUILTIN_SOURCE_SETS.map((s) => s.id)).size).toBe(BUILTIN_SOURCE_SETS.length);
     for (const set of BUILTIN_SOURCE_SETS) {
@@ -210,6 +212,14 @@ describe('built-in History Paper 1 sets (real sources)', () => {
       expect(set.sources).toHaveLength(4);
       for (const src of set.sources) {
         expect(src.origin.length).toBeGreaterThan(40);
+        if (src.image) {
+          // Visual sources: a shipped image with a credit and a text description.
+          expect(src.url).toMatch(/^https:\/\/www\.loc\.gov\/pictures\/item\/\d+\/$/);
+          expect(existsSync(`public/${src.image.src}`), src.image.src).toBe(true);
+          expect(src.image.credit).toMatch(/no known restrictions/i);
+          expect(src.text.length).toBeGreaterThan(60);
+          continue;
+        }
         expect(src.url).toMatch(/^https:\/\/(history\.state\.gov|avalon\.law\.yale\.edu|api\.parliament\.uk)\//);
         const words = src.text.split(/\s+/).length;
         expect(words, src.url).toBeGreaterThanOrEqual(60);

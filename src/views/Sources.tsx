@@ -234,7 +234,27 @@ function SourcePanel({ set }: { set: SourceSet }) {
                   {s.origin}
                 </p>
               ))}
-            <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{s.text}</p>
+            {s.image ? (
+              <>
+                <img
+                  src={`${import.meta.env.BASE_URL}${s.image.src}`}
+                  alt={s.text}
+                  loading="lazy"
+                  style={{ display: 'block', maxWidth: '100%', maxHeight: '70vh', height: 'auto', margin: '0 auto', borderRadius: 8 }}
+                />
+                <p className="small muted" style={{ margin: '0.4rem 0 0' }}>
+                  {s.image.credit}
+                </p>
+                <details>
+                  <summary className="small">Text description</summary>
+                  <p className="small" style={{ margin: 0 }}>
+                    {s.text}
+                  </p>
+                </details>
+              </>
+            ) : (
+              <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{s.text}</p>
+            )}
             {s.url && (
               <a className="small" href={s.url} target="_blank" rel="noopener noreferrer">
                 {t('Full document')} ↗
