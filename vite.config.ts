@@ -31,6 +31,19 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        // Listening recordings (VOA Learning English) are streamed once, then kept for offline use.
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/voa-audio\.voanews\.eu\/.*\.mp3$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'listening-audio',
+              expiration: { maxEntries: 30, maxAgeSeconds: 365 * 24 * 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+              rangeRequests: true,
+            },
+          },
+        ],
       },
     }),
   ],

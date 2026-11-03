@@ -161,11 +161,12 @@ describe('listening items', () => {
   it('every auto-marked numeric answer appears in the script (as digits or words)', () => {
     const words: Record<number, string> = { 2: 'two', 3: 'three', 4: 'four', 5: 'five', 7: 'seven', 9: 'nine', 32: 'thirty-two', 2000: 'two thousand' };
     for (const l of LISTENING) {
-      const text = l.script.map((s) => s.text).join(' ').toLowerCase();
+      // Thousands separators are ignored ("4,500" counts as 4500).
+      const text = l.script.map((s) => s.text).join(' ').toLowerCase().replace(/(\d),(\d{3})/g, '$1$2');
       for (const p of l.question.parts) {
         if (!p.numeric) continue;
         const v = p.numeric.value;
-        expect(text.includes(String(v)) || (words[v] !== undefined && text.includes(words[v])), `${l.title} (${p.label}) ${v}`).toBe(true);
+        expect(new RegExp(`(^|[^\\d])${v}([^\\d]|$)`).test(text) || (words[v] !== undefined && text.includes(words[v])), `${l.title} (${p.label}) ${v}`).toBe(true);
       }
     }
   });
@@ -243,5 +244,21 @@ describe('Cold War source-quote cards', () => {
       expect(q.text.split(/\s+/).length, key).toBeLessThanOrEqual(100);
     }
     for (const c of quoteCards) expect(c.back).toMatch(/\*\*Use it:\*\* .{40,}/);
+  });
+});
+
+describe('authentic listening (VOA)', () => {
+  it('uses real VOA recordings with full transcripts and credits', () => {
+    const real = LISTENING.filter((l) => l.audio);
+    expect(real.length).toBeGreaterThanOrEqual(4);
+    expect(new Set(real.map((l) => l.theme)).size).toBeGreaterThanOrEqual(4);
+    for (const l of real) {
+      expect(l.audio!.url).toMatch(/^https:\/\/voa-audio\.voanews\.eu\/.+\.mp3$/);
+      expect(l.audio!.source).toMatch(/^https:\/\/learningenglish\.voanews\.com\//);
+      expect(l.audio!.credit).toMatch(/wrote|reported|adapted/);
+      const words = l.script.map((s) => s.text).join(' ');
+      expect(words.split(/\s+/).length).toBeGreaterThan(250);
+      expect(words).not.toMatch(/Associated Press|Reuters|\bAFP\b/);
+    }
   });
 });
