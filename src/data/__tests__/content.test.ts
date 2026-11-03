@@ -245,7 +245,7 @@ describe('built-in History Paper 1 sets (real sources)', () => {
 describe('Cold War source-quote cards', () => {
   it('quotes every generated Cold War excerpt verbatim, with origin and usage notes', async () => {
     const { COLD_WAR_QUOTES } = await import('../paper1Sources.generated');
-    const quoteCards = ALL_CARDS.filter((c) => c.kind === 'quote' && c.front.startsWith('**Source quote**'));
+    const quoteCards = ALL_CARDS.filter((c) => c.kind === 'quote' && c.front.startsWith('**Source quote**') && c.topic.startsWith('W12'));
     expect(quoteCards.length).toBeGreaterThanOrEqual(15);
     expect(new Set(quoteCards.map((c) => c.topic))).toEqual(new Set(['W12.RMA', 'W12.CR', 'W12.END']));
     for (const [key, q] of Object.entries(COLD_WAR_QUOTES)) {
@@ -270,5 +270,19 @@ describe('authentic listening (VOA)', () => {
       expect(words.split(/\s+/).length).toBeGreaterThan(250);
       expect(words).not.toMatch(/Associated Press|Reuters|\bAFP\b/);
     }
+  });
+});
+
+describe('Topic 11 evidence and historiography cards', () => {
+  it('quotes every Topic 11 excerpt verbatim on a card for each war', async () => {
+    const { TOPIC11_QUOTES } = await import('../paper1Sources.generated');
+    const cards = ALL_CARDS.filter((c) => c.kind === 'quote' && c.topic.startsWith('W11'));
+    for (const [key, q] of Object.entries(TOPIC11_QUOTES)) expect(cards.some((c) => c.back.includes(q.text)), key).toBe(true);
+    expect(new Set(cards.map((c) => c.topic))).toEqual(new Set(['W11.WW1', 'W11.WW2', 'W11.SCW', 'W11.RJW', 'W11.CCW']));
+  });
+  it('has historiography cards for every Topic 11 war studied and the Cold War', () => {
+    const h = ALL_CARDS.filter((c) => c.front.startsWith('Historiography'));
+    expect(h.length).toBeGreaterThanOrEqual(20);
+    for (const t of ['W11.WW1', 'W11.WW2', 'W11.SCW', 'W11.CCW', 'W12.RMA']) expect(h.some((c) => c.topic === t), t).toBe(true);
   });
 });

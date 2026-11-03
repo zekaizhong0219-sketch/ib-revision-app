@@ -277,3 +277,46 @@ export const COLD_WAR_QUOTES: Record<string, { url: string; text: string }> = {
     "text": "In order to eliminate as rapidly as possible the conflict which endangers the cause of peace, to give an assurance to all people who crave peace, and to reassure the American people, who, I am certain, also want peace, as do the people of the Soviet Union, the Soviet Government, in addition to earlier instructions on the discontinuation of further work on weapons construction sites, has given a new order to dismantle the arms which you described as offensive, and to crate and return them to the Soviet Union."
   }
 };
+
+export const TOPIC11_QUOTES: Record<string, { url: string; text: string }> = {
+  "wilson-points": {
+    "url": "https://avalon.law.yale.edu/20th_century/wilson14.asp",
+    "text": "I. Open covenants of peace, openly arrived at, after which there shall be no private international understandings of any kind but diplomacy shall proceed always frankly and in the public view. […] XIV. A general association of nations must be formed under specific covenants for the purpose of affording mutual guarantees of political independence and territorial integrity to great and small states alike."
+  },
+  "versailles-231": {
+    "url": "https://avalon.law.yale.edu/imt/partviii.asp",
+    "text": "The Allied and Associated Governments affirm and Germany accepts the responsibility of Germany and her allies for causing all the loss and damage to which the Allied and Associated Governments and their nationals have been subjected as a consequence of the war imposed upon them by the aggression of Germany and her allies."
+  },
+  "atlantic-charter": {
+    "url": "https://avalon.law.yale.edu/wwii/atlantic.asp",
+    "text": "Third, they respect the right of all peoples to choose the form of government under which they will live; and they wish to see sovereign rights and self government restored to those who have been forcibly deprived of them"
+  },
+  "potsdam-13": {
+    "url": "https://avalon.law.yale.edu/20th_century/decade17.asp",
+    "text": "(13) We call upon the government of Japan to proclaim now the unconditional surrender of all Japanese armed forces, and to provide proper and adequate assurances of their good faith in such action. The alternative for Japan is prompt and utter destruction."
+  },
+  "eden-spain-1936": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1936/oct/29/spain",
+    "text": "But our purpose in this was not to help one side or another but to prevent civil war, savage in itself, from passing the boundaries of Spain and involving the whole of Europe in its orbit. […] Would anyone in the House deny that the policy of non-intervention is the one most likely to keep peace in Europe?"
+  },
+  "attlee-spain-1936": {
+    "url": "https://api.parliament.uk/historic-hansard/commons/1936/oct/29/spain",
+    "text": "The question is, are we to acquiesce in this farce? Because it has become a farce? It is a humiliating position for this country."
+  },
+  "roosevelt-peace-1905": {
+    "url": "https://history.state.gov/historicaldocuments/frus1905/d876",
+    "text": "The President feels that the time has come when, in the interest of all mankind, he must endeavor to see if it is not possible to bring to an end the terrible and lamentable conflict now being waged. With both Russia and Japan the United States has inherited ties of friendship and good will. It hopes for the prosperity and welfare of each, and it feels that the progress of the world is set back by the war between these two great nations. The President accordingly urges the Russian and Japanese Governments, not only for their own sakes, but in the interest of the whole civilized world, to open direct negotiations for peace with one another."
+  },
+  "anglo-japanese-1905": {
+    "url": "https://history.state.gov/historicaldocuments/frus1905/d417",
+    "text": "Japan possessing paramount political, military, and economic interests in Korea, Great Britain recognizes the right of Japan to take such measures of guidance, control, and protection in Korea as she may deem proper and necessary to safeguard and advance those interests, provided always that such measures are not contrary to the principle of equal opportunities for the commerce and industry of all nations."
+  },
+  "truman-china-1945": {
+    "url": "https://www.presidency.ucsb.edu/documents/statement-the-president-united-states-policy-toward-china-0",
+    "text": "It is the firm belief of this Government that a strong, united and democratic China is of the utmost importance to the success of this United Nations organization and for world peace. […] (1) That a cessation of hostilities be arranged between the armies of the National Government and the Chinese Communists"
+  },
+  "truman-china-1946": {
+    "url": "https://www.presidency.ucsb.edu/documents/statement-the-president-united-states-policy-toward-china",
+    "text": "We recognized the National Government of the Republic of China as the legal government. […] I asked General Marshall to go to China as my representative."
+  }
+};
