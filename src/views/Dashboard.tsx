@@ -7,6 +7,7 @@ import { queueCounts } from '../lib/queue';
 import { ALL_QUESTIONS } from '../data/questions';
 import { planDay, reviewLoad, type PlanItem } from '../lib/planner';
 import { estimateGrade } from '../lib/grades';
+import { SchoolResults } from '../components/SchoolResults';
 import { isLeech } from '../lib/mistakes';
 import { BarChart, HBars } from '../components/Charts';
 import { ProgressBar, SubjectDot, Tile } from '../components/ui';
@@ -225,6 +226,8 @@ export default function Dashboard() {
           </p>
         )}
       </section>
+
+      <SchoolResults />
 
       <section className="card" style={{ marginTop: '1rem' }}>
         <div className="spread" style={{ marginBottom: '0.75rem' }}>

@@ -122,4 +122,10 @@ S: overall
     expect(() => parseStructured('physics', '@struct A.1\nQ: s\na) [1] x\nb) [1] z\nM: w')).toThrow(/mark scheme/);
     expect(() => parseStructured('physics', '@struct A.1\nQ: s\na) [1] x\n= abc\nM: y\nb) [1] z\nM: w')).toThrow(/numeric/);
   });
+  it('reads an optional style attribute and rejects unknown ones', () => {
+    const body = 'Q: s\na) [1] x\nM: y\nb) [1] z\nM: w';
+    expect(parseStructured('math', `@struct M1 style=P3\n${body}`)[0].style).toBe('P3');
+    expect(parseStructured('physics', `@struct A.1\n${body}`)[0].style).toBeUndefined();
+    expect(() => parseStructured('math', `@struct M1 style=P9\n${body}`)).toThrow(/attribute/);
+  });
 });

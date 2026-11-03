@@ -11,9 +11,9 @@ import { HBars } from '../components/Charts';
 import { SubjectChips, SubjectDot, TopicPicker } from '../components/ui';
 import { navigate, type Route } from '../router';
 import { MatchAnswer, OrderAnswer, StructuredAnswer, TextAnswer } from './PracticeAnswers';
-import type { Card, PracticeResult, Question, SubjectId } from '../types';
+import type { Card, PracticeResult, Question, StructuredQuestion, SubjectId } from '../types';
 
-const DURATIONS = [5, 10, 15, 20, 30, 45];
+const DURATIONS = [5, 10, 15, 20, 30, 45, 60];
 
 const TYPE_LABEL: Record<Question['type'], string> = {
   mc: 'multiple choice',
@@ -24,6 +24,27 @@ const TYPE_LABEL: Record<Question['type'], string> = {
   match: 'matching',
   structured: 'structured (Paper 2 style)',
 };
+
+const STYLE_LABEL: Record<NonNullable<StructuredQuestion['style']>, string> = {
+  P1B: 'data-based (Paper 1B style)',
+  P3: 'investigation (Paper 3 style)',
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function typeLabel(q: Question): string {
+  if (q.type === 'structured' && q.style) return STYLE_LABEL[q.style];
+  return TYPE_LABEL[q.type] ?? q.type;
+}
+
+/** Question-format filter: all, any structured question, or a specific exam style. */
+type Format = '' | 'struct' | 'P1B' | 'P3';
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function matchesFormat(q: Question, fmt: Format): boolean {
+  if (!fmt) return true;
+  if (q.type !== 'structured') return false;
+  return fmt === 'struct' ? !q.style : q.style === fmt;
+}
 
 /** Turns a flashcard into a self-marked recall question. */
 function cardToQuestion(c: Card): Question {
@@ -61,7 +82,9 @@ export default function Practice({ route }: { route: Route }) {
   const subjects = (p.get('subject')?.split(',').filter(Boolean) as SubjectId[] | undefined) ?? [activeSubjectIds[0] ?? 'physics'];
   const topics = p.get('topics')?.split(',').filter(Boolean) ?? [];
   const minutes = Number(p.get('min')) || 10;
-  const includeCards = p.get('cards') !== '0';
+  const fmtParam = p.get('fmt');
+  const fmt: Format = fmtParam === 'struct' || fmtParam === 'P1B' || fmtParam === 'P3' ? fmtParam : '';
+  const includeCards = p.get('cards') !== '0' && !fmt;
   const [running, setRunning] = useState<{ pool: Question[]; endsAt: number; minutes: number } | null>(null);
 
   const inScope = useCallback(
@@ -69,11 +92,19 @@ export default function Practice({ route }: { route: Route }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [p.toString()],
   );
-  const questions = useMemo(() => ALL_QUESTIONS.filter(inScope), [inScope]);
+  const questions = useMemo(() => ALL_QUESTIONS.filter((q) => inScope(q) && matchesFormat(q, fmt)), [inScope, fmt]);
+  const formats = useMemo(() => {
+    const avail = ALL_QUESTIONS.filter((q) => subjects.includes(q.subject));
+    const list: [Format, string][] = [['', 'All'], ['struct', 'Paper 2-style structured']];
+    if (avail.some((q) => matchesFormat(q, 'P1B'))) list.push(['P1B', 'Paper 1B data-based']);
+    if (avail.some((q) => matchesFormat(q, 'P3'))) list.push(['P3', 'Paper 3 investigations']);
+    return list;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjects.join(',')]);
   const scopedCards = useMemo(() => cards.filter((c) => inScope(c) && !data.cards[c.id]?.suspended), [cards, inScope, data.cards]);
 
   const set = (patch: Record<string, string | string[] | undefined>) =>
-    navigate('/practice', { subject: subjects, topics, min: String(minutes), cards: includeCards ? undefined : '0', ...patch });
+    navigate('/practice', { subject: subjects, topics, min: String(minutes), cards: p.get('cards') === '0' ? '0' : undefined, fmt: fmt || undefined, ...patch });
 
   if (running) {
     return <Run pool={running.pool} endsAt={running.endsAt} minutes={running.minutes} onExit={() => setRunning(null)} />;
@@ -97,8 +128,15 @@ export default function Practice({ route }: { route: Route }) {
       </a>
       <a className="card spread" href="#/listening" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
         <div>
-          <strong>English B listening trainer</strong>
+          <strong>{t('English B listening trainer')}</strong>
           <div className="small muted">Recordings read aloud (played twice, as in the exam), Paper 2-style questions and a strategy guide.</div>
+        </div>
+        <span className="btn small">{t('Open')}</span>
+      </a>
+      <a className="card spread" href="#/sources" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '1rem' }}>
+        <div>
+          <strong>{t('History Paper 1 workshop')}</strong>
+          <div className="small muted">Your own sources, a Paper 1-style question set, a 1-hour timer and marking guidance.</div>
         </div>
         <span className="btn small">{t('Open')}</span>
       </a>
@@ -121,8 +159,29 @@ export default function Practice({ route }: { route: Route }) {
             ))}
           </div>
         </div>
-        <label className="row" style={{ cursor: 'pointer' }}>
-          <input type="checkbox" checked={includeCards} onChange={(e) => set({ cards: e.target.checked ? undefined : '0' })} />
+        <div>
+          <h3>{t('Format')}</h3>
+          <div className="row">
+            {formats.map(([f, label]) => (
+              <button key={f || 'all'} className="chip" aria-pressed={fmt === f} onClick={() => set({ fmt: f || undefined })}>
+                {label}
+              </button>
+            ))}
+          </div>
+          {fmt === 'P3' && (
+            <p className="small muted">
+              Paper 3 (AA HL) has two long problem-solving questions in 1 hour: you spot a pattern, make a conjecture, then prove or extend it.
+              Allow about 30 minutes per question; a 60-minute session matches the real paper.
+            </p>
+          )}
+          {fmt === 'P1B' && (
+            <p className="small muted">
+              Paper 1B questions are based on experimental data: read tables, process data, propagate uncertainties and evaluate the method.
+            </p>
+          )}
+        </div>
+        <label className="row" style={{ cursor: 'pointer', opacity: fmt ? 0.5 : 1 }}>
+          <input type="checkbox" disabled={!!fmt} checked={includeCards} onChange={(e) => set({ cards: e.target.checked ? undefined : '0' })} />
           Mix in flashcard recall prompts (self-marked)
         </label>
         <div className="spread">
@@ -220,7 +279,7 @@ function Run({ pool, endsAt, minutes, onExit }: { pool: Question[]; endsAt: numb
       <div className="card">
         <div className="row small muted" style={{ marginBottom: '0.6rem' }}>
           <SubjectDot subject={q.subject} /> {topicLabel(q.subject, q.topic)}
-          <span className="badge">{TYPE_LABEL[q.type] ?? q.type}{q.type === 'open' && !q.id.includes('-q-') ? ' (flashcard)' : ''}</span>
+          <span className="badge">{typeLabel(q)}{q.type === 'open' && !q.id.includes('-q-') ? ' (flashcard)' : ''}</span>
         </div>
         <MathText text={q.prompt} />
         <div style={{ marginTop: '1rem' }}>

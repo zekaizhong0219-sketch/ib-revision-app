@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { FeedbackExport } from '../components/FeedbackExport';
+import { buildFeedbackPrompt } from '../lib/feedback';
+import { copyText } from '../lib/clipboard';
 import { useT } from '../i18n';
 import { useStore } from '../store';
 import { ALL_ESSAYS } from '../data/essays';
@@ -131,6 +134,16 @@ export default function Writing({ route }: { route: Route }) {
         })}
       </div>
 
+      {subject === 'history' && (
+        <a className="card spread" href="#/sources" style={{ textDecoration: 'none', color: 'inherit', marginTop: '1rem' }}>
+          <div>
+            <strong>{t('History Paper 1 workshop')}</strong>
+            <div className="small muted">Practise with your own sources in the Paper 1 workshop.</div>
+          </div>
+          <span className="btn small">{t('Open')}</span>
+        </a>
+      )}
+
       <div className="section-title">
         <h2>Your attempts — {getSubject(subject).name}</h2>
       </div>
@@ -162,6 +175,23 @@ export default function Writing({ route }: { route: Route }) {
                   {p && (
                     <button className="btn small" onClick={() => setActive({ prompt: p, attempt: a, phase: a.done ? 'assess' : 'write' })}>
                       {a.done ? 'Re-mark' : 'Continue'}
+                    </button>
+                  )}
+                  {p && a.text.trim() && (
+                    <button
+                      className="btn small"
+                      onClick={async () => {
+                        const r = getRubric(a.rubric);
+                        if (!r) return;
+                        const text = buildFeedbackPrompt(p, a, r);
+                        window.alert(
+                          (await copyText(text))
+                            ? 'Feedback request copied. Paste it into Claude or send it to your teacher.'
+                            : 'Copying was blocked by the browser. Open "Re-mark" and use Download .md instead.',
+                        );
+                      }}
+                    >
+                      {t('Copy feedback request')}
                     </button>
                   )}
                   <button
@@ -366,6 +396,10 @@ function Assess({ prompt, attempt, onDone }: { prompt: EssayPrompt; attempt: Ess
           {t('Save marks')}
         </button>
       </div>
+      <FeedbackExport
+        build={() => buildFeedbackPrompt(prompt, { ...attempt, scores, done: complete }, r)}
+        filename={`feedback-${prompt.subject}-${new Date(attempt.t).toISOString().slice(0, 10)}.md`}
+      />
     </div>
   );
 }

@@ -194,3 +194,62 @@ describe('v2 migration and essays', () => {
     expect(m.essays.map((x) => x.id)).toEqual(['e2', 'e1']);
   });
 });
+
+describe('school results and source sets', () => {
+  it('sanitises school results and source sets, clamping marks', () => {
+    const d = sanitizeData({
+      version: DATA_VERSION,
+      school: [
+        { id: 's1', subject: 'math', t: 1, label: 'Mock', got: 70, max: 60, grade: 9 },
+        { id: 's2', subject: 'nope', t: 1, got: 1, max: 2 },
+        { id: 's3', subject: 'physics', t: 1, got: 1, max: 0 },
+      ],
+      sourceSets: [
+        {
+          id: 'p1',
+          title: 'Manchuria',
+          topic: 'PS3.JP',
+          t: 5,
+          sources: [{ origin: 'Source A', text: 'text' }, 'junk'],
+          questions: [{ label: '1a', marks: 3, prompt: 'What…' }, { label: 'x' }],
+          attempts: [{ t: 9, sec: 60, answers: ['a', 7], scores: [5] }],
+        },
+        { id: 'p2', title: 'empty', topic: 'PS3.EU', t: 1, sources: [], questions: [] },
+      ],
+    });
+    expect(d.school).toHaveLength(1);
+    expect(d.school[0]).toMatchObject({ got: 60, max: 60 });
+    expect(d.school[0].grade).toBeUndefined();
+    expect(d.sourceSets).toHaveLength(1);
+    expect(d.sourceSets[0].sources).toHaveLength(1);
+    expect(d.sourceSets[0].questions).toHaveLength(1);
+    expect(d.sourceSets[0].attempts[0]).toEqual({ t: 9, sec: 60, answers: ['a'], scores: [3] });
+  });
+  it('defaults to empty lists for older data and merges attempts of the same set', () => {
+    const old = sanitizeData({ version: DATA_VERSION });
+    expect(old.school).toEqual([]);
+    expect(old.sourceSets).toEqual([]);
+    const set = { id: 'p1', title: 'T', topic: 'PS3.JP', t: 1, sources: [{ origin: 'o', text: 't' }], questions: [{ label: '1a', marks: 3, prompt: 'q' }] };
+    const a: AppData = { ...defaultData(), sourceSets: [{ ...set, attempts: [{ t: 1, sec: 1, answers: [''], scores: [1] }] }] };
+    const b: AppData = { ...defaultData(), sourceSets: [{ ...set, attempts: [{ t: 2, sec: 1, answers: [''], scores: [2] }] }] };
+    const m = mergeData(a, b);
+    expect(m.sourceSets).toHaveLength(1);
+    expect(m.sourceSets[0].attempts.map((x) => x.t)).toEqual([1, 2]);
+  });
+});
+
+describe('built-in Paper 1 attempts', () => {
+  it('keeps attempts for built-in set ids only, clamped to the standard marks, and merges them', () => {
+    const d = sanitizeData({
+      version: DATA_VERSION,
+      p1Attempts: {
+        'p1b-munich': [{ t: 5, sec: 10, answers: ['x'], scores: [9, 2, 4, 6, 9] }],
+        'evil-id': [{ t: 1, sec: 1, answers: [], scores: [] }],
+      },
+    });
+    expect(Object.keys(d.p1Attempts)).toEqual(['p1b-munich']);
+    expect(d.p1Attempts['p1b-munich'][0].scores).toEqual([3, 2, 4, 6, 9]);
+    const other: AppData = { ...defaultData(), p1Attempts: { 'p1b-munich': [{ t: 6, sec: 1, answers: [], scores: [0, 0, 0, 0, 0] }] } };
+    expect(mergeData(d, other).p1Attempts['p1b-munich'].map((a) => a.t)).toEqual([5, 6]);
+  });
+});

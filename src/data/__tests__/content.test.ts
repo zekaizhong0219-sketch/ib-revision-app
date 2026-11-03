@@ -3,6 +3,7 @@ import katex from 'katex';
 import 'katex/contrib/mhchem';
 import { ALL_CARDS } from '../cards';
 import { SUBJECTS } from '../syllabus';
+import { toHtml } from '../../lib/markup';
 
 function mathSegments(raw: string): string[] {
   const text = raw.replace(/\\\$/g, '');
@@ -160,12 +161,104 @@ describe('listening items', () => {
   it('every auto-marked numeric answer appears in the script (as digits or words)', () => {
     const words: Record<number, string> = { 2: 'two', 3: 'three', 4: 'four', 5: 'five', 7: 'seven', 9: 'nine', 32: 'thirty-two', 2000: 'two thousand' };
     for (const l of LISTENING) {
-      const text = l.script.map((s) => s.text).join(' ').toLowerCase();
+      // Thousands separators are ignored ("4,500" counts as 4500).
+      const text = l.script.map((s) => s.text).join(' ').toLowerCase().replace(/(\d),(\d{3})/g, '$1$2');
       for (const p of l.question.parts) {
         if (!p.numeric) continue;
         const v = p.numeric.value;
-        expect(text.includes(String(v)) || (words[v] !== undefined && text.includes(words[v])), `${l.title} (${p.label}) ${v}`).toBe(true);
+        expect(new RegExp(`(^|[^\\d])${v}([^\\d]|$)`).test(text) || (words[v] !== undefined && text.includes(words[v])), `${l.title} (${p.label}) ${v}`).toBe(true);
       }
+    }
+  });
+});
+
+describe('exam-style formats (Paper 1B, Paper 3)', () => {
+  const styled = ALL_QUESTIONS.filter((q) => q.type === 'structured' && q.style);
+  it('has data-based questions for both sciences and Paper 3 investigations for math only', () => {
+    const count = (s: string, st: string) => styled.filter((q) => q.subject === s && q.type === 'structured' && q.style === st).length;
+    expect(count('physics', 'P1B')).toBeGreaterThanOrEqual(4);
+    expect(count('chemistry', 'P1B')).toBeGreaterThanOrEqual(4);
+    expect(count('math', 'P3')).toBeGreaterThanOrEqual(5);
+    expect(styled.every((q) => (q.subject === 'math') === (q.type === 'structured' && q.style === 'P3'))).toBe(true);
+  });
+  it('gives every data-based question a rendered data table', () => {
+    for (const q of styled.filter((x) => x.type === 'structured' && x.style === 'P1B')) {
+      expect(toHtml(q.prompt), q.id).toMatch(/<table class="data"><thead>/);
+    }
+  });
+  it('makes Paper 3 investigations long, multi-step and partly auto-marked', () => {
+    for (const q of styled.filter((x) => x.type === 'structured' && x.style === 'P3')) {
+      if (q.type !== 'structured') continue;
+      const marks = q.parts.reduce((s, p) => s + p.marks, 0);
+      expect(marks, q.id).toBeGreaterThanOrEqual(18);
+      expect(q.parts.length, q.id).toBeGreaterThanOrEqual(6);
+      expect(q.parts.filter((p) => p.numeric).length, q.id).toBeGreaterThanOrEqual(3);
+    }
+  });
+});
+
+describe('built-in History Paper 1 sets (real sources)', () => {
+  it('has complete sets on both case studies with the standard question structure', async () => {
+    const { BUILTIN_SOURCE_SETS } = await import('../paper1Sets');
+    expect(BUILTIN_SOURCE_SETS.length).toBeGreaterThanOrEqual(4);
+    expect(new Set(BUILTIN_SOURCE_SETS.map((s) => s.topic))).toEqual(new Set(['PS3.JP', 'PS3.EU']));
+    expect(new Set(BUILTIN_SOURCE_SETS.map((s) => s.id)).size).toBe(BUILTIN_SOURCE_SETS.length);
+    for (const set of BUILTIN_SOURCE_SETS) {
+      expect(set.id).toMatch(/^p1b-[a-z0-9-]+$/);
+      expect(set.questions.map((q) => [q.label, q.marks])).toEqual([['1a', 3], ['1b', 2], ['2', 4], ['3', 6], ['4', 9]]);
+      for (const q of set.questions) expect(q.scheme?.length, `${set.id} ${q.label}`).toBeGreaterThanOrEqual(2);
+      expect(set.sources).toHaveLength(4);
+      for (const src of set.sources) {
+        expect(src.origin.length).toBeGreaterThan(40);
+        expect(src.url).toMatch(/^https:\/\/(history\.state\.gov|avalon\.law\.yale\.edu|api\.parliament\.uk)\//);
+        const words = src.text.split(/\s+/).length;
+        expect(words, src.url).toBeGreaterThanOrEqual(60);
+        expect(words, src.url).toBeLessThanOrEqual(300);
+        // No stray Hansard column numbers (e.g. "four Powers 50 at Munich").
+        if (src.url?.includes('parliament.uk')) expect(src.text).not.toMatch(/[A-Za-z,] \d{2,4} [a-z]/);
+      }
+      // Hansard extracts carry the Open Parliament Licence attribution.
+      for (const src of set.sources.filter((x) => x.url?.includes('parliament.uk'))) expect(src.origin).toContain('Open Parliament Licence');
+    }
+  });
+  it('refers to sources that exist (A–D) in every question', async () => {
+    const { BUILTIN_SOURCE_SETS } = await import('../paper1Sets');
+    for (const set of BUILTIN_SOURCE_SETS) {
+      for (const q of set.questions) {
+        const letters = [...q.prompt.matchAll(/Sources? ([A-D])(?: and ([A-D]))?/g)].flatMap((m) => [m[1], m[2]]).filter(Boolean);
+        if (q.label !== '4') expect(letters.length, `${set.id} ${q.label}`).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe('Cold War source-quote cards', () => {
+  it('quotes every generated Cold War excerpt verbatim, with origin and usage notes', async () => {
+    const { COLD_WAR_QUOTES } = await import('../paper1Sources.generated');
+    const quoteCards = ALL_CARDS.filter((c) => c.kind === 'quote' && c.front.startsWith('**Source quote**'));
+    expect(quoteCards.length).toBeGreaterThanOrEqual(15);
+    expect(new Set(quoteCards.map((c) => c.topic))).toEqual(new Set(['W12.RMA', 'W12.CR', 'W12.END']));
+    for (const [key, q] of Object.entries(COLD_WAR_QUOTES)) {
+      expect(quoteCards.some((c) => c.back.includes(q.text)), key).toBe(true);
+      expect(q.url).toMatch(/^https:\/\/(history\.state\.gov|avalon\.law\.yale\.edu|www\.presidency\.ucsb\.edu|en\.wikisource\.org)\//);
+      expect(q.text.split(/\s+/).length, key).toBeLessThanOrEqual(100);
+    }
+    for (const c of quoteCards) expect(c.back).toMatch(/\*\*Use it:\*\* .{40,}/);
+  });
+});
+
+describe('authentic listening (VOA)', () => {
+  it('uses real VOA recordings with full transcripts and credits', () => {
+    const real = LISTENING.filter((l) => l.audio);
+    expect(real.length).toBeGreaterThanOrEqual(4);
+    expect(new Set(real.map((l) => l.theme)).size).toBeGreaterThanOrEqual(4);
+    for (const l of real) {
+      expect(l.audio!.url).toMatch(/^https:\/\/voa-audio\.voanews\.eu\/.+\.mp3$/);
+      expect(l.audio!.source).toMatch(/^https:\/\/learningenglish\.voanews\.com\//);
+      expect(l.audio!.credit).toMatch(/wrote|reported|adapted/);
+      const words = l.script.map((s) => s.text).join(' ');
+      expect(words.split(/\s+/).length).toBeGreaterThan(250);
+      expect(words).not.toMatch(/Associated Press|Reuters|\bAFP\b/);
     }
   });
 });

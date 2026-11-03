@@ -206,7 +206,7 @@ kbd {
 .badge.good { background: var(--good-soft); color: var(--good); }
 .badge.bad { background: var(--bad-soft); color: var(--bad); }
 
-input[type='text'], input[type='number'], input[type='search'], input[type='datetime-local'], select, textarea {
+input[type='text'], input[type='number'], input[type='search'], input[type='datetime-local'], input[type='date'], select, textarea {
   width: 100%; padding: 0.55rem 0.7rem; border-radius: 10px; border: 1px solid var(--border);
   background: var(--surface); min-height: 40px;
 }
@@ -314,3 +314,8 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 
 .exemplar { line-height: 1.7; }
 .exemplar-para { margin-bottom: 0.9rem; }
+
+.table-wrap { overflow-x: auto; margin: 0.5rem 0; }
+table.data { border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+table.data th, table.data td { border: 1px solid var(--border); padding: 0.3rem 0.6rem; text-align: center; white-space: nowrap; }
+table.data th { background: var(--surface-2); font-weight: 600; }

@@ -11,9 +11,14 @@ import { MathText } from '../components/MathText';
 import { HBars } from '../components/Charts';
 import { SubjectDot } from '../components/ui';
 import { href } from '../router';
-import type { PracticeLog, SubjectId } from '../types';
+import type { PracticeLog, QuestionStyle, SubjectId } from '../types';
 
 const LENGTHS = [30, 60, 90];
+const STYLE_OPTIONS: [QuestionStyle | '', string][] = [
+  ['', 'Mixed (Paper 1 + 2 style)'],
+  ['P1B', 'Paper 1B data-based'],
+  ['P3', 'Paper 3 investigations'],
+];
 
 type Phase =
   | { kind: 'setup' }
@@ -28,6 +33,9 @@ export default function Mock() {
   const [phase, setPhase] = useState<Phase>({ kind: 'setup' });
   const [subject, setSubject] = useState<SubjectId>(subjects[0]?.id ?? 'physics');
   const [minutes, setMinutes] = useState(60);
+  const [style, setStyle] = useState<QuestionStyle | ''>('');
+  const styles = STYLE_OPTIONS.filter(([st]) => !st || ALL_QUESTIONS.some((q) => q.subject === subject && q.type === 'structured' && q.style === st));
+  const activeStyle = styles.some(([st]) => st === style) ? style : '';
 
   if (phase.kind === 'sit') {
     return (
@@ -61,6 +69,18 @@ export default function Mock() {
             ))}
           </div>
         </div>
+        {styles.length > 1 && (
+          <div>
+            <h3>{t('Paper')}</h3>
+            <div className="row">
+              {styles.map(([st, label]) => (
+                <button key={st || 'mixed'} className="chip" aria-pressed={activeStyle === st} onClick={() => setStyle(st)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div>
           <h3>{t('Length')}</h3>
           <div className="row">
@@ -77,7 +97,7 @@ export default function Mock() {
         </p>
         <button
           className="btn primary"
-          onClick={() => setPhase({ kind: 'sit', subject, minutes, items: buildMock(ALL_QUESTIONS, subject, minutes), started: Date.now() })}
+          onClick={() => setPhase({ kind: 'sit', subject, minutes, items: buildMock(ALL_QUESTIONS, subject, minutes, Date.now(), undefined, activeStyle || undefined), started: Date.now() })}
         >
           Start {minutes}-minute mock
         </button>

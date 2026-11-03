@@ -143,7 +143,67 @@ export interface AppData {
   essays: EssayAttempt[];
   mocks: MockRecord[];
   reports: ContentReport[];
+  /** Real school assessment results, used to calibrate the app's grade estimates. */
+  school: SchoolResult[];
+  /** History Paper 1 source sets entered by the user (kept on this device / in backups only). */
+  sourceSets: SourceSet[];
+  /** Attempts at the built-in Paper 1 sets, by set id. */
+  p1Attempts: Record<string, SourceAttempt[]>;
   settings: Settings;
+}
+
+/** A result from a real school test or mock, entered by the user. */
+export interface SchoolResult {
+  id: string;
+  subject: SubjectId;
+  /** Date of the assessment (ms). */
+  t: number;
+  label: string;
+  got: number;
+  max: number;
+  /** IB-style grade the teacher gave, if any (1–7). */
+  grade?: number;
+}
+
+/** One source in a Paper 1 set. */
+export interface SourceDoc {
+  /** Provenance as it would appear under the source: author, title, date, type. */
+  origin: string;
+  /** Text of the source, or a description of a visual source. */
+  text: string;
+  /** Where the text was taken from (built-in sets). */
+  url?: string;
+}
+
+/** A Paper 1-style question built on a source set. */
+export interface SourceQuestion {
+  /** "1a", "1b", "2", "3", "4" */
+  label: string;
+  marks: number;
+  prompt: string;
+  /** Points a good answer may make (built-in sets). */
+  scheme?: string[];
+}
+
+/** A user-entered Paper 1 source set (four sources + five questions) and its attempts. */
+export interface SourceSet {
+  id: string;
+  title: string;
+  /** Syllabus topic id, e.g. PS3.JP or PS3.EU */
+  topic: string;
+  sources: SourceDoc[];
+  questions: SourceQuestion[];
+  t: number;
+  attempts: SourceAttempt[];
+}
+
+export interface SourceAttempt {
+  /** Start time (ms) */
+  t: number;
+  sec: number;
+  answers: string[];
+  /** Self-assessed marks per question (same order as questions). */
+  scores: number[];
 }
 
 /** A user's note that a card or question may contain a mistake. */
@@ -259,9 +319,13 @@ export interface StructuredPart {
 }
 
 /** Multi-part exam-style question with marks per part. */
+/** Exam format a structured question imitates: Paper 1B (data-based, sciences) or Paper 3 (Math AA HL investigation). */
+export type QuestionStyle = 'P1B' | 'P3';
+
 export interface StructuredQuestion extends QuestionBase {
   type: 'structured';
   parts: StructuredPart[];
+  style?: QuestionStyle;
 }
 
 export type Question = MCQuestion | NumericQuestion | OpenQuestion | TextQuestion | OrderQuestion | MatchQuestion | StructuredQuestion;

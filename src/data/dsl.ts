@@ -1,4 +1,4 @@
-import type { Card, CardKind, EssayPrompt, NumericSpec, Question, StructuredPart, StructuredQuestion, SubjectId } from '../types';
+import type { Card, CardKind, EssayPrompt, NumericSpec, Question, QuestionStyle, StructuredPart, StructuredQuestion, SubjectId } from '../types';
 import { SUBJECT_PREFIX as PREFIX } from './subjectIds';
 
 /**
@@ -41,8 +41,8 @@ import { SUBJECT_PREFIX as PREFIX } from './subjectIds';
  *   Q: … / P: metáfora => «tus ojos son luceros» / … / S: …
  *
  * ── Structured (multi-part, Paper 2-style) questions ─────────
- *   @struct A.2
- *   Q: stem / context (may continue on following lines)
+ *   @struct A.2                       ← optional: style=P1B (data-based) or style=P3 (Math Paper 3)
+ *   Q: stem / context (may continue on following lines; rows like | a | b | form a table)
  *   a) [2] Calculate the acceleration.
  *   = 2.5 rel=0.02 unit=m s^-2        ← optional: auto-mark this part numerically
  *   ~ answer one | answer two          ← optional: auto-mark this part as a short text answer
@@ -293,8 +293,14 @@ export function parseStructured(subject: SubjectId, source: string): StructuredQ
   const blocks = source.split(/^@struct\s+/m).slice(1);
   for (const block of blocks) {
     const lines = block.split('\n');
-    const topic = lines[0].trim();
+    const [topic, ...attrs] = lines[0].trim().split(/\s+/);
     const where = `[${subject}] structured ${topic}`;
+    let style: QuestionStyle | undefined;
+    for (const attr of attrs) {
+      const m = attr.match(/^style=(P1B|P3)$/);
+      if (!m) throw new Error(`${where}: unknown attribute "${attr}"`);
+      style = m[1] as QuestionStyle;
+    }
     let stem = '';
     let solution = '';
     const parts: StructuredPart[] = [];
@@ -346,6 +352,7 @@ export function parseStructured(subject: SubjectId, source: string): StructuredQ
       prompt,
       solution: normalise(solution),
       parts: parts.map((p) => ({ ...p, prompt: normalise(p.prompt), scheme: normalise(p.scheme) })),
+      ...(style ? { style } : {}),
     });
   }
   return out;

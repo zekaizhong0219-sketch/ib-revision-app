@@ -40,6 +40,7 @@ export default function Listening() {
               <strong>{it.title}</strong>
               <div className="small muted">
                 {it.kind} · {topicLabel('english', it.theme)} · {it.question.parts.length} questions
+                {it.audio ? ' · real recording' : ' · synthesised voice'}
               </div>
             </div>
             <button className="btn primary small" onClick={() => setItem(it)}>
@@ -79,7 +80,10 @@ function Session({ item, supported, onBack }: { item: ListeningItem; supported: 
   const [done, setDone] = useState<{ result: PracticeResult } | null>(null);
   const [, setVoicesReady] = useState(0);
   const cancelled = useRef(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [audioError, setAudioError] = useState(false);
   const maxPlays = unlimited ? Infinity : 2;
+  const canPlay = item.audio ? !audioError : supported;
 
   useEffect(() => {
     if (!supported) return;
@@ -93,13 +97,26 @@ function Session({ item, supported, onBack }: { item: ListeningItem; supported: 
 
   const stop = useCallback(() => {
     cancelled.current = true;
-    window.speechSynthesis.cancel();
+    audioRef.current?.pause();
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     setPlaying(false);
     setLine(-1);
   }, []);
 
   const play = () => {
-    if (!supported || playing || plays >= maxPlays) return;
+    if (!canPlay || playing || plays >= maxPlays) return;
+    if (item.audio && audioRef.current) {
+      const a = audioRef.current;
+      a.currentTime = 0;
+      a.playbackRate = rate;
+      setPlaying(true);
+      setPlays((p) => p + 1);
+      a.play().catch(() => {
+        setPlaying(false);
+        setAudioError(true);
+      });
+      return;
+    }
     cancelled.current = false;
     const speakers = Object.keys(item.speakers);
     const voices = pickVoices(speakers.length);
@@ -157,7 +174,7 @@ function Session({ item, supported, onBack }: { item: ListeningItem; supported: 
       </p>
       <section className="card stack">
         <div className="row">
-          <button className="btn primary" onClick={play} disabled={!supported || playing || plays >= maxPlays}>
+          <button className="btn primary" onClick={play} disabled={!canPlay || playing || plays >= maxPlays}>
             ▶ {plays === 0 ? 'Play' : 'Play again'}
           </button>
           <button className="btn" onClick={stop} disabled={!playing}>
@@ -165,7 +182,7 @@ function Session({ item, supported, onBack }: { item: ListeningItem; supported: 
           </button>
           <span className="small muted">
             {unlimited ? `${plays} plays` : `${plays} / 2 plays`}
-            {playing && line >= 0 ? ` · speaking ${line + 1}/${item.script.length}` : ''}
+            {playing && !item.audio && line >= 0 ? ` · speaking ${line + 1}/${item.script.length}` : ''}
           </span>
         </div>
         <div className="row" role="group" aria-label="Speed">
@@ -179,7 +196,27 @@ function Session({ item, supported, onBack }: { item: ListeningItem; supported: 
             <input type="checkbox" checked={unlimited} onChange={(e) => setUnlimited(e.target.checked)} /> practice mode (unlimited plays)
           </label>
         </div>
-        <p className="small muted">Read the questions below before the first play. Voices depend on your device; installing an English voice in your system settings improves quality.</p>
+        {item.audio ? (
+          <>
+            <audio
+              ref={audioRef}
+              src={item.audio.url}
+              preload="metadata"
+              onEnded={() => setPlaying(false)}
+              onError={() => {
+                setPlaying(false);
+                setAudioError(true);
+              }}
+            />
+            <p className="small muted">
+              Real recording from Voice of America Learning English ({item.audio.date}), public domain. It needs an internet connection the first
+              time; after that it is cached for offline use. Read the questions below before the first play.
+            </p>
+            {audioError && <div className="feedback no">The recording could not be loaded. Check your connection and reopen this item.</div>}
+          </>
+        ) : (
+          <p className="small muted">Read the questions below before the first play. Voices depend on your device; installing an English voice in your system settings improves quality.</p>
+        )}
       </section>
       <section className="card">
         <StructuredAnswer q={item.question} done={done} onAnswer={record} />
@@ -192,6 +229,14 @@ function Session({ item, supported, onBack }: { item: ListeningItem; supported: 
               <strong>{item.speakers[l.speaker]}:</strong> {l.text}
             </p>
           ))}
+          {item.audio && (
+            <p className="small muted">
+              {item.audio.credit}{' '}
+              <a href={item.audio.source} target="_blank" rel="noopener noreferrer">
+                Original story ↗
+              </a>
+            </p>
+          )}
           <a className="btn small" href={href('/listening')} onClick={onBack}>
             Another recording
           </a>

@@ -13,6 +13,9 @@ import { worksQuestions } from './worksAndWars';
 import { physicsExtra } from './physicsExtra';
 import { chemistryExtra } from './chemistryExtra';
 import { mathExtra } from './mathExtra';
+import { mathPaper3 } from './mathPaper3';
+import { chemistryPaper1B, physicsPaper1B } from './sciencePaper1B';
+import { englishVoaReading } from './englishVoaReading';
 
 export const ALL_QUESTIONS: Question[] = [...physicsQuestions, ...chemistryQuestions, ...mathQuestions, ...englishQuestions, ...historyQuestions, ...spanishQuestions,
   ...physicsStructured,
@@ -23,4 +26,8 @@ export const ALL_QUESTIONS: Question[] = [...physicsQuestions, ...chemistryQuest
   ...physicsExtra,
   ...chemistryExtra,
   ...mathExtra,
+  ...mathPaper3,
+  ...physicsPaper1B,
+  ...chemistryPaper1B,
+  ...englishVoaReading,
 ];
