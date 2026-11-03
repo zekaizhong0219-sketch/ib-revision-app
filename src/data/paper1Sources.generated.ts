@@ -183,5 +183,25 @@ export const COLD_WAR_QUOTES: Record<string, { url: string; text: string }> = {
   "reagan-wall": {
     "url": "https://www.presidency.ucsb.edu/documents/remarks-east-west-relations-the-brandenburg-gate-west-berlin",
     "text": "General Secretary Gorbachev, if you seek peace, if you seek prosperity for the Soviet Union and Eastern Europe, if you seek liberalization: Come here to this gate! Mr. Gorbachev, open this gate! Mr. Gorbachev, tear down this wall!"
+  },
+  "marshall-1947": {
+    "url": "https://en.wikisource.org/wiki/Marshall_Plan_Speech",
+    "text": "Our policy is directed not against any country or doctrine but against hunger, poverty, desperation, and chaos. Its purpose should be the revival of a working economy in the world so as to permit the emergence of political and social conditions in which free institutions can exist. […] Any government which maneuvers to block the recovery of other countries cannot expect help from us. Furthermore, governments, political parties, or groups which seek to perpetuate human misery in order to profit therefrom politically or otherwise will encounter the opposition of the United States."
+  },
+  "stalin-poland-1945": {
+    "url": "https://history.state.gov/historicaldocuments/frus1945v05/d199",
+    "text": "It is also necessary to take into account the fact that Poland borders with the Soviet Union, what cannot be said of Great Britain and the United States. […] You, apparently, do not agree that the Soviet Union has a right to make efforts that there should exist in Poland a government friendly toward the Soviet Union, and that the Soviet government cannot agree to existence in Poland of a government hostile toward it."
+  },
+  "warsaw-preamble": {
+    "url": "https://avalon.law.yale.edu/20th_century/warsaw.asp",
+    "text": "mindful, at the same time, of the situation created in Europe by the ratification of the Paris agreements, which envisage the formation of a new military alignment in the shape of \"Western European Union,\" with the participation of a remilitarized Western Germany and the integration of the latter in the North-Atlantic bloc, which increased the danger of another war and constitutes a threat to the national security of the peaceable states"
+  },
+  "khrushchev-turkey": {
+    "url": "https://history.state.gov/historicaldocuments/frus1961-63v06/d66",
+    "text": "You are disturbed over Cuba. You say that this disturbs you because it is 90 miles by sea from the coast of the United States of America. But Turkey adjoins us; our sentries patrol back and forth and see each other. Do you consider, then, that you have the right to demand security for your own country and the removal of the weapons you call offensive, but do not accord the same right to us?"
+  },
+  "khrushchev-dismantle": {
+    "url": "https://history.state.gov/historicaldocuments/frus1961-63v06/d68",
+    "text": "In order to eliminate as rapidly as possible the conflict which endangers the cause of peace, to give an assurance to all people who crave peace, and to reassure the American people, who, I am certain, also want peace, as do the people of the Soviet Union, the Soviet Government, in addition to earlier instructions on the discontinuation of further work on weapons construction sites, has given a new order to dismantle the arms which you described as offensive, and to crate and return them to the Soviet Union."
   }
 };

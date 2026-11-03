@@ -25,6 +25,13 @@ const SPECS: QuoteCard[] = [
     use: 'Orthodox historians use this pledge to argue that Stalin broke his word in Poland and Eastern Europe; revisionists stress the vague wording and Soviet security needs.',
   },
   {
+    key: 'stalin-poland-1945',
+    topic: 'W12.RMA',
+    front: 'Stalin to Truman (24 April 1945): how did Stalin justify Soviet policy on Poland?',
+    origin: 'Joseph Stalin, message to President Truman, Moscow, 24 April 1945 (English translation as received; FRUS 1945, vol. V).',
+    use: 'The Soviet case in the origins debate: security after two German invasions through Poland, and a comparison with British influence in Greece and Belgium. Set it against the Yalta pledge of free elections.',
+  },
+  {
     key: 'kennan-insecurity',
     topic: 'W12.RMA',
     front: 'Kennan\'s "Long Telegram" (22 February 1946): what did he see at the root of Soviet foreign policy?',
@@ -51,6 +58,13 @@ const SPECS: QuoteCard[] = [
     front: 'Truman Doctrine (1947): according to Truman, what allows totalitarian regimes to grow?',
     origin: 'Harry S. Truman, address to Congress, 12 March 1947.',
     use: 'Links containment to economic aid: the reasoning behind the Marshall Plan (June 1947), which the USSR rejected and answered with Cominform and Comecon.',
+  },
+  {
+    key: 'marshall-1947',
+    topic: 'W12.RMA',
+    front: 'Marshall Plan speech (Harvard, 5 June 1947): what did Marshall say US policy was directed against, and whom would the US oppose?',
+    origin: 'George C. Marshall, US Secretary of State, address at Harvard University, 5 June 1947 (Wikisource transcription).',
+    use: 'Presented as economic, not ideological, but the warning to governments that "block the recovery" anticipated Soviet refusal: Molotov left the Paris talks (July 1947); Moscow answered with Cominform (1947) and Comecon (1949). Revisionists see economic self-interest.',
   },
   {
     key: 'nato-art5',
@@ -81,6 +95,13 @@ const SPECS: QuoteCard[] = [
     use: 'The Soviet answer to West Germany joining NATO (May 1955); compare its wording with NATO Article 5, and with its use against members (Hungary 1956, Czechoslovakia 1968).',
   },
   {
+    key: 'warsaw-preamble',
+    topic: 'W12.RMA',
+    front: 'Warsaw Pact preamble (1955): what reason did the signatories give for forming the alliance?',
+    origin: 'Treaty of Friendship, Co-operation and Mutual Assistance (Warsaw Pact), 14 May 1955, preamble.',
+    use: 'The Soviet bloc presents the pact as a defensive reply to West German rearmament and NATO membership (Paris agreements, 1954): evidence for arguments about mutual fear and misperception.',
+  },
+  {
     key: 'jfk-missiles',
     topic: 'W12.CR',
     front: 'Kennedy\'s address of 22 October 1962: what had the United States discovered in Cuba?',
@@ -107,6 +128,20 @@ const SPECS: QuoteCard[] = [
     front: 'Khrushchev, 26 October 1962: what deal did he propose?',
     origin: 'Nikita Khrushchev, letter to President Kennedy, 26 October 1962 (FRUS 1961–1963, vol. VI).',
     use: 'The basis of the settlement (a no-invasion pledge for Cuba); the letter of 27 October added the Turkish missiles, removed secretly by the US in 1963.',
+  },
+  {
+    key: 'khrushchev-turkey',
+    topic: 'W12.CR',
+    front: 'Khrushchev to Kennedy, 27 October 1962: how did he compare US missiles in Turkey with Soviet missiles in Cuba?',
+    origin: 'Nikita Khrushchev, letter to President Kennedy, 27 October 1962 (US translation, FRUS 1961–1963, vol. VI).',
+    use: 'The Soviet argument for equal security. Kennedy publicly ignored the Turkey proposal but Robert Kennedy secretly assured Dobrynin that the Jupiter missiles would go (removed April 1963).',
+  },
+  {
+    key: 'khrushchev-dismantle',
+    topic: 'W12.CR',
+    front: 'Khrushchev, 28 October 1962: what did he announce?',
+    origin: 'Nikita Khrushchev, message to President Kennedy, 28 October 1962 (FRUS 1961–1963, vol. VI).',
+    use: 'The end of the crisis. Castro was not consulted, straining Soviet–Cuban relations, and the climbdown was later used against Khrushchev when he was removed (1964).',
   },
   {
     key: 'jfk-berlin',

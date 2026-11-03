@@ -243,11 +243,53 @@ function SourcePanel({ set }: { set: SourceSet }) {
   );
 }
 
+/**
+ * Unfinished sittings are autosaved per set in localStorage (a per-device convenience), so
+ * leaving the page or switching tabs in the app does not lose an hour of writing. A draft older
+ * than the paper plus a margin is ignored.
+ */
+const draftKey = (setId: string) => `ib-revision:p1-draft:${setId}`;
+const DRAFT_MAX_AGE = 3 * 60 * 60000;
+
+interface P1Draft {
+  t: number;
+  answers: string[];
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function loadP1Draft(setId: string, questions: number, now = Date.now()): P1Draft | null {
+  try {
+    const raw = JSON.parse(window.localStorage.getItem(draftKey(setId)) ?? 'null') as unknown;
+    if (!raw || typeof raw !== 'object') return null;
+    const { t, answers } = raw as { t?: unknown; answers?: unknown };
+    if (typeof t !== 'number' || now - t > DRAFT_MAX_AGE || t > now || !Array.isArray(answers)) return null;
+    return { t, answers: Array.from({ length: questions }, (_, i) => (typeof answers[i] === 'string' ? (answers[i] as string) : '')) };
+  } catch {
+    return null;
+  }
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function saveP1Draft(setId: string, draft: P1Draft | null): void {
+  try {
+    if (draft) window.localStorage.setItem(draftKey(setId), JSON.stringify(draft));
+    else window.localStorage.removeItem(draftKey(setId));
+  } catch {
+    /* storage unavailable: the sitting still works, it just is not autosaved */
+  }
+}
+
 function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAttempt) => void; onExit: () => void }) {
-  const [started] = useState(() => Date.now());
+  const [draft] = useState(() => loadP1Draft(set.id, set.questions.length));
+  const [started, setStarted] = useState(() => draft?.t ?? Date.now());
   const [now, setNow] = useState(Date.now());
-  const [answers, setAnswers] = useState<string[]>(() => set.questions.map(() => ''));
+  const [answers, setAnswers] = useState<string[]>(() => draft?.answers ?? set.questions.map(() => ''));
+  const [resumed, setResumed] = useState(!!draft);
   const finished = useRef(false);
+
+  useEffect(() => {
+    if (!finished.current) saveP1Draft(set.id, { t: started, answers });
+  }, [set.id, started, answers]);
   const totalMs = (PAPER1_MINUTES + PAPER1_READING_MINUTES) * 60000;
   const elapsed = now - started;
   const reading = elapsed < PAPER1_READING_MINUTES * 60000;
@@ -278,14 +320,18 @@ function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAt
     <div>
       <div className="spread" style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--bg)', padding: '0.5rem 0' }}>
         <strong>{set.title}</strong>
-        <span className={`badge ${remaining < 5 * 60000 ? 'bad' : ''}`} aria-live="polite">
+        <span className={`badge ${remaining < 5 * 60000 ? 'bad' : ''}`} role="timer">
           {reading ? `Reading time ${mmss(PAPER1_READING_MINUTES * 60000 - elapsed)}` : `${mmss(remaining)} left`}
         </span>
         <div className="row">
           <button
             className="btn small"
             onClick={() => {
-              if (window.confirm('Leave without saving this attempt?')) onExit();
+              if (window.confirm('Leave without saving this attempt?')) {
+                finished.current = true;
+                saveP1Draft(set.id, null);
+                onExit();
+              }
             }}
           >
             Quit
@@ -295,6 +341,22 @@ function Sit({ set, onFinish, onExit }: { set: SourceSet; onFinish: (a: SourceAt
           </button>
         </div>
       </div>
+      {resumed && (
+        <div className="feedback spread" style={{ marginTop: 0 }}>
+          <span className="small">Resumed your unfinished attempt; the timer kept running.</span>
+          <button
+            className="btn small"
+            onClick={() => {
+              setStarted(Date.now());
+              setNow(Date.now());
+              setAnswers(set.questions.map(() => ''));
+              setResumed(false);
+            }}
+          >
+            Start over
+          </button>
+        </div>
+      )}
       {reading && <p className="small muted">Reading time: read the sources and questions, and plan. You may start writing whenever you like.</p>}
       <SourcePanel set={set} />
       {set.questions.map((q, i) => (
@@ -337,6 +399,7 @@ function Mark({ set, attempt, onDone }: { set: SourceSet; attempt: SourceAttempt
 
   const save = () => {
     addSourceAttempt(set.id, final);
+    saveP1Draft(set.id, null);
     saveMock({ id: `mock-p1-${attempt.t.toString(36)}`, subject: 'history', t: attempt.t, minutes: PAPER1_MINUTES, got: total, max, items: set.questions.length });
     const pct = total / max;
     logPractice([

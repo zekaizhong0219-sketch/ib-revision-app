@@ -99,6 +99,14 @@ def presidency(url: str) -> tuple:
 
 
 @lru_cache(None)
+def wikisource(url: str) -> tuple:
+    """Paragraphs of a Wikisource transcription (main content only)."""
+    s = BeautifulSoup(fetch(url), 'lxml')
+    root = s.select_one('#mw-content-text') or s
+    return tuple(t for t in (clean(p.get_text()) for p in root.find_all('p')) if t)
+
+
+@lru_cache(None)
 def page_lines(url: str) -> tuple:
     """All text lines of a page (for documents whose text is not in <p> elements)."""
     s = BeautifulSoup(fetch(url), 'lxml')
@@ -402,6 +410,32 @@ def build_cold_war() -> dict:
     add('reagan-evil-empire', url, cut(presidency(url), 'the aggressive impulses of an evil empire', 'label both sides equally at fault', 'good and evil.'))
     url = P + 'remarks-east-west-relations-the-brandenburg-gate-west-berlin'
     add('reagan-wall', url, cut(presidency(url), 'Mr. Gorbachev, tear down this wall!', 'General Secretary Gorbachev', 'tear down this wall!'))
+    # Balance: the Marshall Plan and Soviet statements (official translations in FRUS).
+    url = 'https://en.wikisource.org/wiki/Marshall_Plan_Speech'
+    d = wikisource(url)
+    add(
+        'marshall-1947',
+        url,
+        cut(d, 'Our policy is directed not against any country or doctrine', 'Our policy is directed'),
+        cut(d, 'Any government which maneuvers to block the recovery', 'Any government which maneuvers', 'will encounter the opposition of the United States.'),
+    )
+    d = frus('frus1945v05', 'd199')
+    add(
+        'stalin-poland-1945',
+        FRUS_URL.format('frus1945v05', 'd199'),
+        cut(d, 'Poland borders with the Soviet Union', 'It is also necessary'),
+        cut(d, 'You, apparently, do not agree that the Soviet Union has a right', None, 'a government hostile toward it.'),
+    )
+    url = AVALON + '20th_century/warsaw.asp'
+    add(
+        'warsaw-preamble',
+        url,
+        cut(avalon(url), 'with the participation of a remilitarized Western Germany', 'mindful, at the same time', 'threat to the national security of the peaceable states'),
+    )
+    url = H + 'frus1961-63v06/d66'
+    add('khrushchev-turkey', url, cut(frus_html(url), 'But Turkey adjoins us', 'You are disturbed over Cuba.', 'do not accord the same right to us?'))
+    url = H + 'frus1961-63v06/d68'
+    add('khrushchev-dismantle', url, cut(frus_html(url), 'has given a new order to dismantle the arms'))
     for k, v in ex.items():
         v['text'] = v['text'].replace(' Let them come to Berlin. And there', ' Let them come to Berlin.')
     return ex
